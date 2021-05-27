@@ -12,6 +12,7 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
 endif()
 
 add_executable(state state.c)
+add_executable(trace_state trace_state.c)
 
 foreach(TARGET ${BUILDSYSTEM_TARGETS})
   set_target_properties(TARGET PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
