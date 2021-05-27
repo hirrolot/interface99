@@ -22,6 +22,12 @@ void MyState_set(void *self, int x) {
 
 impl(State, MyState);
 
+void manipulate_state(State st) {
+    printf("x = %d\n", st.vtable.get(st.self));
+    st.vtable.set(st.self, 5);
+    printf("x = %d\n", st.vtable.get(st.self));
+}
+
 /*
  * Output:
  * x = 0
@@ -29,8 +35,5 @@ impl(State, MyState);
  */
 int main(void) {
     MyState state = {0};
-
-    printf("x = %d\n", VTABLE(State, MyState).get(&state));
-    VTABLE(State, MyState).set(&state, 5);
-    printf("x = %d\n", VTABLE(State, MyState).get(&state));
+    manipulate_state((State){.self = &state, .vtable = VTABLE(State, MyState)});
 }
