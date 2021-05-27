@@ -22,7 +22,7 @@ void MyState_set(void *self, int x) {
 
 impl(State, MyState);
 
-void manipulate_state(State st) {
+void test(State st) {
     printf("x = %d\n", st.vptr->get(st.self));
     st.vptr->set(st.self, 5);
     printf("x = %d\n", st.vptr->get(st.self));
@@ -36,7 +36,7 @@ void manipulate_state(State st) {
 int main(void) {
     MyState my_st = {.x = 0};
     State st = dyn(State, MyState, &my_st);
-    manipulate_state(st);
+    test(st);
 
     return 0;
 }

@@ -43,7 +43,7 @@ void TraceState_set(void *self, int x) {
 
 impl(State, TraceState);
 
-void manipulate_state(State st) {
+void test(State st) {
     st.vptr->set(st.self, 5);
     st.vptr->set(st.self, 6);
     (void)st.vptr->get(st.self);
@@ -59,7 +59,7 @@ int main(void) {
     State st = dyn(State, MyState, &(MyState){.x = 0});
     State trace_st = dyn(State, TraceState, &(TraceState){.st = st});
 
-    manipulate_state(trace_st);
+    test(trace_st);
 
     return 0;
 }
