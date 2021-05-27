@@ -34,6 +34,7 @@ void manipulate_state(State st) {
  * x = 5
  */
 int main(void) {
-    MyState state = {0};
-    manipulate_state((State){.self = &state, .vtable = VTABLE(State, MyState)});
+    MyState my_st = {.x = 0};
+    State st = VIRTUAL_OBJ(State, MyState, &my_st);
+    manipulate_state(st);
 }

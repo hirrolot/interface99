@@ -35,11 +35,12 @@ SOFTWARE.
 
 #ifndef IFACE99_NO_ALIASES
 
-#define interface interface99
-#define iFn       iFn99
-#define VTABLE    VTABLE99
-#define impl      impl99
-#define declImpl  declImpl99
+#define interface   interface99
+#define iFn         iFn99
+#define impl        impl99
+#define declImpl    declImpl99
+#define VTABLE      VTABLE99
+#define VIRTUAL_OBJ VIRTUAL_OBJ99
 
 #endif // IFACE99_NO_ALIASES
 
@@ -105,6 +106,8 @@ SOFTWARE.
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON(...) ML99_EMPTY()
 
 #define VTABLE99(iface, implementor) ML99_CAT3(iface, _impl_, implementor)
+#define VIRTUAL_OBJ99(iface, implementor, ptr)                                                     \
+    ((iface){.self = (void *)(ptr), .vtable = VTABLE99(iface, implementor)})
 
 // Arity specifiers {
 #define IFACE99_PRIV_genFnPtr_ARITY      1
