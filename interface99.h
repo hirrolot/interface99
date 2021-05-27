@@ -72,7 +72,7 @@ SOFTWARE.
                 IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))))),                   \
         v(typedef struct iface {                                                                   \
             void *self;                                                                            \
-            iface##VTable vtable;                                                                  \
+            const iface##VTable *vptr;                                                             \
         } iface))
 
 #define IFACE99_PRIV_genFnPtrForEach(...)                                                          \
@@ -107,7 +107,7 @@ SOFTWARE.
 
 #define VTABLE99(iface, implementor) ML99_CAT3(iface, _impl_, implementor)
 #define dyn99(iface, implementor, ptr)                                                             \
-    ((iface){.self = (void *)(ptr), .vtable = VTABLE99(iface, implementor)})
+    ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(iface, implementor)})
 
 // Arity specifiers {
 #define IFACE99_PRIV_genFnPtr_ARITY      1

@@ -31,22 +31,22 @@ int TraceState_get(void *self) {
     TraceState *this = (TraceState *)self;
 
     printf("get x\n");
-    return this->st.vtable.get(this->st.self);
+    return this->st.vptr->get(this->st.self);
 }
 
 void TraceState_set(void *self, int x) {
     TraceState *this = (TraceState *)self;
 
     printf("set x = %d\n", x);
-    this->st.vtable.set(this->st.self, x);
+    this->st.vptr->set(this->st.self, x);
 }
 
 impl(State, TraceState);
 
 void manipulate_state(State st) {
-    st.vtable.set(st.self, 5);
-    st.vtable.set(st.self, 6);
-    (void)st.vtable.get(st.self);
+    st.vptr->set(st.self, 5);
+    st.vptr->set(st.self, 6);
+    (void)st.vptr->get(st.self);
 }
 
 /*

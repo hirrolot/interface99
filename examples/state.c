@@ -23,9 +23,9 @@ void MyState_set(void *self, int x) {
 impl(State, MyState);
 
 void manipulate_state(State st) {
-    printf("x = %d\n", st.vtable.get(st.self));
-    st.vtable.set(st.self, 5);
-    printf("x = %d\n", st.vtable.get(st.self));
+    printf("x = %d\n", st.vptr->get(st.self));
+    st.vptr->set(st.self, 5);
+    printf("x = %d\n", st.vptr->get(st.self));
 }
 
 /*
