@@ -60,4 +60,6 @@ int main(void) {
     State trace_st = VIRTUAL_OBJ(State, TraceState, &(TraceState){.st = st});
 
     manipulate_state(trace_st);
+
+    return 0;
 }

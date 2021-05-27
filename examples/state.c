@@ -37,4 +37,6 @@ int main(void) {
     MyState my_st = {.x = 0};
     State st = VIRTUAL_OBJ(State, MyState, &my_st);
     manipulate_state(st);
+
+    return 0;
 }
