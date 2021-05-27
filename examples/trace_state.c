@@ -56,8 +56,8 @@ void manipulate_state(State st) {
  * get x
  */
 int main(void) {
-    State st = VIRTUAL_OBJ(State, MyState, &(MyState){.x = 0});
-    State trace_st = VIRTUAL_OBJ(State, TraceState, &(TraceState){.st = st});
+    State st = dyn(State, MyState, &(MyState){.x = 0});
+    State trace_st = dyn(State, TraceState, &(TraceState){.st = st});
 
     manipulate_state(trace_st);
 
