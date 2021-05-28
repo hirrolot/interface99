@@ -86,15 +86,20 @@ SOFTWARE.
 #define IFACE99_impl_IMPL(iface, implementor)                                                      \
     ML99_assign(                                                                                   \
         v(const iface##VTable VTABLE99(iface, implementor)),                                       \
-        ML99_braced(                                                                               \
-            IFACE99_PRIV_genImplFnNameForEach(v(implementor), v(IFACE99_PRIV_IFN_LIST(iface)))))
+        ML99_braced(IFACE99_PRIV_genImplFnNameForEach(                                             \
+            v(iface),                                                                              \
+            v(implementor),                                                                        \
+            v(IFACE99_PRIV_IFN_LIST(iface)))))
 
-#define IFACE99_PRIV_genImplFnNameForEach(implementor, ...)                                        \
+#define IFACE99_PRIV_genImplFnNameForEach(iface, implementor, ...)                                 \
     ML99_variadicsForEach(                                                                         \
-        ML99_compose(ML99_appl(v(IFACE99_PRIV_genImplFnName), implementor), v(ML99_untuple)),      \
+        ML99_compose(                                                                              \
+            ML99_appl(v(IFACE99_PRIV_genImplFnName), iface, implementor),                          \
+            v(ML99_untuple)),                                                                      \
         __VA_ARGS__)
 
-#define IFACE99_PRIV_genImplFnName_IMPL(implementor, _ret_ty, name, ...) v(implementor##_##name, )
+#define IFACE99_PRIV_genImplFnName_IMPL(iface, implementor, _ret_ty, name, ...)                    \
+    v(implementor##_##iface##_##name, )
 // } (Interface implementation generation)
 
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTABLE) VTABLE99(iface, implementor)
@@ -105,7 +110,7 @@ SOFTWARE.
 
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON(...) ML99_EMPTY()
 
-#define VTABLE99(iface, implementor) ML99_CAT3(iface, _impl_, implementor)
+#define VTABLE99(iface, implementor) ML99_CAT4(implementor, _, iface, _impl)
 #define dyn99(iface, implementor, ptr)                                                             \
     ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(iface, implementor)})
 

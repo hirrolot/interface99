@@ -10,17 +10,17 @@ interface(State);
 
 typedef struct {
     int x;
-} MyState;
+} Num;
 
-int MyState_get(void *self) {
-    return ((MyState *)self)->x;
+int Num_State_get(void *self) {
+    return ((Num *)self)->x;
 }
 
-void MyState_set(void *self, int x) {
-    ((MyState *)self)->x = x;
+void Num_State_set(void *self, int x) {
+    ((Num *)self)->x = x;
 }
 
-impl(State, MyState);
+impl(State, Num);
 
 void test(State st) {
     printf("x = %d\n", st.vptr->get(st.self));
@@ -34,8 +34,8 @@ void test(State st) {
  * x = 5
  */
 int main(void) {
-    MyState my_st = {.x = 0};
-    State st = dyn(State, MyState, &my_st);
+    Num my_st = {.x = 0};
+    State st = dyn(State, Num, &my_st);
     test(st);
 
     return 0;

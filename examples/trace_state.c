@@ -10,31 +10,31 @@ interface(State);
 
 typedef struct {
     int x;
-} MyState;
+} Num;
 
-int MyState_get(void *self) {
-    return ((MyState *)self)->x;
+int Num_State_get(void *self) {
+    return ((Num *)self)->x;
 }
 
-void MyState_set(void *self, int x) {
-    ((MyState *)self)->x = x;
+void Num_State_set(void *self, int x) {
+    ((Num *)self)->x = x;
 }
 
-impl(State, MyState);
+impl(State, Num);
 
 // A state adaptor that traces all operations on the inner state.
 typedef struct {
     State st;
 } TraceState;
 
-int TraceState_get(void *self) {
+int TraceState_State_get(void *self) {
     TraceState *this = (TraceState *)self;
 
     printf("get x\n");
     return this->st.vptr->get(this->st.self);
 }
 
-void TraceState_set(void *self, int x) {
+void TraceState_State_set(void *self, int x) {
     TraceState *this = (TraceState *)self;
 
     printf("set x = %d\n", x);
@@ -56,7 +56,7 @@ void test(State st) {
  * get x
  */
 int main(void) {
-    State st = dyn(State, MyState, &(MyState){.x = 0});
+    State st = dyn(State, Num, &(Num){.x = 0});
     State trace_st = dyn(State, TraceState, &(TraceState){.st = st});
 
     test(trace_st);
