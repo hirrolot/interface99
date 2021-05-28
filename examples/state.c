@@ -34,8 +34,8 @@ void test(State st) {
  * x = 5
  */
 int main(void) {
-    Num my_st = {.x = 0};
-    State st = dyn(State, Num, &my_st);
+    Num n = {0};
+    State st = dyn(State, Num, &n);
     test(st);
 
     return 0;

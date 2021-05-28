@@ -56,8 +56,8 @@ void test(State st) {
  * get x
  */
 int main(void) {
-    State st = dyn(State, Num, &(Num){.x = 0});
-    State trace_st = dyn(State, TraceState, &(TraceState){.st = st});
+    State st = dyn(State, Num, &(Num){0});
+    State trace_st = dyn(State, TraceState, &(TraceState){st});
 
     test(trace_st);
 
