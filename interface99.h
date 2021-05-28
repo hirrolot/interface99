@@ -39,8 +39,8 @@ SOFTWARE.
 #define iFn       iFn99
 #define impl      impl99
 #define declImpl  declImpl99
-#define VTABLE    VTABLE99
 #define dyn       dyn99
+#define VTABLE    VTABLE99
 
 #endif // IFACE99_NO_ALIASES
 
@@ -110,9 +110,10 @@ SOFTWARE.
 
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON(...) ML99_EMPTY()
 
-#define VTABLE99(iface, implementor) ML99_CAT4(implementor, _, iface, _impl)
 #define dyn99(iface, implementor, ptr)                                                             \
     ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(iface, implementor)})
+
+#define VTABLE99(iface, implementor) ML99_CAT4(implementor, _, iface, _impl)
 
 // Arity specifiers {
 #define IFACE99_PRIV_genFnPtr_ARITY      1
