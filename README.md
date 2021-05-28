@@ -9,8 +9,8 @@ Zero-boilerplate interfaces for pure C99, implemented as a single-header library
 
 #include <stdio.h>
 
-#define State_INTERFACE                                                                            \
-    iFn(int, get, void *self);                                                                     \
+#define State_INTERFACE               \
+    iFn(int, get, void *self);        \
     iFn(void, set, void *self, int x);
 
 interface(State);
