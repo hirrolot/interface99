@@ -102,7 +102,7 @@ SOFTWARE.
     v(implementor##_##iface##_##name, )
 // } (Interface implementation generation)
 
-#define declImpl99(iface, implementor) const ML99_CAT(iface, VTABLE) VTABLE99(iface, implementor)
+#define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(iface, implementor)
 
 #define IFACE99_PRIV_IFN_LIST(iface) ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
