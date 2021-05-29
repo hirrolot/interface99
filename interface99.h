@@ -35,12 +35,13 @@ SOFTWARE.
 
 #ifndef IFACE99_NO_ALIASES
 
-#define interface interface99
-#define iFn       iFn99
-#define impl      impl99
-#define declImpl  declImpl99
-#define dyn       dyn99
-#define VTABLE    VTABLE99
+#define interface   interface99
+#define iFn         iFn99
+#define impl        impl99
+#define implPrimary implPrimary99
+#define declImpl    declImpl99
+#define dyn         dyn99
+#define VTABLE      VTABLE99
 
 #endif // IFACE99_NO_ALIASES
 
@@ -50,9 +51,12 @@ SOFTWARE.
 
 #define IFACE99_interface(iface)         ML99_call(INTERFACE99_interface, iface)
 #define IFACE99_impl(iface, implementor) ML99_call(INTERFACE99_impl, iface, implementor)
+#define IFACE99_implPrimary(iface, implementor)                                                    \
+    ML99_call(INTERFACE99_implPrimary, iface, implementor)
 
-#define interface99(iface)         ML99_EVAL(IFACE99_interface_IMPL(iface))
-#define impl99(iface, implementor) ML99_EVAL(IFACE99_impl_IMPL(iface, implementor))
+#define interface99(iface)                ML99_EVAL(IFACE99_interface_IMPL(iface))
+#define impl99(iface, implementor)        ML99_EVAL(IFACE99_impl_IMPL(iface, implementor))
+#define implPrimary99(iface, implementor) ML99_EVAL(IFACE99_implPrimary_IMPL(iface, implementor))
 // }
 
 #define IFACE99_MAJOR 0
@@ -84,22 +88,28 @@ SOFTWARE.
 // Interface implementation generation {
 
 #define IFACE99_impl_IMPL(iface, implementor)                                                      \
+    IFACE99_implAux(IFACE99_PRIV_genImplFnName, iface, implementor)
+#define IFACE99_implPrimary_IMPL(iface, implementor)                                               \
+    IFACE99_implAux(IFACE99_PRIV_genImplFnNamePrimary, iface, implementor)
+
+#define IFACE99_implAux(gen_fn, iface, implementor)                                                \
     ML99_assign(                                                                                   \
         v(const iface##VTable VTABLE99(iface, implementor)),                                       \
         ML99_braced(IFACE99_PRIV_genImplFnNameForEach(                                             \
+            v(gen_fn),                                                                             \
             v(iface),                                                                              \
             v(implementor),                                                                        \
             v(IFACE99_PRIV_IFN_LIST(iface)))))
 
-#define IFACE99_PRIV_genImplFnNameForEach(iface, implementor, ...)                                 \
+#define IFACE99_PRIV_genImplFnNameForEach(gen_fn, iface, implementor, ...)                         \
     ML99_variadicsForEach(                                                                         \
-        ML99_compose(                                                                              \
-            ML99_appl(v(IFACE99_PRIV_genImplFnName), iface, implementor),                          \
-            v(ML99_untuple)),                                                                      \
+        ML99_compose(ML99_appl(gen_fn, iface, implementor), v(ML99_untuple)),                      \
         __VA_ARGS__)
 
 #define IFACE99_PRIV_genImplFnName_IMPL(iface, implementor, _ret_ty, name, ...)                    \
     v(implementor##_##iface##_##name, )
+#define IFACE99_PRIV_genImplFnNamePrimary_IMPL(_iface, implementor, _ret_ty, name, ...)            \
+    v(implementor##_##name, )
 // } (Interface implementation generation)
 
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(iface, implementor)
@@ -116,12 +126,14 @@ SOFTWARE.
 #define VTABLE99(iface, implementor) ML99_CAT4(implementor, _, iface, _impl)
 
 // Arity specifiers {
-#define IFACE99_PRIV_genFnPtr_ARITY      1
-#define IFACE99_PRIV_genImplFnName_ARITY 2
+#define IFACE99_PRIV_genFnPtr_ARITY             1
+#define IFACE99_PRIV_genImplFnName_ARITY        2
+#define IFACE99_PRIV_genImplFnNamePrimary_ARITY 2
 
 // Public:
-#define IFACE99_interface_ARITY 1
-#define IFACE99_impl_ARITY      2
+#define IFACE99_interface_ARITY   1
+#define IFACE99_impl_ARITY        2
+#define IFACE99_implPrimary_ARITY 2
 // }
 
 #endif // INTERFACE99_H
