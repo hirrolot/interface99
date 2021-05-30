@@ -118,7 +118,7 @@ SOFTWARE.
 
 #define iFn99(ret_ty, name, ...) ), (ret_ty, name, __VA_ARGS__) IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_LPAREN()
 
-#define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON(...) ML99_EMPTY()
+#define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
 
 #define dyn99(iface, implementor, ptr)                                                             \
     ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(iface, implementor)})
