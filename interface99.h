@@ -42,7 +42,9 @@ SOFTWARE.
 #define declImpl    declImpl99
 #define dyn         dyn99
 #define VTABLE      VTABLE99
-#define Drop        Drop99
+
+#define Drop       Drop99
+#define DropVTable Drop99VTable
 
 #endif // IFACE99_NO_ALIASES
 
