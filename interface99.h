@@ -42,6 +42,7 @@ SOFTWARE.
 #define declImpl    declImpl99
 #define dyn         dyn99
 #define VTABLE      VTABLE99
+#define Drop        Drop99
 
 #endif // IFACE99_NO_ALIASES
 
@@ -135,5 +136,12 @@ SOFTWARE.
 #define IFACE99_impl_ARITY        2
 #define IFACE99_implPrimary_ARITY 2
 // }
+
+// Public interfaces {
+
+#define Drop99_INTERFACE iFn99(void, drop, void *self);
+
+interface99(Drop99);
+// } (Public interfaces)
 
 #endif // INTERFACE99_H
