@@ -74,7 +74,9 @@ SOFTWARE.
             v(iface##VTable),                                                                      \
             ML99_struct(                                                                           \
                 v(iface##VTable),                                                                  \
-                IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))))),                   \
+                ML99_uncomma(ML99_QUOTE(                                                           \
+                    IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))),                 \
+                    IFACE99_PRIV_genRequirementForEach(iface))))),                                 \
         v(typedef struct iface {                                                                   \
             void *self;                                                                            \
             const iface##VTable *vptr;                                                             \
@@ -84,6 +86,15 @@ SOFTWARE.
     ML99_variadicsForEach(ML99_compose(v(IFACE99_PRIV_genFnPtr), v(ML99_untuple)), __VA_ARGS__)
 
 #define IFACE99_PRIV_genFnPtr_IMPL(ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
+
+#define IFACE99_PRIV_genRequirementForEach(iface)                                                  \
+    ML99_IF(                                                                                       \
+        ML99_IS_TUPLE(iface##_REQUIRES),                                                           \
+        ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_REQUIRES))),  \
+        ML99_empty())
+
+#define IFACE99_PRIV_genRequirement_IMPL(requirement) v(requirement##VTable requirement;)
+
 // } (Interface generation)
 
 // Interface implementation generation {
@@ -96,11 +107,13 @@ SOFTWARE.
 #define IFACE99_implAux(gen_fn, iface, implementor)                                                \
     ML99_assign(                                                                                   \
         v(const iface##VTable VTABLE99(iface, implementor)),                                       \
-        ML99_braced(IFACE99_PRIV_genImplFnNameForEach(                                             \
-            v(gen_fn),                                                                             \
-            v(iface),                                                                              \
-            v(implementor),                                                                        \
-            v(IFACE99_PRIV_IFN_LIST(iface)))))
+        ML99_braced(ML99_uncomma(ML99_QUOTE(                                                       \
+            IFACE99_PRIV_genImplFnNameForEach(                                                     \
+                v(gen_fn),                                                                         \
+                v(iface),                                                                          \
+                v(implementor),                                                                    \
+                v(IFACE99_PRIV_IFN_LIST(iface))),                                                  \
+            IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))))
 
 #define IFACE99_PRIV_genImplFnNameForEach(gen_fn, iface, implementor, ...)                         \
     ML99_variadicsForEach(                                                                         \
@@ -111,6 +124,17 @@ SOFTWARE.
     v(implementor##_##iface##_##name, )
 #define IFACE99_PRIV_genImplFnNamePrimary_IMPL(_iface, implementor, _ret_ty, name, ...)            \
     v(implementor##_##name, )
+
+#define IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)                                \
+    ML99_IF(                                                                                       \
+        ML99_IS_TUPLE(iface##_REQUIRES),                                                           \
+        ML99_variadicsForEach(                                                                     \
+            ML99_appl(v(IFACE99_PRIV_genRequirementImpl), v(implementor)),                         \
+            ML99_untuple(v(iface##_REQUIRES))),                                                    \
+        ML99_empty())
+
+#define IFACE99_PRIV_genRequirementImpl_IMPL(implementor, requirement)                             \
+    v(VTABLE99(requirement, implementor), )
 // } (Interface implementation generation)
 
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(iface, implementor)
@@ -130,6 +154,8 @@ SOFTWARE.
 #define IFACE99_PRIV_genFnPtr_ARITY             1
 #define IFACE99_PRIV_genImplFnName_ARITY        2
 #define IFACE99_PRIV_genImplFnNamePrimary_ARITY 2
+#define IFACE99_PRIV_genRequirement_ARITY       1
+#define IFACE99_PRIV_genRequirementImpl_ARITY   2
 
 // Public:
 #define IFACE99_interface_ARITY   1
