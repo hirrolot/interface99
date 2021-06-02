@@ -95,7 +95,7 @@ SOFTWARE.
         ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_REQUIRES))),  \
         ML99_empty())
 
-#define IFACE99_PRIV_genRequirement_IMPL(requirement) v(requirement##VTable *requirement;)
+#define IFACE99_PRIV_genRequirement_IMPL(requirement) v(const requirement##VTable *requirement;)
 
 // } (Interface generation)
 
