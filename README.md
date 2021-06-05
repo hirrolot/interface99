@@ -126,9 +126,9 @@ Expands to
 
 ```
 typedef struct <iface>VTable {
-    <fn-ret-ty> (*<fn-name>0)(<fn-params>);
+    <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
     ...
-    <fn-ret-ty> (*<fn-name>N)(<fn-params>);
+    <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
 
     const <requirement>0VTable *<requirement>;
     ...
@@ -207,7 +207,9 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 
 ### Q: What about IDE support?
 
-A: TODO.
+![Suggestion](images/suggestion.png)
+
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment.
 
 ### Q: What compilers are tested?
 
