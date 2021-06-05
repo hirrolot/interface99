@@ -54,8 +54,6 @@ x = 5
 
 ## Highlights
 
- - **Type-safe.** Improperly typed interface implementations are caught at compile-time.
-
  - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you!
 
  - **Portable.** Everything you need is a standard-conforming C99 preprocessor.
