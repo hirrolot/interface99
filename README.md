@@ -37,7 +37,7 @@ void test(State st) {
 
 int main(void) {
     Num n = {0};
-    State st = dyn(State, Num, &n);
+    State st = dyn(Num, State, &n);
     test(st);
 }
 ```
@@ -52,7 +52,26 @@ x = 5
 
 </details>
 
-No dynamic memory allocation is performed. Even the standard library is not a dependency. Everything you need is a standard-conforming C99 preprocessor.
+## Highlights
+
+ - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you!
+
+ - **Portable.** Everything you need is a standard-conforming C99 preprocessor.
+
+ - **Predictable.** Interface99 comes with formal [code generation semantics], meaning that the generated data layout is guaranteed to always be the same.
+
+ - **Comprehensible errors.** Despite that Interface99 is built upon macros, compilation errors are usually comprehensible.
+
+[code generation semantics]: #semantics
+
+## Features
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Multiple interface inheritance | ✅ | A type can inherit multiple interfaces at the same time. |
+| Interface requirements | ✅ | One interface can require a set of other interfaces to be implemented as well. |
+| Single dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
+| Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 
 ## Installation
 
@@ -66,23 +85,123 @@ No dynamic memory allocation is performed. Even the standard library is not a de
 [precompiled headers]: https://en.wikipedia.org/wiki/Precompiled_header
 [`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
 
+## Usage
+
 ## Syntax and semantics
+
+Having a well-defined semantics of the macros, you can write an FFI which is quite common in C.
 
 ### EBNF syntax
 
-TODO.
+```ebnf
+<iface-def>    ::= "interface(" <iface> ")" ;
+
+<fn>          ::= "iFn(" <fn-ret-ty> "," <fn-name> "," <fn-params> ");" ;
+<fn-ret-ty>   ::= <type> ;
+<fn-name>     ::= <ident> ;
+<fn-params>   ::= <parameter-type-list> ;
+
+<impl>        ::= "impl("        <iface> "," <implementor> ")" ;
+<implPrimary> ::= "implPrimary(" <iface> "," <implementor> ")" ;
+<declImpl>    ::= "declImpl("    <iface> "," <implementor> ")" ;
+
+<dyn>         ::= "dyn("    <implementor> "," <iface> "," <ptr> ")" ;
+<vtable>      ::= "VTABLE(" <implementor> "," <iface> ")" ;
+
+<iface>       ::= <ident> ;
+<implementor> ::= <ident> ;
+<requirement> ::= <iface> ;
+```
+
+Notes:
+
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE` which must expand to `{ <fn> }+`. It must be defined for every interface.
+ - For any interface, a macro `<iface>_REQUIRES` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 ### Semantics
 
-TODO.
+#### `interface`
+
+Expands to
+
+```
+typedef struct <iface>VTable {
+    <fn-ret-ty> (*<fn-name>0)(<fn-params>);
+    ...
+    <fn-ret-ty> (*<fn-name>N)(<fn-params>);
+
+    const <requirement>0VTable *<requirement>;
+    ...
+    const <requirement>NVTable *<requirement>;
+} <iface>VTable;
+
+typedef struct <iface> {
+    void *self;
+    const <iface>VTable *vptr;
+} <iface>
+```
+
+I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
+
+ - **Function pointers**. For each `<fn-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
+ - **Requirements obligation.** If the macro `<iface>_REQUIRES` is defined, then the listed requirements are generated to obligate `<iface>` implementors to satisfy them.
+
+#### `impl`
+
+Expands to
+
+```
+const <iface>VTable VTABLE(<implementor>, <iface>) = {
+    <implementor>_<iface>_<fn-name>0, ..., <implementor>_<iface>_<fn-name>N,
+    &VTABLE(<implementor, <requirement>0), ..., &VTABLE(<implementor, <requirement>N),
+}
+```
+
+I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementor>`. It is generated in two steps:
+
+ - **Function implementations.** Each `<implementor>_<iface>_<fn-name>I` refers to a function belonging to `<implementor>` which implements the corresponding function of `<iface>`.
+ - **Requirements satisfaction.** If the macro `<iface>_REQUIRES` is defined, then the listed requirements are generated to satisfy `<iface>`.
+
+A pretty trick: if you want this `impl` to appear only in a current TU, write `static impl(...)`.
+
+#### `implPrimary`
+
+Like [`impl`](#impl) but captures the `<implementor>_<fn-name>` functions instead of `<implementor>_<iface>_<fn-name>`.
+
+#### `declImpl`
+
+Expands to `const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it declares a virtual table instance of `<implementor>` of type `<iface>VTable`.
+
+#### `dyn`
+
+Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` and `.vptr` initialised to `&VTABLE(<implementor>, <iface>)`.
+
+#### `VTABLE`
+
+Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<implementor>` of type `<iface>VTable`.
 
 ## Miscellaneous
 
-TODO.
+ - The macros `IFACE99_MAJOR`, `IFACE99_MINOR`, and `IFACE99_PATCH` stand for the corresponding components of a version of Interface99.
+
+ -  If you do **not** want the shortened versions to appear (e.g., `interface` without the prefix `99`), define `IFACE99_NO_ALIASES` prior to `#include <interface99.h>`.
+
+ - For each macro using `ML99_EVAL`, Interface99 provides its [Metalang99-compliant](https://metalang99.readthedocs.io/en/latest/#definitions) counterpart which can be used inside derivers and other Metalang99-compliant macros:
+
+| Macro | Metalang99-compliant counterpart |
+|----------|----------|
+| `interface` | `IFACE99_interface` |
+| `impl` | `IFACE99_impl` |
+| `implPrimary` | `IFACE99_implPrimary` |
+
+(An [arity specifier] and [desugaring macro] are provided for each of the above macros.)
+
+[arity specifier]: https://hirrolot.gitbook.io/metalang99/partial-application
+[desugaring macro]: https://metalang99.readthedocs.io/en/latest/#definitions
 
 ## Credits
 
-Thanks to Rust for its implementation of traits.
+Thanks to Rust and Golang for their implementations of traits/interfaces.
 
 ## FAQ
 
