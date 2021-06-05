@@ -1,7 +1,7 @@
 # Interface99
 [![CI](https://github.com/Hirrolot/interface99/workflows/C/C++%20CI/badge.svg)](https://github.com/Hirrolot/interface99/actions)
 
-Zero-boilerplate interfaces for pure C99, implemented as a single-header library.
+Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-header library.
 
 [ [`examples/state.c`](examples/state.c) ]
 ```c
@@ -53,6 +53,8 @@ x = 5
 </details>
 
 ## Highlights
+
+ - **Type-safe.** Improperly typed interface implementations are caught at compile-time.
 
  - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you!
 
