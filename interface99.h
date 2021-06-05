@@ -105,7 +105,7 @@ SOFTWARE.
 
 #define IFACE99_implAux(gen_fn, iface, implementor)                                                \
     ML99_assign(                                                                                   \
-        v(const iface##VTable VTABLE99(iface, implementor)),                                       \
+        v(const iface##VTable VTABLE99(implementor, iface)),                                       \
         ML99_braced(ML99_uncomma(ML99_QUOTE(                                                       \
             IFACE99_PRIV_genImplFnNameForEach(                                                     \
                 v(gen_fn),                                                                         \
@@ -133,10 +133,10 @@ SOFTWARE.
         ML99_empty())
 
 #define IFACE99_PRIV_genRequirementImpl_IMPL(implementor, requirement)                             \
-    v(&VTABLE99(requirement, implementor), )
+    v(&VTABLE99(implementor, requirement), )
 // } (Interface implementation generation)
 
-#define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(iface, implementor)
+#define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(implementor, iface)
 
 #define IFACE99_PRIV_IFN_LIST(iface) ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
@@ -144,10 +144,10 @@ SOFTWARE.
 
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
 
-#define dyn99(iface, implementor, ptr)                                                             \
-    ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(iface, implementor)})
+#define dyn99(implementor, iface, ptr)                                                             \
+    ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(implementor, iface)})
 
-#define VTABLE99(iface, implementor) ML99_CAT4(implementor, _, iface, _impl)
+#define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
 
 // Arity specifiers {
 #define IFACE99_PRIV_genFnPtr_ARITY             1

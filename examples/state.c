@@ -35,7 +35,7 @@ void test(State st) {
  */
 int main(void) {
     Num n = {0};
-    State st = dyn(State, Num, &n);
+    State st = dyn(Num, State, &n);
     test(st);
 
     return 0;
