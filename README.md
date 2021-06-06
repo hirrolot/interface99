@@ -73,6 +73,101 @@ x = 5
 | Single dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 
+## Usage
+
+Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
+
+In this section we are to clarify some details that are specific to Interface99. First of all, there are three major things:
+
+ - interface definition,
+ - interface implementation declaration,
+ - interface implementation definition.
+
+The terms "declaration" & "definition" have the same semantics as in the C programming language: normally you put declarations inside headers, whereas definitions reside in `*.c` files (except an interface definition, which can be located in a header file since it defines nothing but a couple of structures). If your interface must appear only in a single TU, feel free to omit the declarations and place the definitions at the top of the file. In this case, I recommend you to prepend interface implementations with `static`: `static impl(...);`.
+
+What do the macros generate? `interface` generates a virtual table and a so-called _dynamic interface object_. In the case of [`examples/state.c`](examples/state.c):
+
+```c
+typedef struct StateVTable {
+    int (*get)(void *self);
+    void (*set)(void *self, int x);
+} StateVTable;
+
+typedef struct State {
+    void *self;
+    const StateVTable *vptr;
+} State;
+```
+
+`impl` generates a constant variable of type `StateVTable`:
+
+```c
+const StateVTable Num_State_impl = {
+    Num_State_get,
+    Num_State_set,
+};
+```
+
+This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by `dyn`:
+
+```с
+Num n = {0};
+State st = dyn(Num, State, &n);
+```
+
+Since `State` is polymorphic over its implementations, you can accept it as a function parameter and manipulate it through `.self` & `.vptr`:
+
+```c
+void test(State st) {
+    printf("x = %d\n", st.vptr->get(st.self));
+    st.vptr->set(st.self, 5);
+    printf("x = %d\n", st.vptr->get(st.self));
+}
+```
+
+The last thing is superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
+
+```c
+#define Vehicle_INTERFACE                              \
+    iFn(void, move_forward, void *self, int distance); \
+    iFn(void, move_back, void *self, int distance);
+
+interface(Vehicle);
+
+#define Airplane_INTERFACE                             \
+    iFn(void, move_up, void *self, int distance);      \
+    iFn(void, move_down, void *self, int distance);
+
+#define Airplane_EXTENDS (Vehicle)
+
+interface(Airplane);
+```
+
+(Note that `#define Airplane_EXTENDS` must appear prior to `interface(Airplane);`.)
+
+Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
+
+```c
+Airplane my_airplane = dyn(MyAirplane, Airplane, &(MyAirplane){0, 0});
+
+my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
+my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
+```
+
+Thus, Interface99 embeds superinterfaces into subinterfaces's virtual tables, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` or `Armoured`, and they all will be included in `AirplaneVTable` like so:
+
+```c
+typedef struct AirplaneVTable {
+    void (*move_up)(void *self, int distance);
+    void (*move_down)(void *self, int distance);
+    const VehicleVTable *Vehicle;
+    const RepairableVTable *Repairable;
+    const ArmouredVTable *Armoured;
+};
+```
+
+Happy hacking!
+
 ## Installation
 
  1. Download Interface99 and [Metalang99] (minimum supported version -- [1.1.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.1.0)).
