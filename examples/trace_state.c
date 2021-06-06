@@ -1,3 +1,5 @@
+// This example demonstrates how to write interface adaptors/decorators.
+
 #include <interface99.h>
 
 #include <stdio.h>

@@ -144,8 +144,8 @@ SOFTWARE.
 
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
 
-#define dyn99(implementor, iface, ptr)                                                             \
-    ((iface){.self = (void *)(ptr), .vptr = &VTABLE99(implementor, iface)})
+#define dyn99(implementor, iface, ...)                                                             \
+    ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
 
 #define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
 

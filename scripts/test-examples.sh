@@ -13,4 +13,5 @@ run_example() {
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     run_example "state"
     run_example "trace_state"
+    run_example "airplane"
 fi
