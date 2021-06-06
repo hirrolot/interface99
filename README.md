@@ -68,9 +68,9 @@ x = 5
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| Multiple interface inheritance | ✅ | A type can inherit multiple interfaces at the same time. |
-| Superinterfaces | ✅ | One interface can require a set of other interfaces to be implemented as well. |
-| Single/Dynamic dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
+| [Multiple interface inheritance](examples/read_write.c) | ✅ | A type can inherit multiple interfaces at the same time. |
+| [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
+| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 
 ## Installation
