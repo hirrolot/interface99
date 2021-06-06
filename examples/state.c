@@ -1,3 +1,5 @@
+// This examples demonstrates the basic usage of Interface99.
+
 #include <interface99.h>
 
 #include <stdio.h>
