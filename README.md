@@ -69,8 +69,8 @@ x = 5
 | Feature | Status | Description |
 |---------|--------|-------------|
 | Multiple interface inheritance | ✅ | A type can inherit multiple interfaces at the same time. |
-| Interface requirements | ✅ | One interface can require a set of other interfaces to be implemented as well. |
-| Single dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
+| Superinterfaces | ✅ | One interface can require a set of other interfaces to be implemented as well. |
+| Single/Dynamic dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 
 ## Usage
