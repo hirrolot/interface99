@@ -296,6 +296,10 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
  - Prepend `impl`s with `static` if they must appear only in a single TU: `static impl(...);`.
 
+## Pitfalls
+
+No pitfalls discovered yet.
+
 ## Credits
 
 Thanks to Rust and Golang for their implementations of traits/interfaces.
