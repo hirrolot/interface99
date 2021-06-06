@@ -60,7 +60,7 @@ x = 5
 
  - **Predictable.** Interface99 comes with formal [code generation semantics], meaning that the generated data layout is guaranteed to always be the same.
 
- - **Comprehensible errors.** Despite that Interface99 is built upon macros, compilation errors are usually comprehensible.
+ - **Comprehensible errors.** Despite that Interface99 is built upon macros, compilation errors are usually [comprehensible](#q-what-about-compile-time-errors).
 
 [code generation semantics]: #semantics
 
@@ -309,6 +309,158 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 ### Q: How does it work?
 
 A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
+
+### Q: What about compile-time errors?
+
+----------
+
+#### Error: missing interface implementation
+
+```c
+#define Foo_INTERFACE iFn(void, foo, int x, int y);
+interface(Foo);
+
+typedef struct {
+    char dummy;
+} MyFoo;
+
+// Missing `void MyFoo_Foo_foo(int x, int y)`.
+
+impl(Foo, MyFoo);
+```
+
+```
+playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function); did you mean ‘MyFoo_Foo_impl’?
+   12 | impl(Foo, MyFoo);
+      | ^~~~
+      | MyFoo_Foo_impl
+```
+
+----------
+
+#### Error: improperly typed interface implementation
+
+```c
+#define Foo_INTERFACE iFn(void, foo, int x, int y);
+interface(Foo);
+
+typedef struct {
+    char dummy;
+} MyFoo;
+
+void MyFoo_Foo_foo(const char *str) {}
+
+impl(Foo, MyFoo);
+```
+
+```
+playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from incompatible pointer type ‘void (*)(const char *)’ [-Wincompatible-pointer-types]
+   12 | impl(Foo, MyFoo);
+      | ^~~~
+```
+
+----------
+
+#### Error: unsatisfied interface requirement
+
+```c
+#define Foo_INTERFACE iFn(void, foo, int x, int y);
+interface(Foo);
+
+#define Bar_INTERFACE iFn(void, bar, void);
+#define Bar_EXTENDS   (Foo)
+
+interface(Bar);
+
+typedef struct {
+    char dummy;
+} MyBar;
+
+void MyBar_Bar_bar(void) {}
+
+// Missing `impl(Foo, MyBar)`.
+
+impl(Bar, MyBar);
+```
+
+```
+playground.c:17:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a function); did you mean ‘MyBar_Bar_impl’?
+   17 | impl(Bar, MyBar);
+      | ^~~~
+      | MyBar_Bar_impl
+playground.c:17:1: warning: missing initializer for field ‘Foo’ of ‘BarVTable’ [-Wmissing-field-initializers]
+playground.c:9:1: note: ‘Foo’ declared here
+    9 | interface(Bar);
+      | ^~~~~~~~~
+```
+
+----------
+
+#### Error: typo in `dyn`
+
+```c
+#define Foo_INTERFACE iFn(void, foo, void);
+interface(Foo);
+
+typedef struct {
+    char dummy;
+} MyFoo;
+
+void MyFoo_Foo_foo(void) {}
+
+impl(Foo, MyFoo);
+
+int main(void) {
+    Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+}
+```
+
+```
+playground.c: In function ‘main’:
+playground.c:15:15: error: ‘MyBar’ undeclared (first use in this function)
+   15 |     Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+      |               ^~~
+playground.c:15:15: note: each undeclared identifier is reported only once for each function it appears in
+playground.c:15:18: error: expected ‘)’ before ‘{’ token
+   15 |     Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+      |               ~~~^
+      |                  )
+```
+
+----------
+
+#### Error: typo in `VTABLE`
+
+```c
+#define Foo_INTERFACE iFn(void, foo, void);
+interface(Foo);
+
+typedef struct {
+    char dummy;
+} MyFoo;
+
+void MyFoo_Foo_foo(void) {}
+
+impl(Foo, MyFoo);
+
+int main(void) {
+    FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo);
+}
+```
+
+```
+playground.c: In function ‘main’:
+playground.c:15:21: error: ‘MyBar_Foo_impl’ undeclared (first use in this function); did you mean ‘MyFoo_Foo_impl’?
+   15 |     FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo);
+      |                     ^~~~~~
+      |                     MyFoo_Foo_impl
+```
+
+----------
+
+From my experience, nearly 95% of errors make sense.
+
+If an error is not comprehensible at all, try to look at generated code (`-E`). Hopefully, the [code generation semantics] is formally defined so normally you will not see something unexpected.
 
 ### Q: What about IDE support?
 
