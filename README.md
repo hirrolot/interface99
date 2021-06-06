@@ -73,6 +73,18 @@ x = 5
 | Single/Dynamic dispatch | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 
+## Installation
+
+ 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.1.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.1.0)).
+ 2. Add `interface99` and `metalang99/include` to your include paths.
+ 3. `#include <interface99.h>` beforehand.
+
+**PLEASE**, use Interface99 only with [`-ftrack-macro-expansion=0`] (GCC) or something similar, otherwise it will throw your compiler to the moon. [Precompiled headers] are also very helpful.
+
+[Metalang99]: https://github.com/Hirrolot/metalang99
+[precompiled headers]: https://en.wikipedia.org/wiki/Precompiled_header
+[`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
+
 ## Usage
 
 Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
@@ -167,20 +179,6 @@ typedef struct AirplaneVTable {
 ```
 
 Happy hacking!
-
-## Installation
-
- 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.1.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.1.0)).
- 2. Add `interface99` and `metalang99/include` to your include paths.
- 3. `#include <interface99.h>` beforehand.
-
-**PLEASE**, use Interface99 only with [`-ftrack-macro-expansion=0`] (GCC) or something similar, otherwise it will throw your compiler to the moon. [Precompiled headers] are also very helpful.
-
-[Metalang99]: https://github.com/Hirrolot/metalang99
-[precompiled headers]: https://en.wikipedia.org/wiki/Precompiled_header
-[`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
-
-## Usage
 
 ## Syntax and semantics
 
