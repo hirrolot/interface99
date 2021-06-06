@@ -116,7 +116,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 Notes:
 
  - `<iface>` refers to a user-defined macro `<iface>_INTERFACE` which must expand to `{ <fn> }+`. It must be defined for every interface.
- - For any interface, a macro `<iface>_REQUIRES` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
+ - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 ### Semantics
 
@@ -144,7 +144,7 @@ typedef struct <iface> {
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
 
  - **Function pointers**. For each `<fn-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
- - **Requirements obligation.** If the macro `<iface>_REQUIRES` is defined, then the listed requirements are generated to obligate `<iface>` implementors to satisfy them.
+ - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementors to satisfy them.
 
 #### `impl`
 
@@ -160,7 +160,7 @@ const <iface>VTable VTABLE(<implementor>, <iface>) = {
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementor>`. It is generated in two steps:
 
  - **Function implementations.** Each `<implementor>_<iface>_<fn-name>I` refers to a function belonging to `<implementor>` which implements the corresponding function of `<iface>`.
- - **Requirements satisfaction.** If the macro `<iface>_REQUIRES` is defined, then the listed requirements are generated to satisfy `<iface>`.
+ - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 A pretty trick: if you want this `impl` to appear only in a current TU, write `static impl(...)`.
 

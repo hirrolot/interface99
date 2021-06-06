@@ -88,8 +88,8 @@ SOFTWARE.
 
 #define IFACE99_PRIV_genRequirementForEach(iface)                                                  \
     ML99_IF(                                                                                       \
-        ML99_IS_TUPLE(iface##_REQUIRES),                                                           \
-        ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_REQUIRES))),  \
+        ML99_IS_TUPLE(iface##_EXTENDS),                                                            \
+        ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_EXTENDS))),   \
         ML99_empty())
 
 #define IFACE99_PRIV_genRequirement_IMPL(requirement) v(const requirement##VTable *requirement;)
@@ -126,10 +126,10 @@ SOFTWARE.
 
 #define IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)                                \
     ML99_IF(                                                                                       \
-        ML99_IS_TUPLE(iface##_REQUIRES),                                                           \
+        ML99_IS_TUPLE(iface##_EXTENDS),                                                            \
         ML99_variadicsForEach(                                                                     \
             ML99_appl(v(IFACE99_PRIV_genRequirementImpl), v(implementor)),                         \
-            ML99_untuple(v(iface##_REQUIRES))),                                                    \
+            ML99_untuple(v(iface##_EXTENDS))),                                                     \
         ML99_empty())
 
 #define IFACE99_PRIV_genRequirementImpl_IMPL(implementor, requirement)                             \

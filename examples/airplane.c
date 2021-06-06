@@ -14,7 +14,7 @@ interface(Vehicle);
     iFn(void, move_up, void *self, int distance);                                                  \
     iFn(void, move_down, void *self, int distance);
 
-#define Airplane_REQUIRES (Vehicle)
+#define Airplane_EXTENDS (Vehicle)
 
 interface(Airplane);
 
@@ -70,4 +70,6 @@ int main(void) {
 
     my_airplane.vptr->move_up(my_airplane.self, 7);
     my_airplane.vptr->move_down(my_airplane.self, 11);
+
+    return 0;
 }
