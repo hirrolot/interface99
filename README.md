@@ -205,6 +205,18 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 
 ## FAQ
 
+### Q: Why use C instead of Rust/Zig/whatever else?
+
+A: See [Datatype99's README >>](https://github.com/Hirrolot/datatype99#q-why-use-c-instead-of-rustzigwhatever-else).
+
+### Q: Why not third-party code generators?
+
+A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not-third-party-code-generators).
+
+### Q: How does it work?
+
+A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
+
 ### Q: What about IDE support?
 
 ![Suggestion](images/suggestion.png)
