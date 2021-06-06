@@ -292,6 +292,10 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 [arity specifier]: https://hirrolot.gitbook.io/metalang99/partial-application
 [desugaring macro]: https://metalang99.readthedocs.io/en/latest/#definitions
 
+## Guidelines
+
+ - Prepend `impl`s with `static` if they must appear only in a single TU: `static impl(...);`.
+
 ## Credits
 
 Thanks to Rust and Golang for their implementations of traits/interfaces.
