@@ -175,7 +175,7 @@ typedef struct AirplaneVTable {
     const VehicleVTable *Vehicle;
     const RepairableVTable *Repairable;
     const ArmouredVTable *Armoured;
-};
+} AirplaneVTable;
 ```
 
 Happy hacking!
