@@ -72,6 +72,7 @@ x = 5
 | [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
+| Default function implementations | ❌ | Some interface functions may be given default implementations. |
 
 ## Installation
 
