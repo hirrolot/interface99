@@ -9,13 +9,18 @@ static void test(Croak croakable) {
     croakable.vptr->croak(croakable.self);
 }
 
+/*
+ * Output:
+ * Paul: croak!
+ * Steve: croak!
+ */
 int main(void) {
-    Frog *john = Frog_new("John");
     Frog *paul = Frog_new("Paul");
+    Frog *steve = Frog_new("Steve");
 
-    test(dyn(Frog, Croak, john));
     test(dyn(Frog, Croak, paul));
+    test(dyn(Frog, Croak, steve));
 
-    Frog_free(john);
     Frog_free(paul);
+    Frog_free(steve);
 }
