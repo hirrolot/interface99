@@ -11,6 +11,8 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
   add_compile_options("/std:c11")
 endif()
 
+add_subdirectory(opaque_type)
+
 add_executable(state state.c)
 add_executable(trace_state trace_state.c)
 add_executable(airplane airplane.c)
