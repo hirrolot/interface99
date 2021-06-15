@@ -70,6 +70,7 @@ x = 5
 |---------|--------|-------------|
 | [Multiple interface inheritance](examples/read_write.c) | ✅ | A type can inherit multiple interfaces at the same time. |
 | [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
+| [Marker interfaces](examples/marker.c) | ✅ | An interface with no functions. |
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | Default function implementations | ❌ | Some interface functions may be given default implementations. |
@@ -209,7 +210,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE` which must expand to `{ <fn> }+`. It must be defined for every interface.
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE` which must expand to `{ <fn> }*`. It must be defined for every interface.
  - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 ### Semantics
@@ -219,6 +220,12 @@ Notes:
 Expands to
 
 ```
+// If <iface> is a marker interface:
+typedef struct <iface>VTable {
+    char dummy;
+} <iface>VTable;
+
+// Otherwise:
 typedef struct <iface>VTable {
     <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
     ...
@@ -245,6 +252,10 @@ I.e., this macro defines a virtual table structure for `<iface>`, as well as the
 Expands to
 
 ```
+// If <iface> is a marker interface:
+const <iface>VTable VTABLE(<implementor>, <iface>) = { .dummy = '\0' }
+
+// Otherwise:
 const <iface>VTable VTABLE(<implementor>, <iface>) = {
     <implementor>_<iface>_<fn-name>0, ..., <implementor>_<iface>_<fn-name>N,
     &VTABLE(<implementor, <requirement>0), ..., &VTABLE(<implementor, <requirement>N),
@@ -255,8 +266,6 @@ I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<
 
  - **Function implementations.** Each `<implementor>_<iface>_<fn-name>I` refers to a function belonging to `<implementor>` which implements the corresponding function of `<iface>`.
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
-
-A pretty trick: if you want this `impl` to appear only in a current TU, write `static impl(...)`.
 
 #### `implPrimary`
 

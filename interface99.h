@@ -71,15 +71,22 @@ SOFTWARE.
     ML99_TERMS(                                                                                    \
         ML99_typedef(                                                                              \
             v(iface##VTable),                                                                      \
-            ML99_struct(                                                                           \
-                v(iface##VTable),                                                                  \
-                ML99_uncomma(ML99_QUOTE(                                                           \
-                    IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))),                 \
-                    IFACE99_PRIV_genRequirementForEach(iface))))),                                 \
+            ML99_struct(v(iface##VTable), IFACE99_PRIV_genVTableFields(iface))),                   \
         v(typedef struct iface {                                                                   \
             void *self;                                                                            \
             const iface##VTable *vptr;                                                             \
         } iface))
+
+#define IFACE99_PRIV_genVTableFields(iface)                                                        \
+    ML99_IF(                                                                                       \
+        IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                       \
+        v(char dummy;),                                                                            \
+        ML99_callUneval(IFACE99_PRIV_genVTableOrdinary, iface))
+
+#define IFACE99_PRIV_genVTableOrdinary_IMPL(iface)                                                 \
+    ML99_TERMS(                                                                                    \
+        IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))),                             \
+        IFACE99_PRIV_genRequirementForEach(iface))
 
 #define IFACE99_PRIV_genFnPtrForEach(...)                                                          \
     ML99_variadicsForEach(ML99_compose(v(IFACE99_PRIV_genFnPtr), v(ML99_untuple)), __VA_ARGS__)
@@ -99,20 +106,29 @@ SOFTWARE.
 // Interface implementation generation {
 
 #define IFACE99_impl_IMPL(iface, implementor)                                                      \
-    IFACE99_implAux(IFACE99_PRIV_genImplFnName, iface, implementor)
+    IFACE99_PRIV_implAux(IFACE99_PRIV_genImplFnName, iface, implementor)
 #define IFACE99_implPrimary_IMPL(iface, implementor)                                               \
-    IFACE99_implAux(IFACE99_PRIV_genImplFnNamePrimary, iface, implementor)
+    IFACE99_PRIV_implAux(IFACE99_PRIV_genImplFnNamePrimary, iface, implementor)
 
-#define IFACE99_implAux(gen_fn, iface, implementor)                                                \
+#define IFACE99_PRIV_implAux(gen_fn, iface, implementor)                                           \
     ML99_assign(                                                                                   \
         v(const iface##VTable VTABLE99(implementor, iface)),                                       \
-        ML99_braced(ML99_uncomma(ML99_QUOTE(                                                       \
-            IFACE99_PRIV_genImplFnNameForEach(                                                     \
-                v(gen_fn),                                                                         \
-                v(iface),                                                                          \
-                v(implementor),                                                                    \
-                v(IFACE99_PRIV_IFN_LIST(iface))),                                                  \
-            IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))))
+        ML99_braced(IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)))
+
+#define IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)                                   \
+    ML99_IF(                                                                                       \
+        IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                       \
+        v(.dummy = '\0'),                                                                          \
+        ML99_callUneval(IFACE99_PRIV_genImplInitListOrdinary, gen_fn, iface, implementor))
+
+#define IFACE99_PRIV_genImplInitListOrdinary_IMPL(gen_fn, iface, implementor)                      \
+    ML99_TERMS(                                                                                    \
+        IFACE99_PRIV_genImplFnNameForEach(                                                         \
+            v(gen_fn),                                                                             \
+            v(iface),                                                                              \
+            v(implementor),                                                                        \
+            v(IFACE99_PRIV_IFN_LIST(iface))),                                                      \
+        IFACE99_PRIV_genRequirementsImplForEach(iface, implementor))
 
 #define IFACE99_PRIV_genImplFnNameForEach(gen_fn, iface, implementor, ...)                         \
     ML99_variadicsForEach(                                                                         \
@@ -138,7 +154,8 @@ SOFTWARE.
 
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(implementor, iface)
 
-#define IFACE99_PRIV_IFN_LIST(iface) ML99_VARIADICS_TAIL((iface##_INTERFACE))
+#define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_VARIADICS_IS_SINGLE((iface##_INTERFACE))
+#define IFACE99_PRIV_IFN_LIST(iface)        ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
 #define iFn99(ret_ty, name, ...) ), (ret_ty, name, __VA_ARGS__) IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_LPAREN()
 
