@@ -242,6 +242,8 @@ typedef struct <iface> {
 } <iface>
 ```
 
+(`char dummy;` is needed for `<iface>VTable` in the first case because a structure must have at least one member, according to C99.)
+
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
 
  - **Function pointers**. For each `<fn-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
