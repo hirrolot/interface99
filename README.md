@@ -73,6 +73,7 @@ x = 5
 | [Marker interfaces](examples/marker.c) | ✅ | An interface with no functions. |
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
+| [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
 | Default function implementations | ❌ | Some interface functions may be given default implementations. |
 
 ## Installation
@@ -220,17 +221,16 @@ Notes:
 Expands to
 
 ```
-// If <iface> is a marker interface:
 typedef struct <iface>VTable {
+    // Only if <iface> is a marker interface:
     char dummy;
-} <iface>VTable;
 
-// Otherwise:
-typedef struct <iface>VTable {
+    // Otherwise:
     <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
     ...
     <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
 
+    // This is always generated:
     const <requirement>0VTable *<requirement>;
     ...
     const <requirement>NVTable *<requirement>;
@@ -254,12 +254,14 @@ I.e., this macro defines a virtual table structure for `<iface>`, as well as the
 Expands to
 
 ```
-// If <iface> is a marker interface:
-const <iface>VTable VTABLE(<implementor>, <iface>) = { .dummy = '\0' }
-
-// Otherwise:
 const <iface>VTable VTABLE(<implementor>, <iface>) = {
+    // Only if <iface> is a marker interface:
+    .dummy = '\0',
+
+    // Otherwise:
     <implementor>_<iface>_<fn-name>0, ..., <implementor>_<iface>_<fn-name>N,
+
+    // This is always generated:
     &VTABLE(<implementor, <requirement>0), ..., &VTABLE(<implementor, <requirement>N),
 }
 ```

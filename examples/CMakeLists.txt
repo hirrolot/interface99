@@ -17,6 +17,7 @@ add_executable(state state.c)
 add_executable(trace_state trace_state.c)
 add_executable(airplane airplane.c)
 add_executable(read_write read_write.c)
+add_executable(read_write_both read_write_both.c)
 add_executable(media_stream media_stream.c)
 add_executable(marker marker.c)
 

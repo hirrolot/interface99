@@ -78,18 +78,17 @@ SOFTWARE.
         } iface))
 
 #define IFACE99_PRIV_genVTableFields(iface)                                                        \
-    ML99_IF(                                                                                       \
-        IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                       \
-        v(char dummy;),                                                                            \
-        ML99_callUneval(IFACE99_PRIV_genVTableOrdinary, iface))
+    ML99_uncomma(ML99_QUOTE(                                                                       \
+        ML99_IF(                                                                                   \
+            IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
+            v(char dummy;),                                                                        \
+            ML99_callUneval(IFACE99_PRIV_genFnPtrForEach, iface)),                                 \
+        IFACE99_PRIV_genRequirementForEach(iface)))
 
-#define IFACE99_PRIV_genVTableOrdinary_IMPL(iface)                                                 \
-    ML99_TERMS(                                                                                    \
-        IFACE99_PRIV_genFnPtrForEach(v(IFACE99_PRIV_IFN_LIST(iface))),                             \
-        IFACE99_PRIV_genRequirementForEach(iface))
-
-#define IFACE99_PRIV_genFnPtrForEach(...)                                                          \
-    ML99_variadicsForEach(ML99_compose(v(IFACE99_PRIV_genFnPtr), v(ML99_untuple)), __VA_ARGS__)
+#define IFACE99_PRIV_genFnPtrForEach_IMPL(iface)                                                   \
+    ML99_variadicsForEach(                                                                         \
+        ML99_compose(v(IFACE99_PRIV_genFnPtr), v(ML99_untuple)),                                   \
+        v(IFACE99_PRIV_IFN_LIST(iface)))
 
 #define IFACE99_PRIV_genFnPtr_IMPL(ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
 
@@ -116,24 +115,17 @@ SOFTWARE.
         ML99_braced(IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)))
 
 #define IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)                                   \
-    ML99_IF(                                                                                       \
-        IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                       \
-        v(.dummy = '\0'),                                                                          \
-        ML99_callUneval(IFACE99_PRIV_genImplInitListOrdinary, gen_fn, iface, implementor))
+    ML99_uncomma(ML99_QUOTE(                                                                       \
+        ML99_IF(                                                                                   \
+            IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
+            v(.dummy = '\0', ),                                                                    \
+            ML99_callUneval(IFACE99_PRIV_genImplFnNameForEach, gen_fn, iface, implementor)),       \
+        IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))
 
-#define IFACE99_PRIV_genImplInitListOrdinary_IMPL(gen_fn, iface, implementor)                      \
-    ML99_TERMS(                                                                                    \
-        IFACE99_PRIV_genImplFnNameForEach(                                                         \
-            v(gen_fn),                                                                             \
-            v(iface),                                                                              \
-            v(implementor),                                                                        \
-            v(IFACE99_PRIV_IFN_LIST(iface))),                                                      \
-        IFACE99_PRIV_genRequirementsImplForEach(iface, implementor))
-
-#define IFACE99_PRIV_genImplFnNameForEach(gen_fn, iface, implementor, ...)                         \
+#define IFACE99_PRIV_genImplFnNameForEach_IMPL(gen_fn, iface, implementor)                         \
     ML99_variadicsForEach(                                                                         \
-        ML99_compose(ML99_appl(gen_fn, iface, implementor), v(ML99_untuple)),                      \
-        __VA_ARGS__)
+        ML99_compose(ML99_appl(v(gen_fn), v(iface), v(implementor)), v(ML99_untuple)),             \
+        v(IFACE99_PRIV_IFN_LIST(iface)))
 
 #define IFACE99_PRIV_genImplFnName_IMPL(iface, implementor, _ret_ty, name, ...)                    \
     v(implementor##_##iface##_##name, )
