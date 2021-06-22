@@ -100,7 +100,7 @@ In this section we are to clarify some details that are specific to Interface99.
 
 The terms "declaration" & "definition" have the same semantics as in the C programming language: normally you put declarations inside headers, whereas definitions reside in `*.c` files (except an interface definition, which can be located in a header file since it defines nothing but a couple of structures). If your interface must appear only in a single TU, feel free to omit the declarations and place the definitions at the top of the file. In this case, I recommend you to prepend interface implementations with `static`: `static impl(...);`.
 
-What do the macros generate? `interface` generates a virtual table and a so-called _dynamic interface object_. In the case of [`examples/state.c`](examples/state.c):
+What do the macros generate? `interface` generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
