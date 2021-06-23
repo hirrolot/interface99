@@ -11,7 +11,12 @@ elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
   add_compile_options("/std:c11")
 endif()
 
-add_executable(tests tests.c)
+add_executable(basic_tests basic_tests.c common.h common.c util.h)
+add_executable(impl_primary impl_primary.c common.h common.c)
+add_executable(decl_impl decl_impl.c common.h common.c)
+add_executable(static_impl static_impl.c common.h common.c)
+add_executable(superinterfaces superinterfaces.c common.h common.c util.h)
+add_executable(metalang99_compliant metalang99_compliant.c)
 
 foreach(TARGET ${BUILDSYSTEM_TARGETS})
   set_target_properties(TARGET PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)

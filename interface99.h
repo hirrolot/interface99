@@ -49,10 +49,9 @@ SOFTWARE.
 
 // Metalang99-compliant macros {
 
-#define IFACE99_interface(iface)         ML99_call(INTERFACE99_interface, iface)
-#define IFACE99_impl(iface, implementor) ML99_call(INTERFACE99_impl, iface, implementor)
-#define IFACE99_implPrimary(iface, implementor)                                                    \
-    ML99_call(INTERFACE99_implPrimary, iface, implementor)
+#define IFACE99_interface(iface)                ML99_call(IFACE99_interface, iface)
+#define IFACE99_impl(iface, implementor)        ML99_call(IFACE99_impl, iface, implementor)
+#define IFACE99_implPrimary(iface, implementor) ML99_call(IFACE99_implPrimary, iface, implementor)
 
 #define interface99(iface)                ML99_EVAL(IFACE99_interface_IMPL(iface))
 #define impl99(iface, implementor)        ML99_EVAL(IFACE99_impl_IMPL(iface, implementor))
