@@ -1,3 +1,6 @@
+#ifndef INTERFACE99_TESTS_COMMON_H
+#define INTERFACE99_TESTS_COMMON_H
+
 #include <interface99.h>
 
 #include <stddef.h>
@@ -24,3 +27,5 @@ float b2_impl(long long x);
 
 typedef const char *(*AFnType)(int x, double *restrict y);
 typedef float (*BFnType)(long long x);
+
+#endif // INTERFACE99_TESTS_COMMON_H
