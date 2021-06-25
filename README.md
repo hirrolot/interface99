@@ -74,7 +74,7 @@ x = 5
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
-| Default function implementations | ❌ | Some interface functions may be given default implementations. |
+| Default functions | ❌ | Some interface functions may be given default implementations. |
 
 ## Installation
 
