@@ -128,14 +128,14 @@ SOFTWARE.
 // Interface implementation generation {
 
 #define IFACE99_impl_IMPL(iface, implementor)                                                      \
-    IFACE99_PRIV_implAux(IFACE99_PRIV_genImplFnName, iface, implementor)
+    IFACE99_PRIV_implAux(IFACE99_PRIV_GEN_IMPL_FN_NAME, iface, implementor)
 #define IFACE99_implPrimary_IMPL(iface, implementor)                                               \
-    IFACE99_PRIV_implAux(IFACE99_PRIV_genImplFnNamePrimary, iface, implementor)
+    IFACE99_PRIV_implAux(IFACE99_PRIV_GEN_IMPL_FN_NAME_PRIMARY, iface, implementor)
 
-#define IFACE99_PRIV_implAux(gen_fn, iface, implementor)                                           \
+#define IFACE99_PRIV_implAux(gen_fn_name, iface, implementor)                                      \
     ML99_assign(                                                                                   \
         v(const iface##VTable VTABLE99(implementor, iface)),                                       \
-        ML99_braced(IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)))
+        ML99_braced(IFACE99_PRIV_genImplInitList(gen_fn_name, iface, implementor)))
 
 /*
  * // Only if <iface> is a marker interface:
@@ -151,12 +151,12 @@ SOFTWARE.
  * ...
  * &VTABLE(<implementor, <requirement>N),
  */
-#define IFACE99_PRIV_genImplInitList(gen_fn, iface, implementor)                                   \
+#define IFACE99_PRIV_genImplInitList(gen_fn_name, iface, implementor)                              \
     ML99_uncomma(ML99_QUOTE(                                                                       \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             v(.dummy = '\0', ),                                                                    \
-            ML99_callUneval(IFACE99_PRIV_genImplFnNameForEach, gen_fn, iface, implementor)),       \
+            ML99_callUneval(IFACE99_PRIV_genImplFnNameForEach, gen_fn_name, iface, implementor)),  \
         IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))
 
 /*
@@ -164,15 +164,18 @@ SOFTWARE.
  * ...
  * <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
  */
-#define IFACE99_PRIV_genImplFnNameForEach_IMPL(gen_fn, iface, implementor)                         \
+#define IFACE99_PRIV_genImplFnNameForEach_IMPL(gen_fn_name, iface, implementor)                    \
     ML99_variadicsForEach(                                                                         \
-        ML99_compose(ML99_appl(v(gen_fn), v(iface), v(implementor)), v(ML99_untuple)),             \
+        ML99_compose(                                                                              \
+            ML99_appl(v(IFACE99_PRIV_genImplFnName), v(gen_fn_name, iface, implementor)),          \
+            v(ML99_untuple)),                                                                      \
         v(IFACE99_PRIV_IFN_LIST(iface)))
 
-#define IFACE99_PRIV_genImplFnName_IMPL(iface, implementor, _ret_ty, name, ...)                    \
-    v(implementor##_##iface##_##name, )
-#define IFACE99_PRIV_genImplFnNamePrimary_IMPL(_iface, implementor, _ret_ty, name, ...)            \
-    v(implementor##_##name, )
+#define IFACE99_PRIV_genImplFnName_IMPL(gen_fn_name, iface, implementor, _ret_ty, name, ...)       \
+    v(gen_fn_name(iface, implementor, name), )
+
+#define IFACE99_PRIV_GEN_IMPL_FN_NAME(iface, implementor, name)          implementor##_##iface##_##name
+#define IFACE99_PRIV_GEN_IMPL_FN_NAME_PRIMARY(_iface, implementor, name) implementor##_##name
 
 /*
  * &VTABLE(<implementor, <requirement>0),
@@ -206,11 +209,10 @@ SOFTWARE.
 #define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
 
 // Arity specifiers {
-#define IFACE99_PRIV_genFnPtr_ARITY             1
-#define IFACE99_PRIV_genImplFnName_ARITY        2
-#define IFACE99_PRIV_genImplFnNamePrimary_ARITY 2
-#define IFACE99_PRIV_genRequirement_ARITY       1
-#define IFACE99_PRIV_genRequirementImpl_ARITY   2
+#define IFACE99_PRIV_genFnPtr_ARITY           1
+#define IFACE99_PRIV_genImplFnName_ARITY      2
+#define IFACE99_PRIV_genRequirement_ARITY     1
+#define IFACE99_PRIV_genRequirementImpl_ARITY 2
 
 // Public:
 #define IFACE99_interface_ARITY   1
