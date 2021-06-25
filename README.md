@@ -333,6 +333,10 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
 
+### Q: Does it work on C++?
+
+A: Yes, C++11 and onwards is supported.
+
 ### Q: What about compile-time errors?
 
 ----------
