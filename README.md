@@ -216,6 +216,9 @@ Notes:
 
 ### Semantics
 
+(It might be helpful to look at the [generated data layout](https://godbolt.org/z/1Mz7abncv) of [`examples/state.c`](examples/state.c).)
+
+
 #### `interface`
 
 Expands to
