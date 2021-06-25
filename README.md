@@ -491,6 +491,10 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment.
 
+### Q: Why use `void *self` instead of `T *self` in implementations?
+
+A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); for Interface99, it is unacceptable since it claims strict C99 conformance.
+
 ### Q: What compilers are tested?
 
 A: Interface99 is known to work on these compilers:
