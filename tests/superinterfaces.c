@@ -105,16 +105,16 @@ impl(MarkerExtendsMany, D);
 int main(void) {
     // Ensure `interface`-generated data.
     {
-        ENSURE_FIELD_TYPE(Foo1ExtendsMarkerVTable, a, AFnType);
+        ENSURE_VTABLE_FIELD_TYPE(Foo1ExtendsMarkerVTable, a, AFnType);
         ENSURE_DYN_OBJ_TYPE(Foo1ExtendsMarker);
 
-        ENSURE_FIELD_TYPE(Foo1ExtendsManyVTable, a, AFnType);
+        ENSURE_VTABLE_FIELD_TYPE(Foo1ExtendsManyVTable, a, AFnType);
         ENSURE_DYN_OBJ_TYPE(Foo1ExtendsMany);
 
-        ENSURE_FIELD_TYPE(MarkerExtendsMarkerVTable, dummy, char);
+        ENSURE_VTABLE_FIELD_TYPE(MarkerExtendsMarkerVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(MarkerExtendsMarker);
 
-        ENSURE_FIELD_TYPE(MarkerExtendsManyVTable, dummy, char);
+        ENSURE_VTABLE_FIELD_TYPE(MarkerExtendsManyVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(MarkerExtendsMany);
     }
 

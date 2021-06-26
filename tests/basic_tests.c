@@ -54,14 +54,14 @@ impl(Foo2, Foo1Foo2Impl);
 int main(void) {
     // Ensure `interface`-generated data.
     {
-        ENSURE_FIELD_TYPE(MarkerVTable, dummy, char);
+        ENSURE_VTABLE_FIELD_TYPE(MarkerVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(Marker);
 
-        ENSURE_FIELD_TYPE(Foo1VTable, a, AFnType);
+        ENSURE_VTABLE_FIELD_TYPE(Foo1VTable, a, AFnType);
         ENSURE_DYN_OBJ_TYPE(Foo1);
 
-        ENSURE_FIELD_TYPE(Foo2VTable, a, AFnType);
-        ENSURE_FIELD_TYPE(Foo2VTable, b, BFnType);
+        ENSURE_VTABLE_FIELD_TYPE(Foo2VTable, a, AFnType);
+        ENSURE_VTABLE_FIELD_TYPE(Foo2VTable, b, BFnType);
         ENSURE_DYN_OBJ_TYPE(Foo2);
     }
 
