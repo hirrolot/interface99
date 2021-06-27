@@ -111,10 +111,8 @@ int main(void) {
         ENSURE_VTABLE_FIELD_TYPE(Foo1ExtendsManyVTable, a, AFnType);
         ENSURE_DYN_OBJ_TYPE(Foo1ExtendsMany);
 
-        ENSURE_VTABLE_FIELD_TYPE(MarkerExtendsMarkerVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(MarkerExtendsMarker);
 
-        ENSURE_VTABLE_FIELD_TYPE(MarkerExtendsManyVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(MarkerExtendsMany);
     }
 
@@ -125,10 +123,8 @@ int main(void) {
         assert(VTABLE(B, Foo1ExtendsMany).Foo1 == &VTABLE(B, Foo1));
         assert(VTABLE(B, Foo1ExtendsMany).Foo2 == &VTABLE(B, Foo2));
 
-        assert(VTABLE(C, MarkerExtendsMarker).dummy == '\0');
         assert(VTABLE(C, MarkerExtendsMarker).Marker == &VTABLE(C, Marker));
 
-        assert(VTABLE(D, MarkerExtendsMany).dummy == '\0');
         assert(VTABLE(D, MarkerExtendsMany).Foo1 == &VTABLE(D, Foo1));
         assert(VTABLE(D, MarkerExtendsMany).Foo2 == &VTABLE(D, Foo2));
     }

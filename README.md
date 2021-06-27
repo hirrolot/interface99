@@ -228,15 +228,13 @@ typedef struct <iface>VTable <iface>VTable;
 typedef struct <iface> <iface>;
 
 struct <iface>VTable {
-    // Only if <iface> is a marker interface:
+    // Only if <iface> is a marker interface without superinterfaces:
     char dummy;
 
-    // Otherwise:
     <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
     ...
     <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
 
-    // This is always generated:
     const <requirement>0VTable *<requirement>;
     ...
     const <requirement>NVTable *<requirement>;
@@ -248,7 +246,7 @@ struct <iface> {
 }
 ```
 
-(`char dummy;` is needed for `<iface>VTable` in the first case because a structure must have at least one member, according to C99.)
+(`char dummy;` is needed for an empty `<iface>VTable` because a structure must have at least one member, according to C99.)
 
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
 
@@ -261,15 +259,13 @@ Expands to
 
 ```
 const <iface>VTable VTABLE(<implementor>, <iface>) = {
-    // Only if <iface> is a marker interface:
+    // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    // Otherwise:
     <fn_name>0 = <implementor>_<iface>_<fn-name>0,
     ...
     <fn-name>N = <implementor>_<iface>_<fn-name>N,
 
-    // This is always generated:
     <requirement>0 = &VTABLE(<implementor, <requirement>0),
     ...
     <requirement>N = &VTABLE(<implementor, <requirement>N),

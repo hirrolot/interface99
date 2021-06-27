@@ -77,26 +77,28 @@ SOFTWARE.
         }))
 
 /*
- * // Only if <iface> is a marker interface:
+ * // Only if <iface> is a marker interface without superinterfaces:
  * char dummy;
  *
- * // Otherwise:
  * <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
  * ...
  * <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
  *
- * // This is always generated:
  * const <requirement>0VTable *<requirement>;
  * ...
  * const <requirement>NVTable *<requirement>;
  */
 #define IFACE99_PRIV_genVTableFields(iface)                                                        \
     ML99_uncomma(ML99_QUOTE(                                                                       \
+        IFACE99_PRIV_genDummy(iface),                                                              \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
-            v(char dummy;),                                                                        \
+            ML99_empty(),                                                                          \
             ML99_callUneval(IFACE99_PRIV_genFnPtrForEach, iface)),                                 \
-        IFACE99_PRIV_genRequirementForEach(iface)))
+        ML99_IF(                                                                                   \
+            IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
+            IFACE99_PRIV_genRequirementForEach(iface),                                             \
+            ML99_empty())))
 
 /*
  * <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
@@ -116,10 +118,7 @@ SOFTWARE.
  * const <requirement>NVTable *<requirement>;
  */
 #define IFACE99_PRIV_genRequirementForEach(iface)                                                  \
-    ML99_IF(                                                                                       \
-        ML99_IS_TUPLE(iface##_EXTENDS),                                                            \
-        ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_EXTENDS))),   \
-        ML99_empty())
+    ML99_variadicsForEach(v(IFACE99_PRIV_genRequirement), ML99_untuple(v(iface##_EXTENDS)))
 
 #define IFACE99_PRIV_genRequirement_IMPL(requirement) v(const requirement##VTable *requirement;)
 
@@ -138,26 +137,28 @@ SOFTWARE.
         ML99_braced(IFACE99_PRIV_genImplInitList(gen_fn_name, iface, implementor)))
 
 /*
- * // Only if <iface> is a marker interface:
+ * // Only if <iface> is a marker interface without superinterfaces:
  * .dummy = '\0',
  *
- * // Otherwise:
  * <fn-name>0 = <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
  * ...
  * <fn-name>N = <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
  *
- * // This is always generated:
  * <requirement>0 = &VTABLE(<implementor, <requirement>0),
  * ...
  * <requirement>N = &VTABLE(<implementor, <requirement>N),
  */
 #define IFACE99_PRIV_genImplInitList(gen_fn_name, iface, implementor)                              \
     ML99_uncomma(ML99_QUOTE(                                                                       \
+        IFACE99_PRIV_genDummyInit(iface),                                                          \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
-            v(.dummy = '\0', ),                                                                    \
+            ML99_empty(),                                                                          \
             ML99_callUneval(IFACE99_PRIV_genImplFnNameForEach, gen_fn_name, iface, implementor)),  \
-        IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))
+        ML99_IF(                                                                                   \
+            IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
+            IFACE99_PRIV_genRequirementsImplForEach(iface, implementor),                           \
+            ML99_empty())))
 
 /*
  * <fn-name>0 = <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
@@ -183,12 +184,9 @@ SOFTWARE.
  * <requirement>N = &VTABLE(<implementor, <requirement>N),
  */
 #define IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)                                \
-    ML99_IF(                                                                                       \
-        ML99_IS_TUPLE(iface##_EXTENDS),                                                            \
-        ML99_variadicsForEach(                                                                     \
-            ML99_appl(v(IFACE99_PRIV_genRequirementImpl), v(implementor)),                         \
-            ML99_untuple(v(iface##_EXTENDS))),                                                     \
-        ML99_empty())
+    ML99_variadicsForEach(                                                                         \
+        ML99_appl(v(IFACE99_PRIV_genRequirementImpl), v(implementor)),                             \
+        ML99_untuple(v(iface##_EXTENDS)))
 
 #define IFACE99_PRIV_genRequirementImpl_IMPL(implementor, requirement)                             \
     v(.requirement = &VTABLE99(implementor, requirement), )
@@ -197,11 +195,20 @@ SOFTWARE.
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(implementor, iface)
 
 #define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_VARIADICS_IS_SINGLE((iface##_INTERFACE))
+#define IFACE99_PRIV_IS_SUB_IFACE(iface)    ML99_IS_TUPLE(iface##_EXTENDS)
 #define IFACE99_PRIV_IFN_LIST(iface)        ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
 #define iFn99(ret_ty, name, ...) ), (ret_ty, name, __VA_ARGS__) IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_LPAREN()
 
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
+
+#define IFACE99_PRIV_genDummy(iface)                                                               \
+    ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(char dummy;), ML99_empty())
+#define IFACE99_PRIV_genDummyInit(iface)                                                           \
+    ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(.dummy = '\0'), ML99_empty())
+
+#define IFACE99_PRIV_IS_EMPTY_VTABLE(iface)                                                        \
+    ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
 
 #define dyn99(implementor, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
