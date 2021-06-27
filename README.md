@@ -118,8 +118,8 @@ typedef struct State {
 
 ```c
 const StateVTable Num_State_impl = {
-    Num_State_get,
-    Num_State_set,
+    .get = Num_State_get,
+    .set = Num_State_set,
 };
 ```
 
@@ -216,7 +216,7 @@ Notes:
 
 ### Semantics
 
-(It might be helpful to look at the [generated data layout](https://godbolt.org/z/MM15E4chK) of [`examples/state.c`](examples/state.c).)
+(It might be helpful to look at the [generated data layout](https://godbolt.org/z/YjG51jdof) of [`examples/state.c`](examples/state.c).)
 
 
 #### `interface`
@@ -265,10 +265,14 @@ const <iface>VTable VTABLE(<implementor>, <iface>) = {
     .dummy = '\0',
 
     // Otherwise:
-    <implementor>_<iface>_<fn-name>0, ..., <implementor>_<iface>_<fn-name>N,
+    <fn_name>0 = <implementor>_<iface>_<fn-name>0,
+    ...
+    <fn-name>N = <implementor>_<iface>_<fn-name>N,
 
     // This is always generated:
-    &VTABLE(<implementor, <requirement>0), ..., &VTABLE(<implementor, <requirement>N),
+    <requirement>0 = &VTABLE(<implementor, <requirement>0),
+    ...
+    <requirement>N = &VTABLE(<implementor, <requirement>N),
 }
 ```
 

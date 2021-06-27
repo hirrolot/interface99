@@ -142,14 +142,14 @@ SOFTWARE.
  * .dummy = '\0',
  *
  * // Otherwise:
- * <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
+ * <fn-name>0 = <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
  * ...
- * <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
+ * <fn-name>N = <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
  *
  * // This is always generated:
- * &VTABLE(<implementor, <requirement>0),
+ * <requirement>0 = &VTABLE(<implementor, <requirement>0),
  * ...
- * &VTABLE(<implementor, <requirement>N),
+ * <requirement>N = &VTABLE(<implementor, <requirement>N),
  */
 #define IFACE99_PRIV_genImplInitList(gen_fn_name, iface, implementor)                              \
     ML99_uncomma(ML99_QUOTE(                                                                       \
@@ -160,9 +160,9 @@ SOFTWARE.
         IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)))
 
 /*
- * <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
+ * <fn-name>0 = <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
  * ...
- * <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
+ * <fn-name>N = <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
  */
 #define IFACE99_PRIV_genImplFnNameForEach_IMPL(gen_fn_name, iface, implementor)                    \
     ML99_variadicsForEach(                                                                         \
@@ -172,15 +172,15 @@ SOFTWARE.
         v(IFACE99_PRIV_IFN_LIST(iface)))
 
 #define IFACE99_PRIV_genImplFnName_IMPL(gen_fn_name, iface, implementor, _ret_ty, name, ...)       \
-    v(gen_fn_name(iface, implementor, name), )
+    v(.name = gen_fn_name(iface, implementor, name), )
 
 #define IFACE99_PRIV_GEN_IMPL_FN_NAME(iface, implementor, name)          implementor##_##iface##_##name
 #define IFACE99_PRIV_GEN_IMPL_FN_NAME_PRIMARY(_iface, implementor, name) implementor##_##name
 
 /*
- * &VTABLE(<implementor, <requirement>0),
+ * <requirement>0 = &VTABLE(<implementor, <requirement>0),
  * ...
- * &VTABLE(<implementor, <requirement>N),
+ * <requirement>N = &VTABLE(<implementor, <requirement>N),
  */
 #define IFACE99_PRIV_genRequirementsImplForEach(iface, implementor)                                \
     ML99_IF(                                                                                       \
@@ -191,7 +191,7 @@ SOFTWARE.
         ML99_empty())
 
 #define IFACE99_PRIV_genRequirementImpl_IMPL(implementor, requirement)                             \
-    v(&VTABLE99(implementor, requirement), )
+    v(.requirement = &VTABLE99(implementor, requirement), )
 // } (Interface implementation generation)
 
 #define declImpl99(iface, implementor) const ML99_CAT(iface, VTable) VTABLE99(implementor, iface)
