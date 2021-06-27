@@ -68,13 +68,13 @@ SOFTWARE.
 
 #define IFACE99_interface_IMPL(iface)                                                              \
     ML99_TERMS(                                                                                    \
-        ML99_typedef(                                                                              \
-            v(iface##VTable),                                                                      \
-            ML99_struct(v(iface##VTable), IFACE99_PRIV_genVTableFields(iface))),                   \
-        v(typedef struct iface {                                                                   \
+        v(typedef struct iface##VTable iface##VTable;),                                            \
+        v(typedef struct iface iface;),                                                            \
+        ML99_semicoloned(ML99_struct(v(iface##VTable), IFACE99_PRIV_genVTableFields(iface))),      \
+        v(struct iface {                                                                           \
             void *self;                                                                            \
             const iface##VTable *vptr;                                                             \
-        } iface))
+        }))
 
 /*
  * // Only if <iface> is a marker interface:

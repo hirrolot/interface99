@@ -216,7 +216,7 @@ Notes:
 
 ### Semantics
 
-(It might be helpful to look at the [generated data layout](https://godbolt.org/z/1Mz7abncv) of [`examples/state.c`](examples/state.c).)
+(It might be helpful to look at the [generated data layout](https://godbolt.org/z/MM15E4chK) of [`examples/state.c`](examples/state.c).)
 
 
 #### `interface`
@@ -224,7 +224,10 @@ Notes:
 Expands to
 
 ```
-typedef struct <iface>VTable {
+typedef struct <iface>VTable <iface>VTable;
+typedef struct <iface> <iface>;
+
+struct <iface>VTable {
     // Only if <iface> is a marker interface:
     char dummy;
 
@@ -237,12 +240,12 @@ typedef struct <iface>VTable {
     const <requirement>0VTable *<requirement>;
     ...
     const <requirement>NVTable *<requirement>;
-} <iface>VTable;
+};
 
-typedef struct <iface> {
+struct <iface> {
     void *self;
     const <iface>VTable *vptr;
-} <iface>
+}
 ```
 
 (`char dummy;` is needed for `<iface>VTable` in the first case because a structure must have at least one member, according to C99.)

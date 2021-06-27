@@ -17,4 +17,5 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     run_test "metalang99_compliant"
     run_test "static_impl"
     run_test "superinterfaces"
+    run_test "forward_typedefs"
 fi

@@ -16,6 +16,7 @@ add_executable(impl_primary impl_primary.c common.h common.c)
 add_executable(decl_impl decl_impl.c common.h common.c)
 add_executable(static_impl static_impl.c common.h common.c)
 add_executable(superinterfaces superinterfaces.c common.h common.c util.h)
+add_executable(forward_typedefs forward_typedefs.c)
 add_executable(metalang99_compliant metalang99_compliant.c)
 
 foreach(TARGET ${BUILDSYSTEM_TARGETS})
