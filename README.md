@@ -503,7 +503,7 @@ A: VS Code automatically enables suggestions of generated types but, of course, 
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
-A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); for Interface99, it is unacceptable since it claims strict C99 conformance.
+A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
 
 ### Q: What compilers are tested?
 
