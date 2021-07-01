@@ -335,6 +335,14 @@ A: See [Datatype99's README >>](https://github.com/Hirrolot/datatype99#q-why-use
 
 A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not-third-party-code-generators).
 
+### Q: How does it work?
+
+A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
+
+### Q: Does it work on C++?
+
+A: Yes, C++11 and onwards is supported.
+
 ### Q: How Interface99 differs from similar projects?
 
 A:
@@ -356,14 +364,6 @@ Other worth-mentioning projects:
 [Datatype99]: https://github.com/Hirrolot/datatype99
 [typeclass-interface-pattern]: https://github.com/TotallyNotChase/typeclass-interface-pattern
 [OOC]: https://www.cs.rit.edu/~ats/books/ooc.pdf
-
-### Q: How does it work?
-
-A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
-
-### Q: Does it work on C++?
-
-A: Yes, C++11 and onwards is supported.
 
 ### Q: What about compile-time errors?
 
