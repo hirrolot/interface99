@@ -515,10 +515,17 @@ A:
 
  - **Depends on Metalang99.** From the implementation point of view, Interface99 is built upon [Metalang99], the underlying metaprogramming framework. With Metalang99, you can also use [Datatype99].
 
+Other worth-mentioning projects:
+
+ - [typeclass-interface-pattern], though it is rather a general idea than a ready-to-use implementation.
+ - [OOC] -- a book about OO programming in ANSI C.
+
 [`obj.h`]: https://github.com/small-c/obj.h
 [GObject]: https://developer.gnome.org/gobject/stable/
 [COS]: http://ldeniau.web.cern.ch/ldeniau/cos.html
 [Datatype99]: https://github.com/Hirrolot/datatype99
+[typeclass-interface-pattern]: https://github.com/TotallyNotChase/typeclass-interface-pattern
+[OOC]: https://www.cs.rit.edu/~ats/books/ooc.pdf
 
 ### Q: What compilers are tested?
 
