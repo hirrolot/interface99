@@ -335,6 +335,28 @@ A: See [Datatype99's README >>](https://github.com/Hirrolot/datatype99#q-why-use
 
 A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not-third-party-code-generators).
 
+### Q: How Interface99 differs from similar projects?
+
+A:
+
+ - **Less boilerplate.** In particular, Interface99 deduces function implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
+
+ - **Small.** Interface99 only features the software interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
+
+ - **Depends on Metalang99.** Interface99 is built upon [Metalang99], the underlying metaprogramming framework. With Metalang99, you can also use [Datatype99].
+
+Other worth-mentioning projects:
+
+ - [typeclass-interface-pattern], though it is rather a general idea than a ready-to-use implementation.
+ - [OOC] -- a book about OO programming in ANSI C.
+
+[`obj.h`]: https://github.com/small-c/obj.h
+[GObject]: https://developer.gnome.org/gobject/stable/
+[COS]: http://ldeniau.web.cern.ch/ldeniau/cos.html
+[Datatype99]: https://github.com/Hirrolot/datatype99
+[typeclass-interface-pattern]: https://github.com/TotallyNotChase/typeclass-interface-pattern
+[OOC]: https://www.cs.rit.edu/~ats/books/ooc.pdf
+
 ### Q: How does it work?
 
 A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
@@ -504,28 +526,6 @@ A: VS Code automatically enables suggestions of generated types but, of course, 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
 A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
-
-### Q: How Interface99 differs from similar projects?
-
-A:
-
- - **Less boilerplate.** In particular, Interface99 deduces function implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
-
- - **Small.** Interface99 only features the software interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
-
- - **Depends on Metalang99.** Interface99 is built upon [Metalang99], the underlying metaprogramming framework. With Metalang99, you can also use [Datatype99].
-
-Other worth-mentioning projects:
-
- - [typeclass-interface-pattern], though it is rather a general idea than a ready-to-use implementation.
- - [OOC] -- a book about OO programming in ANSI C.
-
-[`obj.h`]: https://github.com/small-c/obj.h
-[GObject]: https://developer.gnome.org/gobject/stable/
-[COS]: http://ldeniau.web.cern.ch/ldeniau/cos.html
-[Datatype99]: https://github.com/Hirrolot/datatype99
-[typeclass-interface-pattern]: https://github.com/TotallyNotChase/typeclass-interface-pattern
-[OOC]: https://www.cs.rit.edu/~ats/books/ooc.pdf
 
 ### Q: What compilers are tested?
 
