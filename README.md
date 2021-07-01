@@ -510,8 +510,9 @@ A: This trick technically [results in UB](https://stackoverflow.com/questions/55
 A:
 
  - **Less boilerplate.** In particular, Interface99 deduces function implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
- - **Practical.** Interface99 aims to be enough good to be applicable in production systems, unlike a numerous amount of experimental half-baked implementations.
- - **Small.** Interface99 only features the interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
+
+ - **Small.** Interface99 only features the software interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
+
  - **Depends on Metalang99.** From the implementation point of view, Interface99 is built upon [Metalang99], the underlying metaprogramming framework. With Metalang99, you can also use [Datatype99].
 
 [`obj.h`]: https://github.com/small-c/obj.h
