@@ -59,7 +59,7 @@ SOFTWARE.
 // }
 
 #define IFACE99_MAJOR 0
-#define IFACE99_MINOR 1
+#define IFACE99_MINOR 2
 #define IFACE99_PATCH 0
 
 // } (Various public stuff)
