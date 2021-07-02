@@ -91,6 +91,7 @@ Some handy advices:
 [Precompile headers]: https://en.wikipedia.org/wiki/Precompiled_header
 [`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
 [`-fmacro-backtrace-limit=1`]: https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-fmacro-backtrace-limit
+
 ## Usage
 
 Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
