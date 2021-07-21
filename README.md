@@ -376,6 +376,7 @@ Other worth-mentioning projects:
 
 #### Error: missing interface implementation
 
+\[`playground.c`\]
 ```c
 #define Foo_INTERFACE iFn(void, foo, int x, int y);
 interface(Foo);
@@ -389,6 +390,7 @@ typedef struct {
 impl(Foo, MyFoo);
 ```
 
+\[`/bin/sh`\]
 ```
 playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function); did you mean ‘MyFoo_Foo_impl’?
    12 | impl(Foo, MyFoo);
@@ -400,6 +402,7 @@ playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function
 
 #### Error: improperly typed interface implementation
 
+\[`playground.c`\]
 ```c
 #define Foo_INTERFACE iFn(void, foo, int x, int y);
 interface(Foo);
@@ -413,6 +416,7 @@ void MyFoo_Foo_foo(const char *str) {}
 impl(Foo, MyFoo);
 ```
 
+\[`/bin/sh`\]
 ```
 playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from incompatible pointer type ‘void (*)(const char *)’ [-Wincompatible-pointer-types]
    12 | impl(Foo, MyFoo);
@@ -423,6 +427,7 @@ playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from inc
 
 #### Error: unsatisfied interface requirement
 
+\[`playground.c`\]
 ```c
 #define Foo_INTERFACE iFn(void, foo, int x, int y);
 interface(Foo);
@@ -443,6 +448,7 @@ void MyBar_Bar_bar(void) {}
 impl(Bar, MyBar);
 ```
 
+\[`/bin/sh`\]
 ```
 playground.c:17:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a function); did you mean ‘MyBar_Bar_impl’?
    17 | impl(Bar, MyBar);
@@ -458,6 +464,7 @@ playground.c:9:1: note: ‘Foo’ declared here
 
 #### Error: typo in `dyn`
 
+\[`playground.c`\]
 ```c
 #define Foo_INTERFACE iFn(void, foo, void);
 interface(Foo);
@@ -475,6 +482,7 @@ int main(void) {
 }
 ```
 
+\[`/bin/sh`\]
 ```
 playground.c: In function ‘main’:
 playground.c:15:15: error: ‘MyBar’ undeclared (first use in this function)
@@ -491,6 +499,7 @@ playground.c:15:18: error: expected ‘)’ before ‘{’ token
 
 #### Error: typo in `VTABLE`
 
+\[`playground.c`\]
 ```c
 #define Foo_INTERFACE iFn(void, foo, void);
 interface(Foo);
@@ -508,6 +517,7 @@ int main(void) {
 }
 ```
 
+\[`/bin/sh`\]
 ```
 playground.c: In function ‘main’:
 playground.c:15:21: error: ‘MyBar_Foo_impl’ undeclared (first use in this function); did you mean ‘MyFoo_Foo_impl’?
