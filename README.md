@@ -332,7 +332,7 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 
 ## Learning resources
 
- - [Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
+ - [_Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming_](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
 
 ## FAQ
 
