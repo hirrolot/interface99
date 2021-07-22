@@ -330,6 +330,10 @@ No pitfalls discovered yet.
 
 Thanks to Rust and Golang for their implementations of traits/interfaces.
 
+## Learning resources
+
+ - [Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
+
 ## FAQ
 
 ### Q: Why use C instead of Rust/Zig/whatever else?
