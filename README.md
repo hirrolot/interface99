@@ -333,6 +333,7 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 ## Learning resources
 
  - [_Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming_](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
+ - [_Extend Your Language, Don’t Alter It_](https://hirrolot.github.io/posts/extend-your-language-dont-alter-it.html) by Hirrolot.
 
 ## FAQ
 
