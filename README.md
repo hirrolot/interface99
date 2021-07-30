@@ -56,7 +56,7 @@ x = 5
 
  - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you!
 
- - **Portable.** Everything you need is a standard-conforming C99 preprocessor.
+ - **Portable.** Everything you need is a standard-conforming C99 compiler; neither the standard library, nor compiler/platform-specific functionality or VLA are required.
 
  - **Predictable.** Interface99 comes with formal [code generation semantics], meaning that the generated data layout is guaranteed to always be the same.
 
