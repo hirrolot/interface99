@@ -1,5 +1,6 @@
 # Interface99
 [![CI](https://github.com/Hirrolot/interface99/workflows/C/C++%20CI/badge.svg)](https://github.com/Hirrolot/interface99/actions)
+[![mailing list](https://img.shields.io/badge/mailing%20list-lists.sr.ht-orange)](https://lists.sr.ht/~hirrolot/metalang99)
 
 Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-header library.
 
