@@ -96,25 +96,27 @@ Some handy advices:
 
 ## Usage
 
-Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
+Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you should already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
 
 In this section we are to clarify some details that are specific to Interface99. First of all, these are three major concepts:
 
- - **Interface definition:**
-   - [`interface(Vehicle);`](#interface)
- - **Implementation declaration:**
-   - Internal linkage: [`declImpl(Vehicle, Car);`](#declImpl)
-   - External linkage: [`externDeclImpl(Vehicle, Car);`](#externDeclImpl)
- - **Implementation definition:**
-   - Internal linkage:
-     - Ordinary implementation: [`impl(Vehicle, Car);`](#impl)
-     - Primary implementation: [`implPrimary(Vehicle, Car);`](#implPrimary)
-   - External linkage:
-     - Ordinary implementation: [`externImpl(Vehicle, Car);`](#externImpl)
-     - Primary implementation: [`externImplPrimary(Vehicle, Car);`](#externImplPrimary)
+ 1. **Interface definition:**
+    - [`interface(Vehicle);`](#interface)
+ 2. **Implementation declaration:**
+    - Internal linkage: [`declImpl(Vehicle, Car);`](#declImpl)
+    - External linkage: [`externDeclImpl(Vehicle, Car);`](#externDeclImpl)
+ 3. **Implementation definition:**
+    - Internal linkage:
+      - Ordinary implementation: [`impl(Vehicle, Car);`](#impl)
+      - Primary implementation: [`implPrimary(Vehicle, Car);`](#implPrimary)
+    - External linkage:
+      - Ordinary implementation: [`externImpl(Vehicle, Car);`](#externImpl)
+      - Primary implementation: [`externImplPrimary(Vehicle, Car);`](#externImplPrimary)
 
 Notes:
- - The terms "declaration" & "definition" have the same semantics as in the C programming language.
+ - The terms "declaration" & "definition" have the same semantics as in the C programming language. In particular:
+   - An interface implementation definition is also a declaration.
+   - If you want to share an interface implementation across TUs, you must put its declaration into `*.h` and its definition into `*.c`
  - A primary implementation means that instead of naming functions like `Car_Vehicle_drive`, you write just `Car_drive` (more on this later).
 
 What do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
