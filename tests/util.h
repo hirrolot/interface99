@@ -26,7 +26,7 @@
 #define ENSURE_DYN_OBJ(implementor, iface)                                                         \
     do {                                                                                           \
         implementor x = {0};                                                                       \
-        iface x_dyn = dyn(implementor, iface, &x);                                                 \
+        iface x_dyn = DYN(implementor, iface, &x);                                                 \
         assert(x_dyn.self = &x);                                                                   \
         assert(x_dyn.vptr = &VTABLE(implementor, iface));                                          \
     } while (0)

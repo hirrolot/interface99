@@ -63,7 +63,7 @@ implPrimary(Airplane, MyAirplane);
  * move_down(11): x = 7, y = -4
  */
 int main(void) {
-    Airplane my_airplane = dyn(MyAirplane, Airplane, &(MyAirplane){0, 0});
+    Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
 
     my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
     my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);

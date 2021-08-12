@@ -38,7 +38,7 @@ void test(State st) {
 
 int main(void) {
     Num n = {0};
-    State st = dyn(Num, State, &n);
+    State st = DYN(Num, State, &n);
     test(st);
 }
 ```
@@ -142,11 +142,11 @@ Notes:
  - If you were using [`externImpl`](#externImpl), this definition would be `extern` as well.
  - If you were using [`implPrimary`](#implPrimary)/[`externImplPrimary`](#externImplPrimary), you would have to define the functions as `Num_get` & `Num_set` instead of `Num_State_get` & `Num_State_set`.
 
-This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by `dyn`:
+This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by [`DYN`](#DYN):
 
 ```с
 Num n = {0};
-State st = dyn(Num, State, &n);
+State st = DYN(Num, State, &n);
 ```
 
 Since `State` is polymorphic over its implementations, you can accept it as a function parameter and manipulate it through `.self` & `.vptr`:
@@ -182,7 +182,7 @@ interface(Airplane);
 Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
 
 ```c
-Airplane my_airplane = dyn(MyAirplane, Airplane, &(MyAirplane){0, 0});
+Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
 
 my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
 my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
@@ -220,7 +220,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <implPrimary> ::= "implPrimary(" <iface> "," <implementor> ")" ;
 <declImpl>    ::= "declImpl("    <iface> "," <implementor> ")" ;
 
-<dyn>         ::= "dyn("    <implementor> "," <iface> "," <ptr> ")" ;
+<dyn>         ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
 <vtable>      ::= "VTABLE(" <implementor> "," <iface> ")" ;
 
 <iface>       ::= <ident> ;
@@ -304,7 +304,7 @@ Like [`impl`](#impl) but captures the `<implementor>_<fn-name>` functions instea
 
 Expands to `const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it declares a virtual table instance of `<implementor>` of type `<iface>VTable`.
 
-#### `dyn`
+#### `DYN`
 
 Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` and `.vptr` initialised to `&VTABLE(<implementor>, <iface>)`.
 
@@ -482,7 +482,7 @@ playground.c:9:1: note: ‘Foo’ declared here
 
 ----------
 
-#### Error: typo in `dyn`
+#### Error: typo in `DYN`
 
 [`playground.c`]
 ```c
@@ -498,7 +498,7 @@ void MyFoo_Foo_foo(void) {}
 impl(Foo, MyFoo);
 
 int main(void) {
-    Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+    Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
 }
 ```
 
@@ -506,11 +506,11 @@ int main(void) {
 ```
 playground.c: In function ‘main’:
 playground.c:15:15: error: ‘MyBar’ undeclared (first use in this function)
-   15 |     Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+   15 |     Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
       |               ^~~
 playground.c:15:15: note: each undeclared identifier is reported only once for each function it appears in
 playground.c:15:18: error: expected ‘)’ before ‘{’ token
-   15 |     Foo foo = dyn(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+   15 |     Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
       |               ~~~^
       |                  )
 ```

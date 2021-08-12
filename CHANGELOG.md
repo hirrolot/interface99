@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Generate virtual tables with static linkage in `impl(Primary)` & `declImpl` [**BC**].
+ - `dyn` => `DYN` to know where is a function and where is a macro.
 
 ### Added
 

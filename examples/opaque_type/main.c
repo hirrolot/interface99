@@ -18,8 +18,8 @@ int main(void) {
     Frog *paul = Frog_new("Paul");
     Frog *steve = Frog_new("Steve");
 
-    test(dyn(Frog, Croak, paul));
-    test(dyn(Frog, Croak, steve));
+    test(DYN(Frog, Croak, paul));
+    test(DYN(Frog, Croak, steve));
 
     Frog_free(paul);
     Frog_free(steve);

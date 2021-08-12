@@ -39,9 +39,9 @@ implPrimary(MediaStream, AudioStream);
  * AudioStream_play
  */
 int main(void) {
-    MediaStream video = dyn(VideoStream, MediaStream, &(VideoStream){0});
+    MediaStream video = DYN(VideoStream, MediaStream, &(VideoStream){0});
     video.vptr->play(video.self);
 
-    MediaStream audio = dyn(AudioStream, MediaStream, &(AudioStream){0});
+    MediaStream audio = DYN(AudioStream, MediaStream, &(AudioStream){0});
     audio.vptr->play(audio.self);
 }

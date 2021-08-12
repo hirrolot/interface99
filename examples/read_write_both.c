@@ -45,7 +45,7 @@ int main(void) {
     FILE *fp = tmpfile();
     assert(fp);
 
-    ReadWrite rw = dyn(File, ReadWrite, &(File){fp});
+    ReadWrite rw = DYN(File, ReadWrite, &(File){fp});
 
     rw.vptr->Write->write(rw.self, "hello world", strlen("hello world"));
     rewind(fp);

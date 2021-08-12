@@ -38,11 +38,11 @@ int main(void) {
     FILE *fp = tmpfile();
     assert(fp);
 
-    Write w = dyn(File, Write, &(File){fp});
+    Write w = DYN(File, Write, &(File){fp});
     w.vptr->write(w.self, "hello world", strlen("hello world"));
     rewind(fp);
 
-    Read r = dyn(File, Read, &(File){fp});
+    Read r = DYN(File, Read, &(File){fp});
     char hello_world[16] = {0};
     r.vptr->read(r.self, hello_world, strlen("hello world"));
 

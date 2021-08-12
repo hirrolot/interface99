@@ -43,7 +43,7 @@ SOFTWARE.
 #define externImpl        externImpl99
 #define externImplPrimary externImplPrimary99
 #define externDeclImpl    externDeclImpl99
-#define dyn               dyn99
+#define DYN               DYN99
 #define VTABLE            VTABLE99
 
 #endif // IFACE99_NO_ALIASES
@@ -240,7 +240,7 @@ SOFTWARE.
 #define IFACE99_PRIV_IS_EMPTY_VTABLE(iface)                                                        \
     ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
 
-#define dyn99(implementor, iface, ...)                                                             \
+#define DYN99(implementor, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
 
 #define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
