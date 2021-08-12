@@ -224,9 +224,9 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <implPrimary>       ::= "implPrimary(" <iface> "," <implementor> ")" ;
 <declImpl>          ::= "declImpl("    <iface> "," <implementor> ")" ;
 
-<externImpl>        ::= "impl("        <iface> "," <implementor> ")" ;
-<externImplPrimary> ::= "implPrimary(" <iface> "," <implementor> ")" ;
-<externDeclImpl>    ::= "declImpl("    <iface> "," <implementor> ")" ;
+<externImpl>        ::= "externImpl("        <iface> "," <implementor> ")" ;
+<externImplPrimary> ::= "externImplPrimary(" <iface> "," <implementor> ")" ;
+<externDeclImpl>    ::= "externDeclImpl("    <iface> "," <implementor> ")" ;
 
 <dyn>               ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
 <vtable>            ::= "VTABLE(" <implementor> "," <iface> ")" ;
