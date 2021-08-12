@@ -6,9 +6,13 @@ include_directories(.. ../metalang99/include)
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
   add_compile_options(-Wall -Wextra -pedantic -std=c99
                       -ftrack-macro-expansion=0)
+elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
+  add_compile_options("-fmacro-backtrace-limit=1")
 elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-  # Enable a standard-confirming C99/C11 preprocessor.
+  # Enable a standard-conforming C99/C11 preprocessor.
   add_compile_options("/std:c11")
+elseif(CMAKE_C_COMPILER_ID STREQUAL "TinyCC")
+  add_compile_definitions(ML99_ALLOW_POOR_DIAGNOSTICS)
 endif()
 
 add_subdirectory(extern_impl)
