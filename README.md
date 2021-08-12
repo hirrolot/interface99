@@ -113,9 +113,11 @@ In this section we are to clarify some details that are specific to Interface99.
      - Ordinary implementation: [`externImpl(Vehicle, Car);`](#externImpl)
      - Primary implementation: [`externImplPrimary(Vehicle, Car);`](#externImplPrimary)
 
-(The terms "declaration" & "definition" have the same semantics as in the C programming language.)
+Notes:
+ - The terms "declaration" & "definition" have the same semantics as in the C programming language.
+ - A primary implementation means that instead of naming functions like `Car_Vehicle_drive`, you write just `Car_drive` (more on this later).
 
-What do the macros generate? `interface` generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
+What do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
@@ -209,23 +211,27 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ### EBNF syntax
 
 ```ebnf
-<iface-def>    ::= "interface(" <iface> ")" ;
+<iface-def>         ::= "interface(" <iface> ")" ;
 
-<fn>          ::= "iFn(" <fn-ret-ty> "," <fn-name> "," <fn-params> ");" ;
-<fn-ret-ty>   ::= <type> ;
-<fn-name>     ::= <ident> ;
-<fn-params>   ::= <parameter-type-list> ;
+<fn>                ::= "iFn(" <fn-ret-ty> "," <fn-name> "," <fn-params> ");" ;
+<fn-ret-ty>         ::= <type> ;
+<fn-name>           ::= <ident> ;
+<fn-params>         ::= <parameter-type-list> ;
 
-<impl>        ::= "impl("        <iface> "," <implementor> ")" ;
-<implPrimary> ::= "implPrimary(" <iface> "," <implementor> ")" ;
-<declImpl>    ::= "declImpl("    <iface> "," <implementor> ")" ;
+<impl>              ::= "impl("        <iface> "," <implementor> ")" ;
+<implPrimary>       ::= "implPrimary(" <iface> "," <implementor> ")" ;
+<declImpl>          ::= "declImpl("    <iface> "," <implementor> ")" ;
 
-<dyn>         ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
-<vtable>      ::= "VTABLE(" <implementor> "," <iface> ")" ;
+<externImpl>        ::= "impl("        <iface> "," <implementor> ")" ;
+<externImplPrimary> ::= "implPrimary(" <iface> "," <implementor> ")" ;
+<externDeclImpl>    ::= "declImpl("    <iface> "," <implementor> ")" ;
 
-<iface>       ::= <ident> ;
-<implementor> ::= <ident> ;
-<requirement> ::= <iface> ;
+<dyn>               ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
+<vtable>            ::= "VTABLE(" <implementor> "," <iface> ")" ;
+
+<iface>             ::= <ident> ;
+<implementor>       ::= <ident> ;
+<requirement>       ::= <iface> ;
 ```
 
 Notes:
@@ -277,7 +283,7 @@ I.e., this macro defines a virtual table structure for `<iface>`, as well as the
 Expands to
 
 ```
-const <iface>VTable VTABLE(<implementor>, <iface>) = {
+static const <iface>VTable VTABLE(<implementor>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
@@ -302,7 +308,19 @@ Like [`impl`](#impl) but captures the `<implementor>_<fn-name>` functions instea
 
 #### `declImpl`
 
-Expands to `const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it declares a virtual table instance of `<implementor>` of type `<iface>VTable`.
+Expands to `static const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it declares a virtual table instance of `<implementor>` of type `<iface>VTable`.
+
+#### `externImpl`
+
+The same as [`impl`](#impl) but generates an `extern` definition instead of `static`.
+
+#### `externImplPrimary`
+
+The same as [`implPrimary`](#implPrimary) but generates an `extern` definition instead of `static`.
+
+#### `externDeclImpl`
+
+The same as [`declImpl`](#declImpl) but generates an `extern` declaration instead of `static`.
 
 #### `DYN`
 
@@ -325,6 +343,8 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 | `interface` | `IFACE99_interface` |
 | `impl` | `IFACE99_impl` |
 | `implPrimary` | `IFACE99_implPrimary` |
+| `externImpl` | `IFACE99_externImpl` |
+| `externImplPrimary` | `IFACE99_externImplPrimary` |
 
 (An [arity specifier] and [desugaring macro] are provided for each of the above macros.)
 
