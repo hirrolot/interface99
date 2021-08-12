@@ -13,9 +13,9 @@ run_test() {
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     run_test "basic_tests"
     run_test "decl_impl"
+    run_test "forward_typedefs"
     run_test "impl_primary"
     run_test "metalang99_compliant"
-    run_test "static_impl"
     run_test "superinterfaces"
-    run_test "forward_typedefs"
+    run_test "extern_impl/test"
 fi

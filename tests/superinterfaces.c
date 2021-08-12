@@ -26,29 +26,6 @@ interface(MarkerExtendsMarker);
 interface(MarkerExtendsMany);
 // } (Interfaces)
 
-// Implementations {
-
-typedef struct {
-    char dummy;
-} MarkerImpl;
-
-impl(Marker, MarkerImpl);
-
-typedef struct {
-    char dummy;
-} Foo1Impl;
-
-#define Foo1Impl_Foo1_a a1_impl
-impl(Foo1, Foo1Impl);
-
-typedef struct {
-    char dummy;
-} Foo2Impl;
-
-#define Foo2Impl_Foo2_a a1_impl
-#define Foo2Impl_Foo2_b b1_impl
-impl(Foo2, Foo2Impl);
-
 // Test `Foo1ExtendsMarker` {
 typedef struct {
     char dummy;
@@ -99,8 +76,6 @@ impl(Foo2, D);
 
 impl(MarkerExtendsMany, D);
 // }
-
-// } (Implementations)
 
 int main(void) {
     // Ensure `interface`-generated data.

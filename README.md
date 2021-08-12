@@ -79,7 +79,7 @@ x = 5
 
 ## Installation
 
- 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.2.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.2.0)).
+ 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.5.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.5.0)).
  2. Add `interface99` and `metalang99/include` to your include paths.
  3. `#include <interface99.h>` beforehand.
 
@@ -98,13 +98,22 @@ Some handy advices:
 
 Interface99 aims to provide a minimalistic, yet useable set of features found in most programming languages, while staying natural to C. Therefore, if you have experience with other general-purpose PLs, you already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
 
-In this section we are to clarify some details that are specific to Interface99. First of all, there are three major things:
+In this section we are to clarify some details that are specific to Interface99. First of all, these are three major concepts:
 
- - interface definition,
- - interface implementation declaration,
- - interface implementation definition.
+ - **Interface definition:**
+   - [`interface(Vehicle);`](#interface)
+ - **Implementation declaration:**
+   - Internal linkage: [`declImpl(Vehicle, Car);`](#declImpl)
+   - External linkage: [`externDeclImpl(Vehicle, Car);`](#externDeclImpl)
+ - **Implementation definition:**
+   - Internal linkage:
+     - Ordinary implementation: [`impl(Vehicle, Car);`](#impl)
+     - Primary implementation: [`implPrimary(Vehicle, Car);`](#implPrimary)
+   - External linkage:
+     - Ordinary implementation: [`externImpl(Vehicle, Car);`](#externImpl)
+     - Primary implementation: [`externImplPrimary(Vehicle, Car);`](#externImplPrimary)
 
-The terms "declaration" & "definition" have the same semantics as in the C programming language: normally you put declarations inside headers, whereas definitions reside in `*.c` files (except an interface definition, which can be located in a header file since it defines nothing but a couple of structures). If your interface must appear only in a single TU, feel free to omit the declarations and place the definitions at the top of the file. In this case, I recommend you to prepend interface implementations with `static`: `static impl(...);`.
+(The terms "declaration" & "definition" have the same semantics as in the C programming language.)
 
 What do the macros generate? `interface` generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
@@ -123,11 +132,15 @@ typedef struct State {
 `impl` generates a constant variable of type `StateVTable`:
 
 ```c
-const StateVTable Num_State_impl = {
+static const StateVTable Num_State_impl = {
     .get = Num_State_get,
     .set = Num_State_set,
 };
 ```
+
+Notes:
+ - If you were using [`externImpl`](#externImpl), this definition would be `extern` as well.
+ - If you were using [`implPrimary`](#implPrimary)/[`externImplPrimary`](#externImplPrimary), you would have to define the functions as `Num_get` & `Num_set` instead of `Num_State_get` & `Num_State_set`.
 
 This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by `dyn`:
 
@@ -146,7 +159,7 @@ void test(State st) {
 }
 ```
 
-The last thing is superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
+The last thing unmentioned is superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
 #define Vehicle_INTERFACE                              \
@@ -222,7 +235,7 @@ Notes:
 
 ### Semantics
 
-(It might be helpful to look at the [generated data layout](https://godbolt.org/z/YjG51jdof) of [`examples/state.c`](examples/state.c).)
+(It might be helpful to look at the [generated data layout](https://godbolt.org/z/Mn98f359z) of [`examples/state.c`](examples/state.c).)
 
 
 #### `interface`

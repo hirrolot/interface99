@@ -30,4 +30,4 @@ static void Frog_Croak_croak(void *self) {
     this->ncroaks++;
 }
 
-impl(Croak, Frog);
+externImpl(Croak, Frog);

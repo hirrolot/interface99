@@ -19,6 +19,10 @@ static void test_decl_impl(void) {
 #define Foo2Impl_Foo2_b b1_impl
 impl(Foo2, Foo2Impl);
 
+// Multiple declarations should work fine.
+declImpl(Foo2, Foo2Impl);
+declImpl(Foo2, Foo2Impl);
+
 int main(void) {
     test_decl_impl();
 }
