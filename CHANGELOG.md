@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.3.0] - 2021-08-13
+
 ### Changed
 
  - Generate virtual tables with static linkage in `impl(Primary)` & `declImpl` [**BC**].
