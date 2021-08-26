@@ -48,7 +48,7 @@ SOFTWARE.
 
 #endif // IFACE99_NO_ALIASES
 
-// Various public stuff {
+// Public stuff {
 
 // Metalang99-compliant macros {
 
@@ -65,13 +65,12 @@ SOFTWARE.
 #define externImpl99(iface, implementor)  ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementor))
 #define externImplPrimary99(iface, implementor)                                                    \
     ML99_EVAL(IFACE99_externImplPrimary_IMPL(iface, implementor))
-// }
+// } (Metalang99-compliant macros)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 3
 #define IFACE99_PATCH 0
-
-// } (Various public stuff)
+// } (Public stuff)
 
 // Interface generation {
 
@@ -133,7 +132,6 @@ SOFTWARE.
     ML99_tupleForEach(v(IFACE99_PRIV_genRequirement), v(iface##_EXTENDS))
 
 #define IFACE99_PRIV_genRequirement_IMPL(requirement) v(const requirement##VTable *requirement;)
-
 // } (Interface generation)
 
 // Interface implementation generation {
@@ -228,13 +226,10 @@ SOFTWARE.
 
 #define IFACE99_PRIV_DECL_IMPL_COMMON(iface, implementor)                                          \
     const ML99_CAT(iface, VTable) VTABLE99(implementor, iface)
-// }
-
-// Interface function representation {
+// } (Implementation declaration)
 
 #define iFn99(ret_ty, name, ...) ), (ret_ty, name, __VA_ARGS__) IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_LPAREN()
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
-// }
 
 #define DYN99(implementor, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
@@ -247,17 +242,19 @@ SOFTWARE.
 #define IFACE99_PRIV_IFN_LIST(iface)        ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
 // Arity specifiers {
+
 #define IFACE99_PRIV_genFnPtr_ARITY           1
 #define IFACE99_PRIV_genImplFnName_ARITY      2
 #define IFACE99_PRIV_genRequirement_ARITY     1
 #define IFACE99_PRIV_genRequirementImpl_ARITY 2
 
 // Public:
+
 #define IFACE99_interface_ARITY         1
 #define IFACE99_impl_ARITY              2
 #define IFACE99_implPrimary_ARITY       2
 #define IFACE99_externImpl_ARITY        2
 #define IFACE99_externImplPrimary_ARITY 2
-// }
+// } (Arity specifiers)
 
 #endif // INTERFACE99_H

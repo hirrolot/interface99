@@ -48,7 +48,6 @@ impl(Foo1, Foo1Foo2Impl);
 #define Foo1Foo2Impl_Foo2_a a1_impl
 #define Foo1Foo2Impl_Foo2_b b1_impl
 impl(Foo2, Foo1Foo2Impl);
-
 // } (Implementations)
 
 int main(void) {

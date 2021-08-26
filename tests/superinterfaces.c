@@ -26,7 +26,8 @@ interface(MarkerExtendsMarker);
 interface(MarkerExtendsMany);
 // } (Interfaces)
 
-// Test `Foo1ExtendsMarker` {
+// Foo1ExtendsMarker {
+
 typedef struct {
     char dummy;
 } A;
@@ -35,9 +36,10 @@ impl(Marker, A);
 
 #define A_Foo1ExtendsMarker_a a1_impl
 impl(Foo1ExtendsMarker, A);
-// }
+// } (Foo1ExtendsMarker)
 
-// Test `Foo1ExtendsMany` {
+// Foo1ExtendsMany {
+
 typedef struct {
     char dummy;
 } B;
@@ -51,18 +53,20 @@ impl(Foo2, B);
 
 #define B_Foo1ExtendsMany_a a1_impl
 impl(Foo1ExtendsMany, B);
-// }
+// } (Foo1ExtendsMany)
 
-// Test `MarkerExtendsMarker` {
+// MarkerExtendsMarker {
+
 typedef struct {
     char dummy;
 } C;
 
 impl(Marker, C);
 impl(MarkerExtendsMarker, C);
-// }
+// } (MarkerExtendsMarker)
 
-// Test `MarkerExtendsMany` {
+// MarkerExtendsMany {
+
 typedef struct {
     char dummy;
 } D;
@@ -75,7 +79,7 @@ impl(Foo1, D);
 impl(Foo2, D);
 
 impl(MarkerExtendsMany, D);
-// }
+// } (MarkerExtendsMany)
 
 int main(void) {
     // Ensure `interface`-generated data.
