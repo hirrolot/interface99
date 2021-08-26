@@ -380,7 +380,7 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
  2. Update `CHANGELOG.md`.
  3. Release the project in [GitHub Releases].
 
-[GitHub Releases]: https://github.com/Hirrolot/metalang99/releases
+[GitHub Releases]: https://github.com/Hirrolot/interface99/releases
 
 ## FAQ
 
