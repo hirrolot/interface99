@@ -372,6 +372,14 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
  - [_Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming_](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
  - [_Extend Your Language, Don’t Alter It_](https://hirrolot.github.io/posts/extend-your-language-dont-alter-it.html) by Hirrolot.
 
+## Release procedure
+
+ 1. Update `IFACE99_MAJOR`, `IFACE99_MINOR`, and `IFACE99_PATCH` in `interface99.h`.
+ 2. Update `CHANGELOG.md`
+ 3. Release the project in [GitHub Releases].
+
+[GitHub Releases]: https://github.com/Hirrolot/metalang99/releases
+
 ## FAQ
 
 ### Q: Why use C instead of Rust/Zig/whatever else?
