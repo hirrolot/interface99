@@ -328,6 +328,8 @@ The same as [`declImpl`](#declImpl) but generates an `extern` declaration instea
 
 Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` and `.vptr` initialised to `&VTABLE(<implementor>, <iface>)`.
 
+`<ptr>` is guaranteed to be evaluated only once.
+
 #### `VTABLE`
 
 Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<implementor>` of type `<iface>VTable`.
@@ -375,7 +377,7 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 ## Release procedure
 
  1. Update `IFACE99_MAJOR`, `IFACE99_MINOR`, and `IFACE99_PATCH` in `interface99.h`.
- 2. Update `CHANGELOG.md`
+ 2. Update `CHANGELOG.md`.
  3. Release the project in [GitHub Releases].
 
 [GitHub Releases]: https://github.com/Hirrolot/metalang99/releases
