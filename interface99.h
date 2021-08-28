@@ -67,6 +67,10 @@ SOFTWARE.
     ML99_EVAL(IFACE99_externImplPrimary_IMPL(iface, implementor))
 // } (Metalang99-compliant macros)
 
+#define DYN99(implementor, iface, ...)                                                             \
+    ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
+#define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
+
 #define IFACE99_IS_NON_NULL(...) ((__VA_ARGS__).self && (__VA_ARGS__).vptr)
 
 #define IFACE99_MAJOR 0
@@ -232,16 +236,12 @@ SOFTWARE.
 
 #define iFn99(ret_ty, name, ...) ), (ret_ty, name, __VA_ARGS__) IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_LPAREN()
 #define IFACE99_PRIV_EAT_INTERLEAVED_SEMICOLON ML99_EMPTY
-
-#define DYN99(implementor, iface, ...)                                                             \
-    ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
-#define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
+#define IFACE99_PRIV_IFN_LIST(iface)           ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
 #define IFACE99_PRIV_IS_EMPTY_VTABLE(iface)                                                        \
     ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
 #define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_VARIADICS_IS_SINGLE((iface##_INTERFACE))
 #define IFACE99_PRIV_IS_SUB_IFACE(iface)    ML99_IS_TUPLE(iface##_EXTENDS)
-#define IFACE99_PRIV_IFN_LIST(iface)        ML99_VARIADICS_TAIL((iface##_INTERFACE))
 
 // Arity specifiers {
 
