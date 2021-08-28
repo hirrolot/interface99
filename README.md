@@ -79,7 +79,7 @@ x = 5
 
 ## Installation
 
- 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.6.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.6.0)).
+ 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.9.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.9.0)).
  2. Add `interface99` and `metalang99/include` to your include paths.
  3. `#include <interface99.h>` beforehand.
 
