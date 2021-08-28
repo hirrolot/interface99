@@ -119,7 +119,7 @@ Notes:
    - If you want to share an interface implementation across TUs, you must put its declaration into `*.h` and its definition into `*.c`
  - A primary implementation means that instead of naming functions like `Car_Vehicle_drive`, you write just `Car_drive` (more on this later).
 
-What do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _dynamic interface object_ type. In the case of [`examples/state.c`](examples/state.c):
+What do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
@@ -136,6 +136,7 @@ typedef struct State {
 `impl` generates a constant variable of type `StateVTable`:
 
 ```c
+// The functions `Num_State_get` & `Num_State_set` need to be defined beforehand.
 static const StateVTable Num_State_impl = {
     .get = Num_State_get,
     .set = Num_State_set,
@@ -163,7 +164,12 @@ void test(State st) {
 }
 ```
 
-The last thing unmentioned is superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
+... and this is all you need to know to write most of the stuff.
+
+<detail>
+    <summary>About superinterfaces</summary>
+
+Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
 #define Vehicle_INTERFACE                              \
@@ -203,6 +209,8 @@ typedef struct AirplaneVTable {
     const ArmouredVTable *Armoured;
 } AirplaneVTable;
 ```
+
+</detail>
 
 Happy hacking!
 
