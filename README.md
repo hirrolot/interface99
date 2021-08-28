@@ -96,30 +96,35 @@ Some handy advices:
 
 ## Usage
 
-If you have experience with other general-purpose PLs, you should already know how to use Interface99. Go and look through the [examples](examples/) to see how it performs in the wild.
+A good way to start is to investigate the [examples](examples/). In this section, we are to speak about Interface99 a bit more laboriously.
 
-In this section we are to clarify some details that are specific to Interface99. First of all, these are three major concepts:
+Interface99 lies upon these three basic concepts:
 
  1. **Interface definition:**
-    - [`interface(Vehicle);`](#interface)
+
+[`interface(Vehicle);`](#interface)
+
+(This is much like defining a `struct`/`union`/`enum`. Usually it goes in `*.h` files.)
+
  2. **Implementation declaration:**
-    - Internal linkage: [`declImpl(Vehicle, Car);`](#declImpl)
-    - External linkage: [`externDeclImpl(Vehicle, Car);`](#externDeclImpl)
+
+| Linkage | Syntax |
+|---------|--------|
+| Internal | [`declImpl(Vehicle, Car);`](#declImpl) |
+| External | [`externDeclImpl(Vehicle, Car);`](#externDeclImpl) |
+
+(If your interface implementation is to be exposed to other TUs, you can write `externDeclImpl(...)` in a `*.h` file and `externImpl`/`externImplPrimary` (see below) in a corresponding `*.c` file.)
+
  3. **Implementation definition:**
-    - Internal linkage:
-      - Ordinary implementation: [`impl(Vehicle, Car);`](#impl)
-      - Primary implementation: [`implPrimary(Vehicle, Car);`](#implPrimary)
-    - External linkage:
-      - Ordinary implementation: [`externImpl(Vehicle, Car);`](#externImpl)
-      - Primary implementation: [`externImplPrimary(Vehicle, Car);`](#externImplPrimary)
 
-Notes:
- - The terms "declaration" & "definition" have the same semantics as in the C programming language. In particular:
-   - An interface implementation definition is also a declaration.
-   - If you want to share an interface implementation across TUs, you must put its declaration into `*.h` and its definition into `*.c`
- - A primary implementation means that instead of naming functions like `Car_Vehicle_drive`, you write just `Car_drive` (more on this later).
+| Linkage | Ordinary implementation | Primary implementation |
+|---------|-------------------------|------------------------|
+| Internal | [`impl(Vehicle, Car);`](#impl) | [`implPrimary(Vehicle, Car);`](#implPrimary) |
+| External | [`externImpl(Vehicle, Car);`](#externImpl) | [`externImplPrimary(Vehicle, Car);`](#externImplPrimary) |
 
-What do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
+(An _ordinary implementation_ means that you name your implementor's functions as `Car_Vehicle_drive`, whereas a _primary implementation_ allows you to write just `Car_drive`, which is more concise.)
+
+Now what do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
@@ -154,7 +159,7 @@ Num n = {0};
 State st = DYN(Num, State, &n);
 ```
 
-Since `State` is polymorphic over its implementations, you can accept it as a function parameter and manipulate it through `.self` & `.vptr`:
+Since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept it as a function parameter and manipulate it through `.self` & `.vptr` like this:
 
 ```c
 void test(State st) {
@@ -166,7 +171,7 @@ void test(State st) {
 
 ... and this is all you need to know to write most of the stuff.
 
-<detail>
+<details>
     <summary>About superinterfaces</summary>
 
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
@@ -210,7 +215,7 @@ typedef struct AirplaneVTable {
 } AirplaneVTable;
 ```
 
-</detail>
+</details>
 
 Happy hacking!
 
