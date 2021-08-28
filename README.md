@@ -353,6 +353,9 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 ```c
 assert(IFACE99_IS_NON_NULL(obj));
+
+// Now we can safely manipulate the interface object:
+obj.vptr->do_smth(obj.self, 1, 2, 3);
 ```
 
 (Beware that its parameter can be evaluated more than once.)
