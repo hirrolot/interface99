@@ -88,16 +88,4 @@ int main(void) {
     ENSURE_DYN_OBJ(Foo2Impl2, Foo2);
     ENSURE_DYN_OBJ(Foo1Foo2Impl, Foo1);
     ENSURE_DYN_OBJ(Foo1Foo2Impl, Foo2);
-
-    // IFACE99_IS_NON_NULL
-    {
-        Foo1 foo1 = DYN(Foo1Impl, Foo1, &(Foo1Impl){0});
-        assert(IFACE99_IS_NON_NULL(foo1));
-
-        foo1.self = NULL;
-        assert(!IFACE99_IS_NON_NULL(foo1));
-
-        foo1.vptr = NULL;
-        assert(!IFACE99_IS_NON_NULL(foo1));
-    }
 }

@@ -71,8 +71,6 @@ SOFTWARE.
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementor, iface)})
 #define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
 
-#define IFACE99_IS_NON_NULL(...) ((__VA_ARGS__).self && (__VA_ARGS__).vptr)
-
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 3
 #define IFACE99_PATCH 0

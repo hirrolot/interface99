@@ -6,10 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-### Added
-
- - `IFACE99_IS_NON_NULL` to check that `.self` and `.vptr` are non-null.
-
 ## [0.3.0] - 2021-08-13
 
 ### Changed
