@@ -357,7 +357,6 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 ## Guidelines
 
- - Prepend `impl`s with `static` if they must appear only in a single TU: `static impl(...);`.
  - Use `implPrimary` to avoid boilerplate if you implement an interface considered primary for some concrete type (see [`examples/media_stream.c`](examples/media_stream.c)).
 
 ## Pitfalls
