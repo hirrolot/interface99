@@ -347,6 +347,16 @@ Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` 
 
 Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<implementor>` of type `<iface>VTable`.
 
+## Auxiliary macros
+
+ - A function-like macro `IFACE99_IS_NON_NULL(...)` tests that a provided interface object has both `.self` and `.vptr` non-null. It can be used as a function precondition like this:
+
+```c
+assert(IFACE99_IS_NON_NULL(obj));
+```
+
+(Beware that its parameter can be evaluated more than once.)
+
 ## Miscellaneous
 
  - The macros `IFACE99_MAJOR`, `IFACE99_MINOR`, and `IFACE99_PATCH` stand for the corresponding components of a version of Interface99.

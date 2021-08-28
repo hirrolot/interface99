@@ -67,6 +67,8 @@ SOFTWARE.
     ML99_EVAL(IFACE99_externImplPrimary_IMPL(iface, implementor))
 // } (Metalang99-compliant macros)
 
+#define IFACE99_IS_NON_NULL(...) ((__VA_ARGS__).self && (__VA_ARGS__).vptr)
+
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 3
 #define IFACE99_PATCH 0
