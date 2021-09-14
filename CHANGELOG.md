@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - Use a variation of the [X-Macro] pattern instead of `iFn`. This change makes the implementation easier to reason about.
+ - Use a variation of the [X-Macro] pattern instead of `iFn`. This change makes the implementation easier to reason about [**BC**].
 
 [X-Macro]: https://en.wikipedia.org/wiki/X_Macro
 
