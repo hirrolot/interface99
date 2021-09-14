@@ -55,7 +55,7 @@ x = 5
 
 ## Highlights
 
- - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you!
+ - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you! Internally, it is done through [X-Macro], a technique for reliable maintenance of parallel lists.
 
  - **Portable.** Everything you need is a standard-conforming C99 compiler; neither the standard library, nor compiler/platform-specific functionality or VLA are required.
 
@@ -63,6 +63,7 @@ x = 5
 
  - **Comprehensible errors.** Despite that Interface99 is built upon macros, compilation errors are usually [comprehensible](#q-what-about-compile-time-errors).
 
+[good old X-Macro]: #q-how-does-it-work
 [code generation semantics]: #semantics
 
 ## Features
