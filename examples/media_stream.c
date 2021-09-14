@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define MediaStream_INTERFACE(fn, ctx) fn(ctx, void, play, void *self)
+#define MediaStream_INTERFACE(FN, CTX) FN(CTX, void, play, void *self)
 interface(MediaStream);
 
 typedef struct {

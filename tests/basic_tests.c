@@ -6,8 +6,8 @@
 #include <assert.h>
 #include <stddef.h>
 
-// Ensure that a marker interface can take the `fn, ctx` parameters (not omitted).
-#define MarkerWithParams_INTERFACE(fn, ctx)
+// Ensure that a marker interface can take the `FN, CTX` parameters (not omitted).
+#define MarkerWithParams_INTERFACE(FN, CTX)
 
 interface(MarkerWithParams);
 

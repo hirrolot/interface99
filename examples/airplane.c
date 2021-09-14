@@ -4,15 +4,15 @@
 
 #include <stdio.h>
 
-#define Vehicle_INTERFACE(fn, ctx)                                                                 \
-    fn(ctx, void, move_forward, void *self, int distance)                                          \
-    fn(ctx, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(FN, CTX)                                                                 \
+    FN(CTX, void, move_forward, void *self, int distance)                                          \
+    FN(CTX, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(fn, ctx)                                                                \
-    fn(ctx, void, move_up, void *self, int distance)                                               \
-    fn(ctx, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(FN, CTX)                                                                \
+    FN(CTX, void, move_up, void *self, int distance)                                               \
+    FN(CTX, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 

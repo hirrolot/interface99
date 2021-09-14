@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_INTERFACE(fn, ctx)         \
-    fn(ctx, int,  get, void *self)       \
-    fn(ctx, void, set, void *self, int x)
+#define State_INTERFACE(FN, CTX)         \
+    FN(CTX, int,  get, void *self)       \
+    FN(CTX, void, set, void *self, int x)
 
 interface(State);
 
@@ -177,15 +177,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE(fn, ctx)                         \
-    fn(ctx, void, move_forward, void *self, int  distance) \
-    fn(ctx, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(FN, CTX)                         \
+    FN(CTX, void, move_forward, void *self, int  distance) \
+    FN(CTX, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(fn, ctx)                   \
-    fn(ctx, void, move_up, void *self, int distance)  \
-    fn(ctx, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(FN, CTX)                   \
+    FN(CTX, void, move_up, void *self, int distance)  \
+    FN(CTX, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -228,7 +228,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>         ::= "interface(" <iface> ")" ;
 
-<fn>                ::= "fn(ctx, " <fn-ret-ty> "," <fn-name> "," <fn-params> ")" ;
+<fn>                ::= "FN(CTX, " <fn-ret-ty> "," <fn-name> "," <fn-params> ")" ;
 <fn-ret-ty>         ::= <type> ;
 <fn-name>           ::= <ident> ;
 <fn-params>         ::= <parameter-type-list> ;
@@ -251,10 +251,10 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(fn, ctx)`, which must expand to `{ <fn> }*`. Note that:
-   - You can choose different names for the `fn, ctx` parameters -- it is just a matter of convention.
-   - If you use [Clang-Format], it can be helpful to add `fn` to the `StatementMacros` vector.
-   - If your interface contains no functions, i.e., a marker interface, you can omit `(fn, ctx)` like this: `#define MyMarker_INTERFACE`.
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(FN, CTX)`, which must expand to `{ <fn> }*`. Note that:
+   - You can choose different names for the `FN, CTX` parameters -- it is just a matter of convention.
+   - If you use [Clang-Format], it can be helpful to add `FN` to the `StatementMacros` vector.
+   - If your interface contains no functions, i.e., a marker interface, you can omit `(FN, CTX)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
@@ -413,8 +413,8 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 uses a variation of the [X-Macro] pattern:
 
- - Inside `impl`, the `fn` parameter becomes a macro that expands to an implementor's function name (e.g., `.drive = Car_Vehicle_drive,`).
- - Inside `interface`, the `fn` parameter becomes a macro that generates a function pointer.
+ - Inside `impl`, the `FN` parameter becomes a macro that expands to an implementor's function name (e.g., `.drive = Car_Vehicle_drive,`).
+ - Inside `interface`, the `FN` parameter becomes a macro that generates a function pointer.
 
 To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
 
@@ -454,7 +454,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
+#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -480,7 +480,7 @@ playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
+#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -505,10 +505,10 @@ playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from inc
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
+#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_INTERFACE(fn, ctx) fn(ctx, void, bar, void)
+#define Bar_INTERFACE(FN, CTX) FN(CTX, void, bar, void)
 #define Bar_EXTENDS            (Foo)
 
 interface(Bar);
@@ -542,7 +542,7 @@ playground.c:9:1: note: ‘Foo’ declared here
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, void)
+#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -577,7 +577,7 @@ playground.c:15:18: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, void)
+#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, void)
 interface(Foo);
 
 typedef struct {

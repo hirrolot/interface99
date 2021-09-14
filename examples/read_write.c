@@ -6,11 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#define Read_INTERFACE(fn, ctx) fn(ctx, size_t, read, void *self, char *dest, size_t bytes_to_read)
+#define Read_INTERFACE(FN, CTX) FN(CTX, size_t, read, void *self, char *dest, size_t bytes_to_read)
 interface(Read);
 
-#define Write_INTERFACE(fn, ctx)                                                                   \
-    fn(ctx, size_t, write, void *self, const char *src, size_t bytes_to_write)
+#define Write_INTERFACE(FN, CTX)                                                                   \
+    FN(CTX, size_t, write, void *self, const char *src, size_t bytes_to_write)
 interface(Write);
 
 typedef struct {

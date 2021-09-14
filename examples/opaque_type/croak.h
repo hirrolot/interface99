@@ -3,7 +3,7 @@
 
 #include <interface99.h>
 
-#define Croak_INTERFACE(fn, ctx) fn(ctx, void, croak, void *self)
+#define Croak_INTERFACE(FN, CTX) FN(CTX, void, croak, void *self)
 
 interface(Croak);
 
