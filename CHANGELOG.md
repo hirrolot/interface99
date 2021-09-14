@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.4.0] - 2021-09-14
+
 ### Changed
 
  - Use a variation of the [X-Macro] pattern instead of `iFn`. This change makes the implementation easier to reason about [**BC**].
