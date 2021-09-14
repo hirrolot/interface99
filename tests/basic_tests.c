@@ -6,6 +6,11 @@
 #include <assert.h>
 #include <stddef.h>
 
+// Ensure that a marker interface can take the `fn, ctx` parameters (not omitted).
+#define MarkerWithParams_INTERFACE(fn, ctx)
+
+interface(MarkerWithParams);
+
 // Implementations {
 
 typedef struct {
@@ -56,6 +61,9 @@ int main(void) {
     {
         ENSURE_VTABLE_FIELD_TYPE(MarkerVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(Marker);
+
+        ENSURE_VTABLE_FIELD_TYPE(MarkerWithParamsVTable, dummy, char);
+        ENSURE_DYN_OBJ_TYPE(MarkerWithParams);
 
         ENSURE_VTABLE_FIELD_TYPE(Foo1VTable, a, AFnType);
         ENSURE_DYN_OBJ_TYPE(Foo1);

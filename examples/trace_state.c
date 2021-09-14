@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#define State_INTERFACE                                                                            \
-    iFn(int, get, void *self);                                                                     \
-    iFn(void, set, void *self, int x);
+#define State_INTERFACE(fn, ctx)                                                                   \
+    fn(ctx, int, get, void *self)                                                                  \
+    fn(ctx, void, set, void *self, int x)
 
 interface(State);
 

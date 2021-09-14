@@ -9,11 +9,11 @@
 
 #define Marker_INTERFACE
 
-#define Foo1_INTERFACE iFn(const char *, a, int x, double *restrict y);
+#define Foo1_INTERFACE(fn, ctx) fn(ctx, const char *, a, int x, double *restrict y)
 
-#define Foo2_INTERFACE                                                                             \
-    iFn(const char *, a, int x, double *restrict y);                                               \
-    iFn(float, b, long long x);
+#define Foo2_INTERFACE(fn, ctx)                                                                    \
+    fn(ctx, const char *, a, int x, double *restrict y)                                            \
+    fn(ctx, float, b, long long x)
 
 interface(Marker);
 interface(Foo1);

@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+ - Use a variation of the [X-Macro] pattern instead of `iFn`. This change makes the implementation easier to reason about.
+
+[X-Macro]: https://en.wikipedia.org/wiki/X_Macro
+
 ## [0.3.0] - 2021-08-13
 
 ### Changed

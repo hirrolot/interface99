@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_INTERFACE               \
-    iFn(int, get, void *self);        \
-    iFn(void, set, void *self, int x);
+#define State_INTERFACE(fn, ctx)         \
+    fn(ctx, int,  get, void *self)       \
+    fn(ctx, void, set, void *self, int x)
 
 interface(State);
 
@@ -79,7 +79,7 @@ x = 5
 
 ## Installation
 
- 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.9.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.9.0)).
+ 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.10.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.10.0)).
  2. Add `interface99` and `metalang99/include` to your include paths.
  3. `#include <interface99.h>` beforehand.
 
@@ -177,15 +177,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE                              \
-    iFn(void, move_forward, void *self, int distance); \
-    iFn(void, move_back, void *self, int distance);
+#define Vehicle_INTERFACE(fn, ctx)                         \
+    fn(ctx, void, move_forward, void *self, int  distance) \
+    fn(ctx, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE                             \
-    iFn(void, move_up, void *self, int distance);      \
-    iFn(void, move_down, void *self, int distance);
+#define Airplane_INTERFACE(fn, ctx)                   \
+    fn(ctx, void, move_up, void *self, int distance)  \
+    fn(ctx, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -228,7 +228,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>         ::= "interface(" <iface> ")" ;
 
-<fn>                ::= "iFn(" <fn-ret-ty> "," <fn-name> "," <fn-params> ");" ;
+<fn>                ::= "fn(ctx, " <fn-ret-ty> "," <fn-name> "," <fn-params> ")" ;
 <fn-ret-ty>         ::= <type> ;
 <fn-name>           ::= <ident> ;
 <fn-params>         ::= <parameter-type-list> ;
@@ -251,8 +251,13 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE` which must expand to `{ <fn> }*`. It must be defined for every interface.
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(fn, ctx)`, which must expand to `{ <fn> }*`. Note that:
+   - You can choose different names for the `fn, ctx` parameters -- it is just a matter of convention.
+   - If you use [Clang-Format], it can be helpful to add `fn` to the `StatementMacros` vector.
+   - If your interface contains no functions, i.e., a marker interface, you can omit `(fn, ctx)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
+
+[Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 ### Semantics
 
@@ -406,7 +411,14 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 ### Q: How does it work?
 
-A: Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
+A: Interface99 uses a variation of the [X-Macro] pattern:
+
+ - Inside `impl`, the `fn` parameter becomes a macro that expands to an implementor's function name (e.g., `.drive = Car_Vehicle_drive,`).
+ - Inside `interface`, the `fn` parameter becomes a macro that generates a function pointer.
+
+To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
+
+[X-Macro]: https://en.wikipedia.org/wiki/X_Macro
 
 ### Q: Does it work on C++?
 
@@ -442,7 +454,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE iFn(void, foo, int x, int y);
+#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -468,7 +480,7 @@ playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE iFn(void, foo, int x, int y);
+#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -493,11 +505,11 @@ playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from inc
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE iFn(void, foo, int x, int y);
+#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_INTERFACE iFn(void, bar, void);
-#define Bar_EXTENDS   (Foo)
+#define Bar_INTERFACE(fn, ctx) fn(ctx, void, bar, void)
+#define Bar_EXTENDS            (Foo)
 
 interface(Bar);
 
@@ -530,7 +542,7 @@ playground.c:9:1: note: ‘Foo’ declared here
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE iFn(void, foo, void);
+#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -542,19 +554,19 @@ void MyFoo_Foo_foo(void) {}
 impl(Foo, MyFoo);
 
 int main(void) {
-    Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+    Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
 }
 ```
 
 [`/bin/sh`]
 ```
 playground.c: In function ‘main’:
-playground.c:15:15: error: ‘MyBar’ undeclared (first use in this function)
-   15 |     Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+playground.c:15:15: error: ‘Bar’ undeclared (first use in this function)
+   15 |     Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
       |               ^~~
 playground.c:15:15: note: each undeclared identifier is reported only once for each function it appears in
 playground.c:15:18: error: expected ‘)’ before ‘{’ token
-   15 |     Foo foo = DYN(Foo, /* MyFoo */ MyBar, &(MyFoo){0});
+   15 |     Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
       |               ~~~^
       |                  )
 ```
@@ -565,7 +577,7 @@ playground.c:15:18: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE iFn(void, foo, void);
+#define Foo_INTERFACE(fn, ctx) fn(ctx, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -606,7 +618,7 @@ A: VS Code automatically enables suggestions of generated types but, of course, 
 
 A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
 
-### Q: What compilers are tested?
+### Q: Which compilers are tested?
 
 A: Interface99 is known to work on these compilers:
 

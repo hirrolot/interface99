@@ -13,7 +13,7 @@ ML99_ASSERT_UNEVAL(IFACE99_implPrimary_ARITY == 2);
 ML99_ASSERT_UNEVAL(IFACE99_externImpl_ARITY == 2);
 ML99_ASSERT_UNEVAL(IFACE99_externImplPrimary_ARITY == 2);
 
-#define Foo1_INTERFACE iFn(const char *, a, int x, double *restrict y);
+#define Foo1_INTERFACE(fn, ctx) fn(ctx, const char *, a, int x, double *restrict y)
 
 ML99_EVAL(IFACE99_interface(v(Foo1)));
 
