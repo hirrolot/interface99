@@ -63,7 +63,7 @@ SOFTWARE.
 #define VTABLE99(implementor, iface) ML99_CAT4(implementor, _, iface, _impl)
 
 #define IFACE99_MAJOR 0
-#define IFACE99_MINOR 4
+#define IFACE99_MINOR 5
 #define IFACE99_PATCH 0
 // } (Public stuff)
 

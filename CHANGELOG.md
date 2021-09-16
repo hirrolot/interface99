@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.5.0] - 2021-09-16
+
 ### Changed
 
  - Remove `implPrimary`, `externImplPrimary` [**BC**].
