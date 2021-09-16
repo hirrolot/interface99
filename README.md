@@ -299,7 +299,7 @@ static const <iface>VTable VTABLE(<implementor>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    <fn_name>0 = <implementor>_<op-name>0,
+    <op-name>0 = <implementor>_<op-name>0,
     ...
     <op-name>N = <implementor>_<op-name>N,
 
