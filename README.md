@@ -444,8 +444,6 @@ Other worth-mentioning projects:
 
 ### Q: What about compile-time errors?
 
-----------
-
 #### Error: missing interface implementation
 
 [`playground.c`]
@@ -457,17 +455,16 @@ typedef struct {
     char dummy;
 } MyFoo;
 
-// Missing `void MyFoo_Foo_foo(int x, int y)`.
+// Missing `void MyFoo_foo(int x, int y)`.
 
 impl(Foo, MyFoo);
 ```
 
 [`/bin/sh`]
 ```
-playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function); did you mean ‘MyFoo_Foo_impl’?
+playground.c:12:1: error: ‘MyFoo_foo’ undeclared here (not in a function)
    12 | impl(Foo, MyFoo);
       | ^~~~
-      | MyFoo_Foo_impl
 ```
 
 ----------
@@ -483,7 +480,7 @@ typedef struct {
     char dummy;
 } MyFoo;
 
-void MyFoo_Foo_foo(const char *str) {}
+void MyFoo_foo(const char *str) {}
 
 impl(Foo, MyFoo);
 ```
@@ -493,6 +490,7 @@ impl(Foo, MyFoo);
 playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from incompatible pointer type ‘void (*)(const char *)’ [-Wincompatible-pointer-types]
    12 | impl(Foo, MyFoo);
       | ^~~~
+playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 ```
 
 ----------
@@ -513,7 +511,7 @@ typedef struct {
     char dummy;
 } MyBar;
 
-void MyBar_Bar_bar(void) {}
+void MyBar_bar(void) {}
 
 // Missing `impl(Foo, MyBar)`.
 
@@ -522,14 +520,10 @@ impl(Bar, MyBar);
 
 [`/bin/sh`]
 ```
-playground.c:17:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a function); did you mean ‘MyBar_Bar_impl’?
-   17 | impl(Bar, MyBar);
+playground.c:19:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a function); did you mean ‘MyBar_Bar_impl’?
+   19 | impl(Bar, MyBar);
       | ^~~~
       | MyBar_Bar_impl
-playground.c:17:1: warning: missing initializer for field ‘Foo’ of ‘BarVTable’ [-Wmissing-field-initializers]
-playground.c:9:1: note: ‘Foo’ declared here
-    9 | interface(Bar);
-      | ^~~~~~~~~
 ```
 
 ----------
@@ -545,26 +539,23 @@ typedef struct {
     char dummy;
 } MyFoo;
 
-void MyFoo_Foo_foo(void) {}
+void MyFoo_foo(void) {}
 
 impl(Foo, MyFoo);
 
-int main(void) {
-    Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
-}
+int main(void) { Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0}); }
 ```
 
 [`/bin/sh`]
 ```
-playground.c: In function ‘main’:
-playground.c:15:15: error: ‘Bar’ undeclared (first use in this function)
-   15 |     Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
-      |               ^~~
-playground.c:15:15: note: each undeclared identifier is reported only once for each function it appears in
-playground.c:15:18: error: expected ‘)’ before ‘{’ token
-   15 |     Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0});
-      |               ~~~^
-      |                  )
+playground.c:14:28: error: ‘Bar’ undeclared (first use in this function)
+   14 | int main(void) { Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0}); }
+      |                            ^~~
+playground.c:14:28: note: each undeclared identifier is reported only once for each function it appears in
+playground.c:14:31: error: expected ‘)’ before ‘{’ token
+   14 | int main(void) { Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0}); }
+      |                            ~~~^
+      |                               )
 ```
 
 ----------
@@ -580,22 +571,19 @@ typedef struct {
     char dummy;
 } MyFoo;
 
-void MyFoo_Foo_foo(void) {}
+void MyFoo_foo(void) {}
 
 impl(Foo, MyFoo);
 
-int main(void) {
-    FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo);
-}
+int main(void) { FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo); }
 ```
 
 [`/bin/sh`]
 ```
-playground.c: In function ‘main’:
-playground.c:15:21: error: ‘MyBar_Foo_impl’ undeclared (first use in this function); did you mean ‘MyFoo_Foo_impl’?
-   15 |     FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo);
-      |                     ^~~~~~
-      |                     MyFoo_Foo_impl
+playground.c:14:34: error: ‘MyBar_Foo_impl’ undeclared (first use in this function); did you mean ‘MyFoo_Foo_impl’?
+   14 | int main(void) { FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo); }
+      |                                  ^~~~~~
+      |                                  MyFoo_Foo_impl
 ```
 
 ----------
