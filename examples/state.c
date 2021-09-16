@@ -16,9 +16,10 @@ typedef struct {
     int x;
 } Num;
 
-int Num_get(void *self) { return ((Num *)self)->x; }
-
+// clang-format off
+int  Num_get(void *self) { return ((Num *)self)->x; }
 void Num_set(void *self, int x) { ((Num *)self)->x = x; }
+// clang-format on
 
 impl(State, Num);
 

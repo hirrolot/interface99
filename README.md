@@ -20,8 +20,7 @@ typedef struct {
     int x;
 } Num;
 
-int Num_get(void *self) { return ((Num *)self)->x; }
-
+int  Num_get(void *self) { return ((Num *)self)->x; }
 void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 
 impl(State, Num);
