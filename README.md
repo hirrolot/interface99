@@ -58,10 +58,11 @@ x = 5
 
  - **Predictable.** Interface99 comes with formal [code generation semantics], meaning that the generated data layout is guaranteed to always be the same.
 
- - **Comprehensible errors.** Despite that Interface99 is built upon macros, compilation errors are usually [comprehensible](#q-what-about-compile-time-errors).
+ - **Comprehensible errors.** Interface99 is [resilient to bad code].
 
 [done through X-Macro]: #q-how-does-it-work
 [code generation semantics]: #semantics
+[resilient to bad code]: #q-what-about-compile-time-errors
 
 ## Features
 
