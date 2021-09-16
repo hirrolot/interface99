@@ -5,9 +5,7 @@
 #include "croak.h"
 #include "frog.h"
 
-static void test(Croak croakable) {
-    croakable.vptr->croak(croakable.self);
-}
+static void test(Croak croakable) { croakable.vptr->croak(croakable.self); }
 
 /*
  * Output:

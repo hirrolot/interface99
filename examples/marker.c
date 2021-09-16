@@ -25,9 +25,7 @@ typedef struct {
     PlayerStats stats;
 } Player;
 
-void test(Copy src, Copy dst, size_t size) {
-    memcpy(src.self, dst.self, size);
-}
+void test(Copy src, Copy dst, size_t size) { memcpy(src.self, dst.self, size); }
 
 int main(void) {
     const PlayerStats stats1 = {.health = 100, .victories = 5, .defeats = 2};

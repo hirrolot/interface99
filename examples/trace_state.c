@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#define State_INTERFACE(FN, CTX)                                                                   \
-    FN(CTX, int, get, void *self)                                                                  \
-    FN(CTX, void, set, void *self, int x)
+#define State_INTERFACE(OP, CTX)                                                                   \
+    OP(CTX, int, get, void *self)                                                                  \
+    OP(CTX, void, set, void *self, int x)
 
 interface(State);
 
@@ -14,13 +14,9 @@ typedef struct {
     int x;
 } Num;
 
-int Num_State_get(void *self) {
-    return ((Num *)self)->x;
-}
+int Num_get(void *self) { return ((Num *)self)->x; }
 
-void Num_State_set(void *self, int x) {
-    ((Num *)self)->x = x;
-}
+void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 
 impl(State, Num);
 
@@ -29,14 +25,14 @@ typedef struct {
     State st;
 } TraceState;
 
-int TraceState_State_get(void *self) {
+int TraceState_get(void *self) {
     TraceState *this = (TraceState *)self;
 
     printf("get x\n");
     return this->st.vptr->get(this->st.self);
 }
 
-void TraceState_State_set(void *self, int x) {
+void TraceState_set(void *self, int x) {
     TraceState *this = (TraceState *)self;
 
     printf("set x = %d\n", x);

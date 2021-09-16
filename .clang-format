@@ -5,7 +5,7 @@ IndentWidth: 4
 ContinuationIndentWidth: 4
 ColumnLimit: 100
 
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: All
 AllowAllArgumentsOnNextLine: false
 BinPackArguments: false
 AllowAllParametersOfDeclarationOnNextLine: true
@@ -14,4 +14,4 @@ BinPackParameters: true
 AlignConsecutiveMacros: true
 AlignAfterOpenBracket: AlwaysBreak
 
-StatementMacros: ["ML99_EVAL", "FN"]
+StatementMacros: ["ML99_EVAL", "OP"]

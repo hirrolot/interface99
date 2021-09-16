@@ -3,10 +3,10 @@
 
 typedef struct {
     char dummy;
-} Foo1Impl;
+} FooImpl;
 
 typedef struct {
     char dummy;
-} Foo2Impl;
+} BarImpl;
 
 #endif // INTERFACE99_TESTS_EXTERN_IMPL_TYPES_H

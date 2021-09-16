@@ -35,15 +35,13 @@ SOFTWARE.
 
 #ifndef IFACE99_NO_ALIASES
 
-#define interface         interface99
-#define impl              impl99
-#define implPrimary       implPrimary99
-#define declImpl          declImpl99
-#define externImpl        externImpl99
-#define externImplPrimary externImplPrimary99
-#define externDeclImpl    externDeclImpl99
-#define DYN               DYN99
-#define VTABLE            VTABLE99
+#define interface      interface99
+#define impl           impl99
+#define declImpl       declImpl99
+#define externImpl     externImpl99
+#define externDeclImpl externDeclImpl99
+#define DYN            DYN99
+#define VTABLE         VTABLE99
 
 #endif // IFACE99_NO_ALIASES
 
@@ -51,19 +49,13 @@ SOFTWARE.
 
 // Metalang99-compliant macros {
 
-#define IFACE99_interface(iface)                ML99_call(IFACE99_interface, iface)
-#define IFACE99_impl(iface, implementor)        ML99_call(IFACE99_impl, iface, implementor)
-#define IFACE99_implPrimary(iface, implementor) ML99_call(IFACE99_implPrimary, iface, implementor)
-#define IFACE99_externImpl(iface, implementor)  ML99_call(IFACE99_externImpl, iface, implementor)
-#define IFACE99_externImplPrimary(iface, implementor)                                              \
-    ML99_call(IFACE99_externImplPrimary, iface, implementor)
+#define IFACE99_interface(iface)               ML99_call(IFACE99_interface, iface)
+#define IFACE99_impl(iface, implementor)       ML99_call(IFACE99_impl, iface, implementor)
+#define IFACE99_externImpl(iface, implementor) ML99_call(IFACE99_externImpl, iface, implementor)
 
-#define interface99(iface)                ML99_EVAL(IFACE99_interface_IMPL(iface))
-#define impl99(iface, implementor)        ML99_EVAL(IFACE99_impl_IMPL(iface, implementor))
-#define implPrimary99(iface, implementor) ML99_EVAL(IFACE99_implPrimary_IMPL(iface, implementor))
-#define externImpl99(iface, implementor)  ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementor))
-#define externImplPrimary99(iface, implementor)                                                    \
-    ML99_EVAL(IFACE99_externImplPrimary_IMPL(iface, implementor))
+#define interface99(iface)               ML99_EVAL(IFACE99_interface_IMPL(iface))
+#define impl99(iface, implementor)       ML99_EVAL(IFACE99_impl_IMPL(iface, implementor))
+#define externImpl99(iface, implementor) ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementor))
 // } (Metalang99-compliant macros)
 
 #define DYN99(implementor, iface, ...)                                                             \
@@ -91,9 +83,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * char dummy;
  *
- * <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
+ * <op-ret-ty>0 (*<op-name>0)(<op-params>0);
  * ...
- * <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
+ * <op-ret-ty>N (*<op-name>N)(<op-params>N);
  *
  * const <requirement>0VTable *<requirement>;
  * ...
@@ -105,7 +97,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            v(iface##_INTERFACE(IFACE99_PRIV_FN_PTR, ~))),                                         \
+            v(iface##_INTERFACE(IFACE99_PRIV_OP_PTR, ~))),                                         \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementForEach(iface),                                             \
@@ -114,7 +106,7 @@ SOFTWARE.
 #define IFACE99_PRIV_genDummy(iface)                                                               \
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(char dummy;), ML99_empty())
 
-#define IFACE99_PRIV_FN_PTR(_ctx, ret_ty, name, ...) ret_ty (*name)(__VA_ARGS__);
+#define IFACE99_PRIV_OP_PTR(_ctx, ret_ty, op_name, ...) ret_ty (*op_name)(__VA_ARGS__);
 
 /*
  * const <requirement>0VTable *<requirement>;
@@ -130,49 +122,39 @@ SOFTWARE.
 // Interface implementation generation {
 
 #define IFACE99_impl_IMPL(iface, implementor)                                                      \
-    IFACE99_PRIV_staticImpl(implementor##_##iface, iface, implementor)
-#define IFACE99_implPrimary_IMPL(iface, implementor)                                               \
-    IFACE99_PRIV_staticImpl(implementor, iface, implementor)
-
+    IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_STATIC, iface, implementor)
 #define IFACE99_externImpl_IMPL(iface, implementor)                                                \
-    IFACE99_PRIV_externImpl(implementor##_##iface, iface, implementor)
-#define IFACE99_externImplPrimary_IMPL(iface, implementor)                                         \
-    IFACE99_PRIV_externImpl(implementor, iface, implementor)
-
-#define IFACE99_PRIV_staticImpl(prefix, iface, implementor)                                        \
-    IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_STATIC, prefix, iface, implementor)
-#define IFACE99_PRIV_externImpl(prefix, iface, implementor)                                        \
-    IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_EXTERN, prefix, iface, implementor)
+    IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_EXTERN, iface, implementor)
 
 #define IFACE99_PRIV_STORAGE_CLASS_STATIC    static
 #define IFACE99_PRIV_STORAGE_CLASS_EXTERN    /* If no storage-class specifier is provided, the     \
                                                 default for objects is `extern` (file scope) or    \
                                                 `auto` (block scope). */
 
-#define IFACE99_PRIV_implCommon(storage_class, prefix, iface, implementor)                         \
+#define IFACE99_PRIV_implCommon(storage_class, iface, implementor)                                 \
     ML99_assignInitializerList(                                                                    \
         v(storage_class const iface##VTable VTABLE99(implementor, iface)),                         \
-        IFACE99_PRIV_genImplInitList(prefix, iface, implementor))
+        IFACE99_PRIV_genImplInitList(iface, implementor))
 
 /*
  * // Only if <iface> is a marker interface without superinterfaces:
  * .dummy = '\0',
  *
- * <fn-name>0 = <implementor>_<iface>_<fn-name>0 (or <implementor>_<fn-name>0),
+ * <op-name>0 = <implementor>_<iface>_<op-name>0 (or <implementor>_<op-name>0),
  * ...
- * <fn-name>N = <implementor>_<iface>_<fn-name>N (or <implementor>_<fn-name>N),
+ * <op-name>N = <implementor>_<iface>_<op-name>N (or <implementor>_<op-name>N),
  *
  * <requirement>0 = &VTABLE(<implementor, <requirement>0),
  * ...
  * <requirement>N = &VTABLE(<implementor, <requirement>N),
  */
-#define IFACE99_PRIV_genImplInitList(prefix, iface, implementor)                                   \
+#define IFACE99_PRIV_genImplInitList(iface, implementor)                                           \
     ML99_uncomma(ML99_QUOTE(                                                                       \
         IFACE99_PRIV_genDummyInit(iface),                                                          \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            v(iface##_INTERFACE(IFACE99_PRIV_IMPL_FN, prefix))),                                   \
+            v(iface##_INTERFACE(IFACE99_PRIV_IMPL_OP, implementor))),                              \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementsImplForEach(iface, implementor),                           \
@@ -181,7 +163,7 @@ SOFTWARE.
 #define IFACE99_PRIV_genDummyInit(iface)                                                           \
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(.dummy = '\0'), ML99_empty())
 
-#define IFACE99_PRIV_IMPL_FN(prefix, _ret_ty, fn_name, ...) .fn_name = prefix##_##fn_name,
+#define IFACE99_PRIV_IMPL_OP(implementor, _ret_ty, op_name, ...) .op_name = implementor##_##op_name,
 
 /*
  * <requirement>0 = &VTABLE(<implementor, <requirement>0),
@@ -220,11 +202,9 @@ SOFTWARE.
 
 // Public:
 
-#define IFACE99_interface_ARITY         1
-#define IFACE99_impl_ARITY              2
-#define IFACE99_implPrimary_ARITY       2
-#define IFACE99_externImpl_ARITY        2
-#define IFACE99_externImplPrimary_ARITY 2
+#define IFACE99_interface_ARITY  1
+#define IFACE99_impl_ARITY       2
+#define IFACE99_externImpl_ARITY 2
 // } (Arity specifiers)
 
 #endif // INTERFACE99_H

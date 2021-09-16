@@ -7,26 +7,26 @@
 
 // Interfaces {
 
-#define Foo1ExtendsMarker_INTERFACE Foo1_INTERFACE
-#define Foo1ExtendsMarker_EXTENDS   (Marker)
+#define FooExtendsMarker_INTERFACE Foo_INTERFACE
+#define FooExtendsMarker_EXTENDS   (Marker)
 
-#define Foo1ExtendsMany_INTERFACE Foo1_INTERFACE
-#define Foo1ExtendsMany_EXTENDS   (Foo1, Foo2)
+#define FooExtendsMany_INTERFACE Foo_INTERFACE
+#define FooExtendsMany_EXTENDS   (Foo, Bar)
 
 #define MarkerExtendsMarker_INTERFACE Marker_INTERFACE
 #define MarkerExtendsMarker_EXTENDS   (Marker)
 
 #define MarkerExtendsMany_INTERFACE Marker_INTERFACE
-#define MarkerExtendsMany_EXTENDS   (Foo1, Foo2)
+#define MarkerExtendsMany_EXTENDS   (Foo, Bar)
 
-interface(Foo1ExtendsMarker);
-interface(Foo1ExtendsMany);
+interface(FooExtendsMarker);
+interface(FooExtendsMany);
 
 interface(MarkerExtendsMarker);
 interface(MarkerExtendsMany);
 // } (Interfaces)
 
-// Foo1ExtendsMarker {
+// FooExtendsMarker {
 
 typedef struct {
     char dummy;
@@ -34,26 +34,30 @@ typedef struct {
 
 impl(Marker, A);
 
-#define A_Foo1ExtendsMarker_a a1_impl
-impl(Foo1ExtendsMarker, A);
-// } (Foo1ExtendsMarker)
+#define A_foo foo1_impl
+impl(FooExtendsMarker, A);
+// } (FooExtendsMarker)
 
-// Foo1ExtendsMany {
+// FooExtendsMany {
 
 typedef struct {
     char dummy;
 } B;
 
-#define B_Foo1_a a1_impl
-impl(Foo1, B);
+#define B_foo foo1_impl
+impl(Foo, B);
+#undef B_foo
 
-#define B_Foo2_a a1_impl
-#define B_Foo2_b b1_impl
-impl(Foo2, B);
+#define B_foo foo1_impl
+#define B_bar bar1_impl
+impl(Bar, B);
+#undef B_foo
+#undef B_bar
 
-#define B_Foo1ExtendsMany_a a1_impl
-impl(Foo1ExtendsMany, B);
-// } (Foo1ExtendsMany)
+#define B_foo foo1_impl
+impl(FooExtendsMany, B);
+#undef B_foo
+// } (FooExtendsMany)
 
 // MarkerExtendsMarker {
 
@@ -71,12 +75,15 @@ typedef struct {
     char dummy;
 } D;
 
-#define D_Foo1_a a1_impl
-impl(Foo1, D);
+#define D_foo foo1_impl
+impl(Foo, D);
+#undef D_foo
 
-#define D_Foo2_a a1_impl
-#define D_Foo2_b b1_impl
-impl(Foo2, D);
+#define D_foo foo1_impl
+#define D_bar bar1_impl
+impl(Bar, D);
+#undef D_foo
+#undef D_bar
 
 impl(MarkerExtendsMany, D);
 // } (MarkerExtendsMany)
@@ -84,11 +91,11 @@ impl(MarkerExtendsMany, D);
 int main(void) {
     // Ensure `interface`-generated data.
     {
-        ENSURE_VTABLE_FIELD_TYPE(Foo1ExtendsMarkerVTable, a, AFnType);
-        ENSURE_DYN_OBJ_TYPE(Foo1ExtendsMarker);
+        ENSURE_VTABLE_FIELD_TYPE(FooExtendsMarkerVTable, foo, FooOpType);
+        ENSURE_DYN_OBJ_TYPE(FooExtendsMarker);
 
-        ENSURE_VTABLE_FIELD_TYPE(Foo1ExtendsManyVTable, a, AFnType);
-        ENSURE_DYN_OBJ_TYPE(Foo1ExtendsMany);
+        ENSURE_VTABLE_FIELD_TYPE(FooExtendsManyVTable, foo, FooOpType);
+        ENSURE_DYN_OBJ_TYPE(FooExtendsMany);
 
         ENSURE_DYN_OBJ_TYPE(MarkerExtendsMarker);
 
@@ -97,19 +104,19 @@ int main(void) {
 
     // Ensure `impl`-generated data.
     {
-        assert(VTABLE(A, Foo1ExtendsMarker).Marker == &VTABLE(A, Marker));
+        assert(VTABLE(A, FooExtendsMarker).Marker == &VTABLE(A, Marker));
 
-        assert(VTABLE(B, Foo1ExtendsMany).Foo1 == &VTABLE(B, Foo1));
-        assert(VTABLE(B, Foo1ExtendsMany).Foo2 == &VTABLE(B, Foo2));
+        assert(VTABLE(B, FooExtendsMany).Foo == &VTABLE(B, Foo));
+        assert(VTABLE(B, FooExtendsMany).Bar == &VTABLE(B, Bar));
 
         assert(VTABLE(C, MarkerExtendsMarker).Marker == &VTABLE(C, Marker));
 
-        assert(VTABLE(D, MarkerExtendsMany).Foo1 == &VTABLE(D, Foo1));
-        assert(VTABLE(D, MarkerExtendsMany).Foo2 == &VTABLE(D, Foo2));
+        assert(VTABLE(D, MarkerExtendsMany).Foo == &VTABLE(D, Foo));
+        assert(VTABLE(D, MarkerExtendsMany).Bar == &VTABLE(D, Bar));
     }
 
-    ENSURE_DYN_OBJ(A, Foo1ExtendsMarker);
-    ENSURE_DYN_OBJ(B, Foo1ExtendsMany);
+    ENSURE_DYN_OBJ(A, FooExtendsMarker);
+    ENSURE_DYN_OBJ(B, FooExtendsMany);
     ENSURE_DYN_OBJ(C, MarkerExtendsMarker);
     ENSURE_DYN_OBJ(D, MarkerExtendsMany);
 
@@ -117,12 +124,12 @@ int main(void) {
     {
         ENSURE_DYN_OBJ(A, Marker);
 
-        ENSURE_DYN_OBJ(B, Foo1);
-        ENSURE_DYN_OBJ(B, Foo2);
+        ENSURE_DYN_OBJ(B, Foo);
+        ENSURE_DYN_OBJ(B, Bar);
 
         ENSURE_DYN_OBJ(C, Marker);
 
-        ENSURE_DYN_OBJ(D, Foo1);
-        ENSURE_DYN_OBJ(D, Foo2);
+        ENSURE_DYN_OBJ(D, Foo);
+        ENSURE_DYN_OBJ(D, Bar);
     }
 }

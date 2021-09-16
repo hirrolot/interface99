@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_INTERFACE(FN, CTX)         \
-    FN(CTX, int,  get, void *self)       \
-    FN(CTX, void, set, void *self, int x)
+#define State_INTERFACE(OP, CTX)         \
+    OP(CTX,  int, get, void *self)       \
+    OP(CTX, void, set, void *self, int x)
 
 interface(State);
 
@@ -20,13 +20,9 @@ typedef struct {
     int x;
 } Num;
 
-int Num_State_get(void *self) {
-    return ((Num *)self)->x;
-}
+int Num_get(void *self) { return ((Num *)self)->x; }
 
-void Num_State_set(void *self, int x) {
-    ((Num *)self)->x = x;
-}
+void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 
 impl(State, Num);
 
@@ -40,6 +36,8 @@ int main(void) {
     Num n = {0};
     State st = DYN(Num, State, &n);
     test(st);
+
+    return 0;
 }
 ```
 
@@ -72,11 +70,11 @@ x = 5
 |---------|--------|-------------|
 | [Multiple interface inheritance](examples/read_write.c) | ✅ | A type can inherit multiple interfaces at the same time. |
 | [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
-| [Marker interfaces](examples/marker.c) | ✅ | An interface with no functions. |
-| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
-| Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
+| [Marker interfaces](examples/marker.c) | ✅ | An interface with no operations. |
+| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine an operation to be called at runtime based on `self`. |
+| Multiple dispatch | ❌ | Determine an operation to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
-| Default functions | ❌ | Some interface functions may be given default implementations. |
+| Default implementations  | ❌ | Some interface operations may be given default implementations. |
 
 ## Installation
 
@@ -114,16 +112,16 @@ Interface99 lies upon these three basic concepts:
 | Internal | [`declImpl(Vehicle, Car);`](#declImpl) |
 | External | [`externDeclImpl(Vehicle, Car);`](#externDeclImpl) |
 
-(If your interface implementation is to be exposed to other TUs, you can write `externDeclImpl(...)` in a `*.h` file and `externImpl`/`externImplPrimary` (see below) in a corresponding `*.c` file.)
+(If your interface implementation is to be exposed to other TUs, you can write `externDeclImpl(...)` in a `*.h` file and `externImpl` (see below) in a corresponding `*.c` file.)
 
  3. **Implementation definition:**
 
-| Linkage | Ordinary implementation | Primary implementation |
-|---------|-------------------------|------------------------|
-| Internal | [`impl(Vehicle, Car);`](#impl) | [`implPrimary(Vehicle, Car);`](#implPrimary) |
-| External | [`externImpl(Vehicle, Car);`](#externImpl) | [`externImplPrimary(Vehicle, Car);`](#externImplPrimary) |
+| Linkage | Syntax |
+|---------|--------|
+| Internal | [`impl(Vehicle, Car);`](#impl) |
+| External | [`externImpl(Vehicle, Car);`](#externImpl) |
 
-(An _ordinary implementation_ means that you name your implementor's functions as `Car_Vehicle_drive`, whereas a _primary implementation_ allows you to write just `Car_drive`, which is more concise.)
+(This is the actual place where a certain interface is implemented for a certain type.)
 
 Now what do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
@@ -142,16 +140,14 @@ typedef struct State {
 `impl` generates a constant variable of type `StateVTable`:
 
 ```c
-// The functions `Num_State_get` & `Num_State_set` need to be defined beforehand.
+// The functions `Num_get` & `Num_set` need to be defined beforehand.
 static const StateVTable Num_State_impl = {
-    .get = Num_State_get,
-    .set = Num_State_set,
+    .get = Num_get,
+    .set = Num_set,
 };
 ```
 
-Notes:
- - If you were using [`externImpl`](#externImpl), this definition would be `extern` as well.
- - If you were using [`implPrimary`](#implPrimary)/[`externImplPrimary`](#externImplPrimary), you would have to define the functions as `Num_get` & `Num_set` instead of `Num_State_get` & `Num_State_set`.
+(If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
 This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by [`DYN`](#DYN):
 
@@ -178,15 +174,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE(FN, CTX)                         \
-    FN(CTX, void, move_forward, void *self, int  distance) \
-    FN(CTX, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(OP, CTX)                        \
+    OP(CTX, void, move_forward, void *self, int distance) \
+    OP(CTX, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(FN, CTX)                   \
-    FN(CTX, void, move_up, void *self, int distance)  \
-    FN(CTX, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(OP, CTX)                   \
+    OP(CTX, void, move_up, void *self, int distance)  \
+    OP(CTX, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -195,7 +191,7 @@ interface(Airplane);
 
 (Note that `#define Airplane_EXTENDS` must appear prior to `interface(Airplane);`.)
 
-Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
+Here, `Airplane` extends `Vehicle` with the new operations `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
 
 ```c
 Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
@@ -229,18 +225,15 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>         ::= "interface(" <iface> ")" ;
 
-<fn>                ::= "FN(CTX, " <fn-ret-ty> "," <fn-name> "," <fn-params> ")" ;
-<fn-ret-ty>         ::= <type> ;
-<fn-name>           ::= <ident> ;
-<fn-params>         ::= <parameter-type-list> ;
+<op>                ::= "OP(CTX, " <op-ret-ty> "," <op-name> "," <op-params> ")" ;
+<op-ret-ty>         ::= <type> ;
+<op-name>           ::= <ident> ;
+<op-params>         ::= <parameter-type-list> ;
 
-<impl>              ::= "impl("        <iface> "," <implementor> ")" ;
-<implPrimary>       ::= "implPrimary(" <iface> "," <implementor> ")" ;
-<declImpl>          ::= "declImpl("    <iface> "," <implementor> ")" ;
-
-<externImpl>        ::= "externImpl("        <iface> "," <implementor> ")" ;
-<externImplPrimary> ::= "externImplPrimary(" <iface> "," <implementor> ")" ;
-<externDeclImpl>    ::= "externDeclImpl("    <iface> "," <implementor> ")" ;
+<impl>              ::= "impl("           <iface> "," <implementor> ")" ;
+<externImpl>        ::= "externImpl("     <iface> "," <implementor> ")" ;
+<declImpl>          ::= "declImpl("       <iface> "," <implementor> ")" ;
+<externDeclImpl>    ::= "externDeclImpl(" <iface> "," <implementor> ")" ;
 
 <dyn>               ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
 <vtable>            ::= "VTABLE(" <implementor> "," <iface> ")" ;
@@ -252,18 +245,17 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(FN, CTX)`, which must expand to `{ <fn> }*`. Note that:
-   - You can choose different names for the `FN, CTX` parameters -- it is just a matter of convention.
-   - If you use [Clang-Format], it can be helpful to add `FN` to the `StatementMacros` vector.
-   - If your interface contains no functions, i.e., a marker interface, you can omit `(FN, CTX)` like this: `#define MyMarker_INTERFACE`.
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(OP, CTX)`, which must expand to `{ <op> }*`. Note that:
+   - You can choose different names for the `OP, CTX` parameters -- it is just a matter of convention.
+   - If you use [Clang-Format], it can be helpful to add `OP` to the `StatementMacros` vector.
+   - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, CTX)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
 ### Semantics
 
-(It might be helpful to look at the [generated data layout](https://godbolt.org/z/Mn98f359z) of [`examples/state.c`](examples/state.c).)
-
+(It might be helpful to look at the [generated data layout](https://godbolt.org/z/rh8Meb89E) of [`examples/state.c`](examples/state.c).)
 
 #### `interface`
 
@@ -277,9 +269,9 @@ struct <iface>VTable {
     // Only if <iface> is a marker interface without superinterfaces:
     char dummy;
 
-    <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
+    <op-ret-ty>0 (*<op-name>0)(<op-params>0);
     ...
-    <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
+    <op-ret-ty>N (*<op-name>N)(<op-params>N);
 
     const <requirement>0VTable *<requirement>;
     ...
@@ -296,7 +288,7 @@ struct <iface> {
 
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
 
- - **Function pointers**. For each `<fn-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
+ - **Operation pointers**. For each `<op-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
  - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementors to satisfy them.
 
 #### `impl`
@@ -308,9 +300,9 @@ static const <iface>VTable VTABLE(<implementor>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    <fn_name>0 = <implementor>_<iface>_<fn-name>0,
+    <fn_name>0 = <implementor>_<op-name>0,
     ...
-    <fn-name>N = <implementor>_<iface>_<fn-name>N,
+    <op-name>N = <implementor>_<op-name>N,
 
     <requirement>0 = &VTABLE(<implementor, <requirement>0),
     ...
@@ -320,12 +312,8 @@ static const <iface>VTable VTABLE(<implementor>, <iface>) = {
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementor>`. It is generated in two steps:
 
- - **Function implementations.** Each `<implementor>_<iface>_<fn-name>I` refers to a function belonging to `<implementor>` which implements the corresponding function of `<iface>`.
+ - **Operation implementations.** Each `<implementor>_<op-name>I` refers to a function belonging to `<implementor>` which implements the corresponding operation of `<iface>`.
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
-
-#### `implPrimary`
-
-Like [`impl`](#impl) but captures the `<implementor>_<fn-name>` functions instead of `<implementor>_<iface>_<fn-name>`.
 
 #### `declImpl`
 
@@ -334,10 +322,6 @@ Expands to `static const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it
 #### `externImpl`
 
 The same as [`impl`](#impl) but generates an `extern` definition instead of `static`.
-
-#### `externImplPrimary`
-
-The same as [`implPrimary`](#implPrimary) but generates an `extern` definition instead of `static`.
 
 #### `externDeclImpl`
 
@@ -365,9 +349,7 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 |----------|----------|
 | `interface` | `IFACE99_interface` |
 | `impl` | `IFACE99_impl` |
-| `implPrimary` | `IFACE99_implPrimary` |
 | `externImpl` | `IFACE99_externImpl` |
-| `externImplPrimary` | `IFACE99_externImplPrimary` |
 
 (An [arity specifier] and [desugaring macro] are provided for each of the above macros.)
 
@@ -376,11 +358,25 @@ Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 ## Guidelines
 
- - Use `implPrimary` to avoid boilerplate if you implement an interface considered primary for some concrete type (see [`examples/media_stream.c`](examples/media_stream.c)).
+ - Write `impl(...)`/`externImpl(...)` right after all operations are implemented; do not gather all implementation definitions in a single place.
 
 ## Pitfalls
 
-No pitfalls discovered yet.
+ - Both interfaces that you implement for a single type can have an operation with the same name, thus resulting in a name collision. However, you can elegantly workaround like this:
+
+```c
+// `MyType_Iface1_foo` operation definition here...
+
+#define Iface1_foo MyType_Iface1_foo
+impl(Iface1, MyType);
+#undef Iface1_foo
+
+// `MyType_Iface2_foo` operation definition here...
+
+#define Iface2_foo MyType_Iface2_foo
+impl(Iface2, MyType);
+#undef Iface2_foo
+```
 
 ## Credits
 
@@ -414,8 +410,8 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 uses a variation of the [X-Macro] pattern:
 
- - Inside `impl`, the `FN` parameter becomes a macro that expands to an implementor's function name (e.g., `.drive = Car_Vehicle_drive,`).
- - Inside `interface`, the `FN` parameter becomes a macro that generates a function pointer.
+ - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name (e.g., `.drive = Car_drive,`).
+ - Inside `interface`, the `OP` parameter becomes a macro that generates an operation pointer.
 
 To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
 
@@ -429,7 +425,7 @@ A: Yes, C++11 and onwards is supported.
 
 A:
 
- - **Less boilerplate.** In particular, Interface99 deduces function implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
+ - **Less boilerplate.** In particular, Interface99 deduces operation implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
 
  - **Small.** Interface99 only features the software interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
 
@@ -455,7 +451,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -481,7 +477,7 @@ playground.c:12:1: error: ‘MyFoo_Foo_foo’ undeclared here (not in a function
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -506,10 +502,10 @@ playground.c:12:1: warning: initialization of ‘void (*)(int,  int)’ from inc
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_INTERFACE(FN, CTX) FN(CTX, void, bar, void)
+#define Bar_INTERFACE(OP, CTX) OP(CTX, void, bar, void)
 #define Bar_EXTENDS            (Foo)
 
 interface(Bar);
@@ -543,7 +539,7 @@ playground.c:9:1: note: ‘Foo’ declared here
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, void)
+#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -578,7 +574,7 @@ playground.c:15:18: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(FN, CTX) FN(CTX, void, foo, void)
+#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -617,7 +613,7 @@ A: VS Code automatically enables suggestions of generated types but, of course, 
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
-A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
+A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to operation parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
 
 ### Q: Which compilers are tested?
 

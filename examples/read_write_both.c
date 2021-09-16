@@ -6,11 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#define Read_INTERFACE(FN, CTX) FN(CTX, size_t, read, void *self, char *dest, size_t bytes_to_read)
+#define Read_INTERFACE(OP, CTX) OP(CTX, size_t, read, void *self, char *dest, size_t bytes_to_read)
 interface(Read);
 
-#define Write_INTERFACE(FN, CTX)                                                                   \
-    FN(CTX, size_t, write, void *self, const char *src, size_t bytes_to_write)
+#define Write_INTERFACE(OP, CTX)                                                                   \
+    OP(CTX, size_t, write, void *self, const char *src, size_t bytes_to_write)
 interface(Write);
 
 #define ReadWrite_INTERFACE
@@ -21,14 +21,14 @@ typedef struct {
     FILE *fp;
 } File;
 
-size_t File_Read_read(void *self, char *dest, size_t bytes_to_read) {
+size_t File_read(void *self, char *dest, size_t bytes_to_read) {
     File *this = (File *)self;
     return fread(dest, 1, bytes_to_read, this->fp);
 }
 
 impl(Read, File);
 
-size_t File_Write_write(void *self, const char *src, size_t bytes_to_write) {
+size_t File_write(void *self, const char *src, size_t bytes_to_write) {
     File *this = (File *)self;
     return fwrite(src, 1, bytes_to_write, this->fp);
 }

@@ -6,23 +6,21 @@
 
 typedef struct {
     char dummy;
-} Foo2Impl;
+} BarImpl;
 
-declImpl(Foo2, Foo2Impl);
+declImpl(Bar, BarImpl);
 
 static void test_decl_impl(void) {
-    assert(VTABLE(Foo2Impl, Foo2).a == a1_impl);
-    assert(VTABLE(Foo2Impl, Foo2).b == b1_impl);
+    assert(VTABLE(BarImpl, Bar).foo == foo1_impl);
+    assert(VTABLE(BarImpl, Bar).bar == bar1_impl);
 }
 
-#define Foo2Impl_Foo2_a a1_impl
-#define Foo2Impl_Foo2_b b1_impl
-impl(Foo2, Foo2Impl);
+#define BarImpl_foo foo1_impl
+#define BarImpl_bar bar1_impl
+impl(Bar, BarImpl);
 
 // Multiple declarations should work fine.
-declImpl(Foo2, Foo2Impl);
-declImpl(Foo2, Foo2Impl);
+declImpl(Bar, BarImpl);
+declImpl(Bar, BarImpl);
 
-int main(void) {
-    test_decl_impl();
-}
+int main(void) { test_decl_impl(); }

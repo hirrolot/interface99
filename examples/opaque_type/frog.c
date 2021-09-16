@@ -24,7 +24,7 @@ void Frog_free(Frog *self) {
     free(self);
 }
 
-static void Frog_Croak_croak(void *self) {
+static void Frog_croak(void *self) {
     Frog *this = (Frog *)self;
     printf("%s: croak!\n", this->name);
     this->ncroaks++;

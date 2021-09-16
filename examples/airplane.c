@@ -4,15 +4,15 @@
 
 #include <stdio.h>
 
-#define Vehicle_INTERFACE(FN, CTX)                                                                 \
-    FN(CTX, void, move_forward, void *self, int distance)                                          \
-    FN(CTX, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(OP, CTX)                                                                 \
+    OP(CTX, void, move_forward, void *self, int distance)                                          \
+    OP(CTX, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(FN, CTX)                                                                \
-    FN(CTX, void, move_up, void *self, int distance)                                               \
-    FN(CTX, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(OP, CTX)                                                                \
+    OP(CTX, void, move_up, void *self, int distance)                                               \
+    OP(CTX, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -38,7 +38,7 @@ void MyAirplane_move_back(void *self, int distance) {
     MyAirplane_log(self, "move_back", distance);
 }
 
-implPrimary(Vehicle, MyAirplane);
+impl(Vehicle, MyAirplane);
 
 void MyAirplane_move_up(void *self, int distance) {
     MyAirplane *this = (MyAirplane *)self;
@@ -53,7 +53,7 @@ void MyAirplane_move_down(void *self, int distance) {
     MyAirplane_log(self, "move_down", distance);
 }
 
-implPrimary(Airplane, MyAirplane);
+impl(Airplane, MyAirplane);
 
 /*
  * Output:

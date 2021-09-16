@@ -6,19 +6,19 @@
 
 #include <assert.h>
 
-externDeclImpl(Foo1, Foo1Impl);
+externDeclImpl(Foo, FooImpl);
 
 // Multiple declarations shoud work fine.
-externDeclImpl(Foo2, Foo2Impl);
-externDeclImpl(Foo2, Foo2Impl);
+externDeclImpl(Bar, BarImpl);
+externDeclImpl(Bar, BarImpl);
 
 int main(void) {
     // Ensure `impl`-generated data.
     {
-        assert(VTABLE(Foo1Impl, Foo1).a == a1_impl);
-        assert(VTABLE(Foo2Impl, Foo2).a == a1_impl);
+        assert(VTABLE(FooImpl, Foo).foo == foo1_impl);
+        assert(VTABLE(BarImpl, Bar).foo == foo1_impl);
     }
 
-    ENSURE_DYN_OBJ(Foo1Impl, Foo1);
-    ENSURE_DYN_OBJ(Foo2Impl, Foo2);
+    ENSURE_DYN_OBJ(FooImpl, Foo);
+    ENSURE_DYN_OBJ(BarImpl, Bar);
 }

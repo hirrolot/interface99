@@ -6,10 +6,15 @@
 #include <assert.h>
 #include <stddef.h>
 
-// Ensure that a marker interface can take the `FN, CTX` parameters (not omitted).
-#define MarkerWithParams_INTERFACE(FN, CTX)
+// Ensure that a marker interface can take the `OP, CTX` parameters (not omitted).
+#define MarkerWithParams_INTERFACE(OP, CTX)
 
 interface(MarkerWithParams);
+
+// Ensure that forward declarations are generated.
+#define TestForwardDecl_INTERFACE(OP, CTX) OP(CTX, void, abc, Foo self, FooVTable vtable)
+
+interface(TestForwardDecl);
 
 // Implementations {
 
@@ -21,39 +26,42 @@ impl(Marker, MarkerImpl);
 
 typedef struct {
     char dummy;
-} Foo1Impl;
+} FooImpl;
 
-#define Foo1Impl_Foo1_a a1_impl
-impl(Foo1, Foo1Impl);
+#define FooImpl_foo foo1_impl
+impl(Foo, FooImpl);
 
 typedef struct {
     char dummy;
-} Foo2Impl1;
+} BarImpl1;
 
-#define Foo2Impl1_Foo2_a a1_impl
-#define Foo2Impl1_Foo2_b b1_impl
-impl(Foo2, Foo2Impl1);
+#define BarImpl1_foo foo1_impl
+#define BarImpl1_bar bar1_impl
+impl(Bar, BarImpl1);
 
 // Ensure that an interface can be implemented by many types.
 typedef struct {
     char dummy;
-} Foo2Impl2;
+} BarImpl2;
 
-#define Foo2Impl2_Foo2_a a2_impl
-#define Foo2Impl2_Foo2_b b2_impl
-impl(Foo2, Foo2Impl2);
+#define BarImpl2_foo foo2_impl
+#define BarImpl2_bar bar2_impl
+impl(Bar, BarImpl2);
 
 // Ensure that a type can implement multiple interfaces.
 typedef struct {
     char dummy;
-} Foo1Foo2Impl;
+} FooBarImpl;
 
-#define Foo1Foo2Impl_Foo1_a a1_impl
-impl(Foo1, Foo1Foo2Impl);
+#define FooBarImpl_foo foo1_impl
+impl(Foo, FooBarImpl);
+#undef FooBarImpl_foo
 
-#define Foo1Foo2Impl_Foo2_a a1_impl
-#define Foo1Foo2Impl_Foo2_b b1_impl
-impl(Foo2, Foo1Foo2Impl);
+#define FooBarImpl_foo foo1_impl
+#define FooBarImpl_bar bar1_impl
+impl(Bar, FooBarImpl);
+#undef FooBarImpl_foo
+#undef FooBarImpl_bar
 // } (Implementations)
 
 int main(void) {
@@ -65,35 +73,35 @@ int main(void) {
         ENSURE_VTABLE_FIELD_TYPE(MarkerWithParamsVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(MarkerWithParams);
 
-        ENSURE_VTABLE_FIELD_TYPE(Foo1VTable, a, AFnType);
-        ENSURE_DYN_OBJ_TYPE(Foo1);
+        ENSURE_VTABLE_FIELD_TYPE(FooVTable, foo, FooOpType);
+        ENSURE_DYN_OBJ_TYPE(Foo);
 
-        ENSURE_VTABLE_FIELD_TYPE(Foo2VTable, a, AFnType);
-        ENSURE_VTABLE_FIELD_TYPE(Foo2VTable, b, BFnType);
-        ENSURE_DYN_OBJ_TYPE(Foo2);
+        ENSURE_VTABLE_FIELD_TYPE(BarVTable, foo, FooOpType);
+        ENSURE_VTABLE_FIELD_TYPE(BarVTable, bar, BarOpType);
+        ENSURE_DYN_OBJ_TYPE(Bar);
     }
 
     // Ensure `impl`-generated data.
     {
         assert(VTABLE(MarkerImpl, Marker).dummy == '\0');
 
-        assert(VTABLE(Foo1Impl, Foo1).a == a1_impl);
+        assert(VTABLE(FooImpl, Foo).foo == foo1_impl);
 
-        assert(VTABLE(Foo2Impl1, Foo2).a == a1_impl);
-        assert(VTABLE(Foo2Impl1, Foo2).b == b1_impl);
+        assert(VTABLE(BarImpl1, Bar).foo == foo1_impl);
+        assert(VTABLE(BarImpl1, Bar).bar == bar1_impl);
 
-        assert(VTABLE(Foo2Impl2, Foo2).a == a2_impl);
-        assert(VTABLE(Foo2Impl2, Foo2).b == b2_impl);
+        assert(VTABLE(BarImpl2, Bar).foo == foo2_impl);
+        assert(VTABLE(BarImpl2, Bar).bar == bar2_impl);
 
-        assert(VTABLE(Foo1Foo2Impl, Foo1).a == a1_impl);
-        assert(VTABLE(Foo1Foo2Impl, Foo2).a == a1_impl);
-        assert(VTABLE(Foo1Foo2Impl, Foo2).b == b1_impl);
+        assert(VTABLE(FooBarImpl, Foo).foo == foo1_impl);
+        assert(VTABLE(FooBarImpl, Bar).foo == foo1_impl);
+        assert(VTABLE(FooBarImpl, Bar).bar == bar1_impl);
     }
 
     ENSURE_DYN_OBJ(MarkerImpl, Marker);
-    ENSURE_DYN_OBJ(Foo1Impl, Foo1);
-    ENSURE_DYN_OBJ(Foo2Impl1, Foo2);
-    ENSURE_DYN_OBJ(Foo2Impl2, Foo2);
-    ENSURE_DYN_OBJ(Foo1Foo2Impl, Foo1);
-    ENSURE_DYN_OBJ(Foo1Foo2Impl, Foo2);
+    ENSURE_DYN_OBJ(FooImpl, Foo);
+    ENSURE_DYN_OBJ(BarImpl1, Bar);
+    ENSURE_DYN_OBJ(BarImpl2, Bar);
+    ENSURE_DYN_OBJ(FooBarImpl, Foo);
+    ENSURE_DYN_OBJ(FooBarImpl, Bar);
 }
