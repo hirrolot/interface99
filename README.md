@@ -409,8 +409,8 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 uses a variation of the [X-Macro] pattern:
 
- - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name (e.g., `.drive = Car_drive,`).
- - Inside `interface`, the `OP` parameter becomes a macro that generates an operation pointer.
+ - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name: `.drive = Car_drive,`.
+ - Inside `interface`, the `OP` parameter becomes a macro that generates an operation pointer: `void (*drive)(void *self, int distance, int speed);`.
 
 To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
 
