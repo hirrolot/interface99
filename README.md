@@ -223,24 +223,24 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ### EBNF syntax
 
 ```ebnf
-<iface-def>         ::= "interface(" <iface> ")" ;
+<iface-def>      ::= "interface(" <iface> ")" ;
 
-<op>                ::= "OP(CTX, " <op-ret-ty> "," <op-name> "," <op-params> ")" ;
-<op-ret-ty>         ::= <type> ;
-<op-name>           ::= <ident> ;
-<op-params>         ::= <parameter-type-list> ;
+<op>             ::= "OP(CTX, " <op-ret-ty> "," <op-name> "," <op-params> ")" ;
+<op-ret-ty>      ::= <type> ;
+<op-name>        ::= <ident> ;
+<op-params>      ::= <parameter-type-list> ;
 
-<impl>              ::= "impl("           <iface> "," <implementor> ")" ;
-<externImpl>        ::= "externImpl("     <iface> "," <implementor> ")" ;
-<declImpl>          ::= "declImpl("       <iface> "," <implementor> ")" ;
-<externDeclImpl>    ::= "externDeclImpl(" <iface> "," <implementor> ")" ;
+<impl>           ::= "impl("           <iface> "," <implementor> ")" ;
+<externImpl>     ::= "externImpl("     <iface> "," <implementor> ")" ;
+<declImpl>       ::= "declImpl("       <iface> "," <implementor> ")" ;
+<externDeclImpl> ::= "externDeclImpl(" <iface> "," <implementor> ")" ;
 
-<dyn>               ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
-<vtable>            ::= "VTABLE(" <implementor> "," <iface> ")" ;
+<dyn>            ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
+<vtable>         ::= "VTABLE(" <implementor> "," <iface> ")" ;
 
-<iface>             ::= <ident> ;
-<implementor>       ::= <ident> ;
-<requirement>       ::= <iface> ;
+<iface>          ::= <ident> ;
+<implementor>    ::= <ident> ;
+<requirement>    ::= <iface> ;
 ```
 
 Notes:
