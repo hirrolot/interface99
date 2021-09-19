@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_INTERFACE(OP, CTX)         \
-    OP(CTX,  int, get, void *self)       \
-    OP(CTX, void, set, void *self, int x)
+#define State_INTERFACE(OP, ...)                 \
+    OP(__VA_ARGS__,  int, get, void *self)       \
+    OP(__VA_ARGS__, void, set, void *self, int x)
 
 interface(State);
 
@@ -174,15 +174,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE(OP, CTX)                        \
-    OP(CTX, void, move_forward, void *self, int distance) \
-    OP(CTX, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(OP, ...)                        \
+    OP(__VA_ARGS__, void, move_forward, void *self, int distance) \
+    OP(__VA_ARGS__, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(OP, CTX)                   \
-    OP(CTX, void, move_up, void *self, int distance)  \
-    OP(CTX, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(OP, ...)                   \
+    OP(__VA_ARGS__, void, move_up, void *self, int distance)  \
+    OP(__VA_ARGS__, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -225,7 +225,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>      ::= "interface(" <iface> ")" ;
 
-<op>             ::= "OP(CTX, " <op-ret-ty> "," <op-name> "," <op-params> ")" ;
+<op>             ::= "OP(__VA_ARGS__, " <op-ret-ty> "," <op-name> "," <op-params> ")" ;
 <op-ret-ty>      ::= <type> ;
 <op-name>        ::= <ident> ;
 <op-params>      ::= <parameter-type-list> ;
@@ -245,10 +245,10 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(OP, CTX)`, which must expand to `{ <op> }*`. Note that:
-   - You can choose different names for the `OP, CTX` parameters -- it is just a matter of convention.
+ - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(OP, ...)`, which must expand to `{ <op> }*`. Note that:
+   - You can choose a different name for the `OP` parameter if you wish -- it is just a matter of convention.
    - If you use [Clang-Format], it can be helpful to add `OP` to the `StatementMacros` vector.
-   - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, CTX)` like this: `#define MyMarker_INTERFACE`.
+   - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, ...)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
@@ -449,7 +449,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -474,7 +474,7 @@ playground.c:12:1: error: ‘MyFoo_foo’ undeclared here (not in a function)
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -500,10 +500,10 @@ playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, int x, int y)
+#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_INTERFACE(OP, CTX) OP(CTX, void, bar, void)
+#define Bar_INTERFACE(OP, ...) OP(__VA_ARGS__, void, bar, void)
 #define Bar_EXTENDS            (Foo)
 
 interface(Bar);
@@ -533,7 +533,7 @@ playground.c:19:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a functio
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, void)
+#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -565,7 +565,7 @@ playground.c:14:31: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE(OP, CTX) OP(CTX, void, foo, void)
+#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, void, foo, void)
 interface(Foo);
 
 typedef struct {

@@ -6,13 +6,13 @@
 #include <assert.h>
 #include <stddef.h>
 
-// Ensure that a marker interface can take the `OP, CTX` parameters (not omitted).
-#define MarkerWithParams_INTERFACE(OP, CTX)
+// Ensure that a marker interface can take the `OP, ...` parameters (not omitted).
+#define MarkerWithParams_INTERFACE(OP, ...)
 
 interface(MarkerWithParams);
 
 // Ensure that forward declarations are generated.
-#define TestForwardDecl_INTERFACE(OP, CTX) OP(CTX, void, abc, Foo self, FooVTable vtable)
+#define TestForwardDecl_INTERFACE(OP, ...) OP(__VA_ARGS__, void, abc, Foo self, FooVTable vtable)
 
 interface(TestForwardDecl);
 

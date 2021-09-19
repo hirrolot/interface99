@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Changed
+
+ - Make the `CTX` parameter variadic (allows for a simplified implementation).
+
 ## [0.5.0] - 2021-09-16
 
 ### Changed

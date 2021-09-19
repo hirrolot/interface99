@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 // clang-format off
-#define State_INTERFACE(OP, CTX)         \
-    OP(CTX,  int, get, void *self)       \
-    OP(CTX, void, set, void *self, int x)
+#define State_INTERFACE(OP, ...)                 \
+    OP(__VA_ARGS__,  int, get, void *self)       \
+    OP(__VA_ARGS__, void, set, void *self, int x)
 // clang-format on
 
 interface(State);

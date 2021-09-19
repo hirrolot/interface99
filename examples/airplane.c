@@ -4,15 +4,15 @@
 
 #include <stdio.h>
 
-#define Vehicle_INTERFACE(OP, CTX)                                                                 \
-    OP(CTX, void, move_forward, void *self, int distance)                                          \
-    OP(CTX, void, move_back, void *self, int distance)
+#define Vehicle_INTERFACE(OP, ...)                                                                 \
+    OP(__VA_ARGS__, void, move_forward, void *self, int distance)                                  \
+    OP(__VA_ARGS__, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(OP, CTX)                                                                \
-    OP(CTX, void, move_up, void *self, int distance)                                               \
-    OP(CTX, void, move_down, void *self, int distance)
+#define Airplane_INTERFACE(OP, ...)                                                                \
+    OP(__VA_ARGS__, void, move_up, void *self, int distance)                                       \
+    OP(__VA_ARGS__, void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
