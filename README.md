@@ -74,7 +74,7 @@ x = 5
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine an operation to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine an operation to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
-| Default implementations  | ❌ | Some interface operations may be given default implementations. |
+| [Default implementations](examples/default_impl.c)  | ✅ | Some interface operations may be given default implementations. |
 
 ## Installation
 
@@ -93,9 +93,11 @@ Some handy advices:
 [`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
 [`-fmacro-backtrace-limit=1`]: https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-fmacro-backtrace-limit
 
-## Usage
+## Tutorial
 
 A good way to start is to investigate the [examples](examples/). In this section, we are to speak about Interface99 a bit more laboriously.
+
+### Basic usage
 
 Interface99 lies upon these three basic concepts:
 
@@ -168,8 +170,7 @@ void test(State st) {
 
 ... and this is all you need to know to write most of the stuff.
 
-<details>
-    <summary>About superinterfaces</summary>
+### Superinterfaces
 
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
@@ -212,7 +213,64 @@ typedef struct AirplaneVTable {
 } AirplaneVTable;
 ```
 
-</details>
+### Default implementations
+
+Sometimes we wish to define default behaviour for several implementers; this is supported by _default implementations_.
+
+Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this example, we define the interface `Droid`:
+
+```c
+#define Droid_INTERFACE(OP, ...)                                                                   \
+    OP(__VA_ARGS__, const char *, name, void)                                                      \
+    OP(__VA_ARGS__, const Command *, commands, void)                                               \
+    OP(__VA_ARGS__, void, turn_on, Droid self)
+
+#define Droid_turn_on_DEFAULT ()
+
+interface(Droid);
+```
+
+The macro `Droid_turn_on_DEFAULT` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
+
+```c
+void Droid_turn_on(Droid droid) {
+    printf("Turning on %s...\n", droid.vptr->name());
+}
+```
+
+As you can see, default operation implementations follow a specific naming convention, `<iface>_<default-op-name>`, so that Interface99 can understand which operation name to generate. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
+
+```c
+static const DroidVTable C_3PO_Droid_impl = {
+    .name = C_3PO_name,
+    .commands = C_3PO_commands,
+    .turn_on = Droid_turn_on,
+};
+```
+
+But for `R2_D2`, we use a custom implementation `R2_D2_turn_on`:
+
+```c
+void R2_D2_turn_on(Droid droid) {
+    Droid_turn_on(droid);
+    puts("Waaaaoow!");
+}
+
+#define R2_D2_turn_on_CUSTOM ()
+impl(Droid, R2_D2);
+```
+
+And the virtual table would be:
+
+```c
+static const DroidVTable R2_D2_Droid_impl = {
+    .name = R2_D2_name,
+    .commands = R2_D2_commands,
+    .turn_on = R2_D2_turn_on,
+};
+```
+
+Please, note that you have to specify `()` for both the `*_DEFAULT` and `*_CUSTOM` attributes; do not leave them empty.
 
 Happy hacking!
 
@@ -249,7 +307,9 @@ Notes:
    - You can choose a different name for the `OP` parameter if you wish -- it is just a matter of convention.
    - If you use [Clang-Format], it can be helpful to add `OP` to the `StatementMacros` vector.
    - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, ...)` like this: `#define MyMarker_INTERFACE`.
- - For any interface, a macro `<iface>_EXTENDS` can be defined. It must expand to `"(" <requirement> { "," <requirement> }* ")"`.
+ - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
+ - For any interface operation, a macro `<iface>_<op-name>_DEFAULT` can be defined, which must expand to `()`.
+ - For any interface operation implementation, a macro `<implementor>_<op-name>_CUSTOM` can be defined, which must expand to `()`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
@@ -300,9 +360,9 @@ static const <iface>VTable VTABLE(<implementor>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    <op-name>0 = <implementor>_<op-name>0,
+    <op-name>0 = either <implementor>_<op-name>0 or <iface>_<op-name>0,
     ...
-    <op-name>N = <implementor>_<op-name>N,
+    <op-name>N = either <implementor>_<op-name>N or <iface>_<op-name>N,
 
     <requirement>0 = &VTABLE(<implementor, <requirement>0),
     ...
@@ -312,7 +372,7 @@ static const <iface>VTable VTABLE(<implementor>, <iface>) = {
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementor>`. It is generated in two steps:
 
- - **Operation implementations.** Each `<implementor>_<op-name>I` refers to a function belonging to `<implementor>` which implements the corresponding operation of `<iface>`.
+ - **Operation implementations.** If the macro `<iface>_<op-name>I_DEFAULT` is defined and `<implementor>_<op-name>I_CUSTOM` is **not** defined, `<iface>_<op-name>I` is generated (default implementation). Otherwise, `<implementor>_<op-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `declImpl`
@@ -378,6 +438,18 @@ impl(Iface2, MyType);
 #undef Iface2_foo
 ```
 
+The same holds for custom implementations:
+
+```c
+// Use a custom implementation for `Iface1::bar`.
+#define MyType_bar_CUSTOM ()
+impl(Iface1, MyType);
+#undef MyType_bar_CUSTOM
+
+// Use the default `Iface2::bar`.
+impl(Iface2, MyType);
+```
+
 ## Credits
 
 Thanks to Rust and Golang for their implementations of traits/interfaces.
@@ -410,7 +482,7 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 uses a variation of the [X-Macro] pattern:
 
- - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name: `.drive = Car_drive,`.
+ - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name: `.drive = Car_drive,` (or `Vehicle_drive`, if the default implementation is used).
  - Inside `interface`, the `OP` parameter becomes a macro that generates an operation pointer: `void (*drive)(void *self, int distance, int speed);`.
 
 To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.

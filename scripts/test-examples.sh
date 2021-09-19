@@ -17,6 +17,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     run_example "read_write"
     run_example "read_write_both"
     run_example "marker"
+    run_example "default_impl"
 
     run_example "opaque_type/frog"
 fi

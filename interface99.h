@@ -140,9 +140,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * .dummy = '\0',
  *
- * <op-name>0 = <implementor>_<iface>_<op-name>0 (or <implementor>_<op-name>0),
+ * <op-name>0 = either <implementor>_<op-name>0 or <iface>_<op-name>0,
  * ...
- * <op-name>N = <implementor>_<iface>_<op-name>N (or <implementor>_<op-name>N),
+ * <op-name>N = either <implementor>_<op-name>N or <iface>_<op-name>N,
  *
  * <requirement>0 = &VTABLE(<implementor, <requirement>0),
  * ...
@@ -154,7 +154,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            v(iface##_INTERFACE(IFACE99_PRIV_IMPL_OP, implementor))),                              \
+            v(iface##_INTERFACE(IFACE99_PRIV_IMPL_OP, iface, implementor))),                       \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementsImplForEach(iface, implementor),                           \
@@ -163,7 +163,13 @@ SOFTWARE.
 #define IFACE99_PRIV_genDummyInit(iface)                                                           \
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(.dummy = '\0'), ML99_empty())
 
-#define IFACE99_PRIV_IMPL_OP(implementor, _ret_ty, op_name, ...) .op_name = implementor##_##op_name,
+#define IFACE99_PRIV_IMPL_OP(iface, implementor, _ret_ty, op_name, ...)                            \
+    .op_name = ML99_IF(                                                                            \
+        ML99_AND(                                                                                  \
+            IFACE99_PRIV_PROPERTY_PRESENT(iface##_##op_name##_DEFAULT),                            \
+            ML99_NOT(IFACE99_PRIV_PROPERTY_PRESENT(implementor##_##op_name##_CUSTOM))),            \
+        iface##_##op_name,                                                                         \
+        implementor##_##op_name),
 
 /*
  * <requirement>0 = &VTABLE(<implementor, <requirement>0),
@@ -193,7 +199,9 @@ SOFTWARE.
     ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
 #define IFACE99_PRIV_IS_MARKER_IFACE(iface)                                                        \
     ML99_VARIADICS_IS_SINGLE(iface##_INTERFACE(ML99_COMMA, ~))
-#define IFACE99_PRIV_IS_SUB_IFACE(iface) ML99_IS_TUPLE(iface##_EXTENDS)
+#define IFACE99_PRIV_IS_SUB_IFACE(iface) IFACE99_PRIV_PROPERTY_PRESENT(iface##_EXTENDS)
+
+#define IFACE99_PRIV_PROPERTY_PRESENT(property) ML99_IS_TUPLE(property)
 
 // Arity specifiers {
 

@@ -25,6 +25,7 @@ add_executable(airplane airplane.c)
 add_executable(read_write read_write.c)
 add_executable(read_write_both read_write_both.c)
 add_executable(marker marker.c)
+add_executable(default_impl default_impl.c)
 
 foreach(TARGET ${BUILDSYSTEM_TARGETS})
   set_target_properties(TARGET PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
