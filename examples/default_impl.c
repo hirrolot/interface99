@@ -23,6 +23,8 @@ void Droid_turn_on(Droid droid) {
     printf("Turning on %s...\n", droid.vptr->name());
 }
 
+// C-3PO implementation {
+
 typedef struct {
     char dummy;
 } C_3PO;
@@ -43,6 +45,9 @@ const Command *C_3PO_commands(void) {
 
 // Use the default implementation of `Droid::turn_on` automatically.
 impl(Droid, C_3PO);
+// } (C-3PO implementation)
+
+// R2-D2 implementation {
 
 typedef struct {
     char dummy;
@@ -72,6 +77,7 @@ void R2_D2_turn_on(Droid droid) {
 // Use a custom implementation for `Droid::turn_on`.
 #define R2_D2_turn_on_CUSTOM ()
 impl(Droid, R2_D2);
+// } (R2-D2 implementation)
 
 void test(Droid droid) {
     droid.vptr->turn_on(droid);
