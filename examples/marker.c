@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// A marker interface whose implementors can be duplicated by simply copying bits.
+// A marker interface whose implementers can be duplicated by simply copying bits.
 #define Copy_INTERFACE
 
 interface(Copy);

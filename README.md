@@ -175,13 +175,13 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE(OP, ...)                        \
+#define Vehicle_INTERFACE(OP, ...)                                \
     OP(__VA_ARGS__, void, move_forward, void *self, int distance) \
     OP(__VA_ARGS__, void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE(OP, ...)                   \
+#define Airplane_INTERFACE(OP, ...)                           \
     OP(__VA_ARGS__, void, move_up, void *self, int distance)  \
     OP(__VA_ARGS__, void, move_down, void *self, int distance)
 
@@ -288,16 +288,16 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <op-name>        ::= <ident> ;
 <op-params>      ::= <parameter-type-list> ;
 
-<impl>           ::= "impl("           <iface> "," <implementor> ")" ;
-<externImpl>     ::= "externImpl("     <iface> "," <implementor> ")" ;
-<declImpl>       ::= "declImpl("       <iface> "," <implementor> ")" ;
-<externDeclImpl> ::= "externDeclImpl(" <iface> "," <implementor> ")" ;
+<impl>           ::= "impl("           <iface> "," <implementer> ")" ;
+<externImpl>     ::= "externImpl("     <iface> "," <implementer> ")" ;
+<declImpl>       ::= "declImpl("       <iface> "," <implementer> ")" ;
+<externDeclImpl> ::= "externDeclImpl(" <iface> "," <implementer> ")" ;
 
-<dyn>            ::= "DYN("    <implementor> "," <iface> "," <ptr> ")" ;
-<vtable>         ::= "VTABLE(" <implementor> "," <iface> ")" ;
+<dyn>            ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
+<vtable>         ::= "VTABLE(" <implementer> "," <iface> ")" ;
 
 <iface>          ::= <ident> ;
-<implementor>    ::= <ident> ;
+<implementer>    ::= <ident> ;
 <requirement>    ::= <iface> ;
 ```
 
@@ -309,7 +309,7 @@ Notes:
    - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, ...)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
  - For any interface operation, a macro `<iface>_<op-name>_DEFAULT` can be defined, which must expand to `()`.
- - For any interface operation implementation, a macro `<implementor>_<op-name>_CUSTOM` can be defined, which must expand to `()`.
+ - For any interface operation implementation, a macro `<implementer>_<op-name>_CUSTOM` can be defined, which must expand to `()`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
@@ -346,38 +346,38 @@ struct <iface> {
 
 (`char dummy;` is needed for an empty `<iface>VTable` because a structure must have at least one member, according to C99.)
 
-I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementors. This is generated in two steps:
+I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementers. This is generated in two steps:
 
  - **Operation pointers**. For each `<op-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
- - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementors to satisfy them.
+ - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementers to satisfy them.
 
 #### `impl`
 
 Expands to
 
 ```
-static const <iface>VTable VTABLE(<implementor>, <iface>) = {
+static const <iface>VTable VTABLE(<implementer>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    <op-name>0 = either <implementor>_<op-name>0 or <iface>_<op-name>0,
+    <op-name>0 = either <implementer>_<op-name>0 or <iface>_<op-name>0,
     ...
-    <op-name>N = either <implementor>_<op-name>N or <iface>_<op-name>N,
+    <op-name>N = either <implementer>_<op-name>N or <iface>_<op-name>N,
 
-    <requirement>0 = &VTABLE(<implementor, <requirement>0),
+    <requirement>0 = &VTABLE(<implementer, <requirement>0),
     ...
-    <requirement>N = &VTABLE(<implementor, <requirement>N),
+    <requirement>N = &VTABLE(<implementer, <requirement>N),
 }
 ```
 
-I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementor>`. It is generated in two steps:
+I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementer>`. It is generated in two steps:
 
- - **Operation implementations.** If the macro `<iface>_<op-name>I_DEFAULT` is defined and `<implementor>_<op-name>I_CUSTOM` is **not** defined, `<iface>_<op-name>I` is generated (default implementation). Otherwise, `<implementor>_<op-name>I` is generated (custom implementation).
+ - **Operation implementations.** If the macro `<iface>_<op-name>I_DEFAULT` is defined and `<implementer>_<op-name>I_CUSTOM` is **not** defined, `<iface>_<op-name>I` is generated (default implementation). Otherwise, `<implementer>_<op-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `declImpl`
 
-Expands to `static const <iface>VTable VTABLE(<implementor>, <iface>)`, i.e., it declares a virtual table instance of `<implementor>` of type `<iface>VTable`.
+Expands to `static const <iface>VTable VTABLE(<implementer>, <iface>)`, i.e., it declares a virtual table instance of `<implementer>` of type `<iface>VTable`.
 
 #### `externImpl`
 
@@ -389,13 +389,13 @@ The same as [`declImpl`](#declImpl) but generates an `extern` declaration instea
 
 #### `DYN`
 
-Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` and `.vptr` initialised to `&VTABLE(<implementor>, <iface>)`.
+Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` and `.vptr` initialised to `&VTABLE(<implementer>, <iface>)`.
 
 `<ptr>` is guaranteed to be evaluated only once.
 
 #### `VTABLE`
 
-Expands to `<implementor>_<iface>_impl`, i.e., a virtual table instance of `<implementor>` of type `<iface>VTable`.
+Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<implementer>` of type `<iface>VTable`.
 
 ## Miscellaneous
 
@@ -482,7 +482,7 @@ A: See [Metalang99's README >>](https://github.com/Hirrolot/metalang99#q-why-not
 
 A: Interface99 uses a variation of the [X-Macro] pattern:
 
- - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementor's operation name: `.drive = Car_drive,` (or `Vehicle_drive`, if the default implementation is used).
+ - Inside `impl`, the `OP` parameter becomes a macro that expands to an implementer's operation name: `.drive = Car_drive,` (or `Vehicle_drive`, if the default implementation is used).
  - Inside `interface`, the `OP` parameter becomes a macro that generates an operation pointer: `void (*drive)(void *self, int distance, int speed);`.
 
 To make it work, Interface99 is implemented upon [Metalang99], a preprocessor metaprogramming library.
