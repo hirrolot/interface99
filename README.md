@@ -245,7 +245,7 @@ void Droid_turn_on(Droid droid) {
 }
 ```
 
-As you can see, default implementations follow a strict naming convention, `<iface>_<default-op-name>`, so that Interface99 can understand which operation name to generate. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
+As you can see, default implementations follow a strict naming convention, `<iface>_<default-op-name>` -- this provides Interface99 with sufficient information to generate a virtual table. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
 
 ```c
 static const DroidVTable C_3PO_Droid_impl = {
