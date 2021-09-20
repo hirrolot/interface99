@@ -50,7 +50,7 @@ x = 5
 
 </details>
 
-Interface99 aims to provide a minimalistic yet useable set of features found in most programming languages; at the same time, Interface99 feels like you still program in plain C.
+The design of Interface99 is pretty similar to that of high-level programming languages; at the same time, it feels like you still program in plain C. Just functions and data structures, nothing more.
 
 ## Highlights
 
@@ -97,7 +97,7 @@ Some handy advices:
 
 ## Tutorial
 
-If you have experience with other general-purpose PLs, you should already know how to use Interface99; to grasp the syntax part, you can look through our well-documented [examples](examples/). In this section, to understand the macros better, we will see what is being generated under the hood on some concrete examples.
+This section is based on a collection of well-documented [examples](examples/), each of which demonstrates one specific aspect of Interface99.
 
 ### Basic usage
 
@@ -207,7 +207,7 @@ my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
 my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
 ```
 
-Thus, Interface99 embeds superinterfaces into subinterfaces's virtual tables, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` or `Armoured`, and they all will be included in `AirplaneVTable` like so:
+Thus, Interface99 embeds superinterfaces into subinterfaces's virtual tables, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` and `Armoured`, and they all will be included into `AirplaneVTable` like so:
 
 ```c
 // #define Airplane_EXTENDS (Vehicle, Repairable, Armoured)
@@ -315,8 +315,8 @@ Notes:
    - If you use [Clang-Format], it can be helpful to add `OP` to the `StatementMacros` vector.
    - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, ...)` like this: `#define MyMarker_INTERFACE`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
- - For any interface operation, a macro `<iface>_<op-name>_DEFAULT` can be defined, which must expand to `()`.
- - For any interface operation implementation, a macro `<implementer>_<op-name>_CUSTOM` can be defined, which must expand to `()`.
+ - For any interface operation, a macro `<iface>_<op-name>_DEFAULT` can be defined, which must expand to `"()"`.
+ - For any interface operation implementation, a macro `<implementer>_<op-name>_CUSTOM` can be defined, which must expand to `"()"`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
@@ -353,7 +353,7 @@ struct <iface> {
 
 (`char dummy;` is needed for an empty `<iface>VTable` because a structure must have at least one member, according to C99.)
 
-I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` polymorphic over `<iface>` implementers. This is generated in two steps:
+I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` that is polymorphic over `<iface>` implementers. This is generated in two steps:
 
  - **Operation pointers**. For each `<op-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
  - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementers to satisfy them.
