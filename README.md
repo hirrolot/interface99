@@ -127,7 +127,7 @@ Interface99 lies upon these three basic concepts:
 
 (This is the actual place where a certain interface is implemented for a certain type.)
 
-Now what do the macros generate? [`interface`](#interface) generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
+Now what do the macros generate? `interface` generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
@@ -144,7 +144,6 @@ typedef struct State {
 `impl` generates a constant variable of type `StateVTable`:
 
 ```c
-// The functions `Num_get` & `Num_set` need to be defined beforehand.
 static const StateVTable Num_State_impl = {
     .get = Num_get,
     .set = Num_set,
@@ -211,6 +210,7 @@ my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
 Thus, Interface99 embeds superinterfaces into subinterfaces's virtual tables, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` or `Armoured`, and they all will be included in `AirplaneVTable` like so:
 
 ```c
+// #define Airplane_EXTENDS (Vehicle, Repairable, Armoured)
 typedef struct AirplaneVTable {
     void (*move_up)(void *self, int distance);
     void (*move_down)(void *self, int distance);
