@@ -207,7 +207,7 @@ my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
 my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
 ```
 
-Thus, Interface99 embeds superinterfaces into subinterfaces's virtual tables, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` and `Armoured`, and they all will be included into `AirplaneVTable` like so:
+Thus, Interface99 embeds superinterfaces' virtual tables into those of subinterfaces, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` and `Armoured`, and they all will be included into `AirplaneVTable` like so:
 
 ```c
 // #define Airplane_EXTENDS (Vehicle, Repairable, Armoured)
