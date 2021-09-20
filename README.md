@@ -50,6 +50,8 @@ x = 5
 
 </details>
 
+Interface99 aims to provide a minimalistic yet useable set of features found in most programming languages; at the same time, Interface99 feels like you still program in plain C.
+
 ## Highlights
 
  - **Zero-boilerplate.** Forget about constructing virtual tables manually -- Interface99 will do it for you! Internally, it is [done through X-Macro], a technique for reliable maintenance of parallel lists.
@@ -74,7 +76,7 @@ x = 5
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine an operation to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine an operation to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
-| [Default implementations](examples/default_impl.c)  | ✅ | Some interface operations may be given default implementations. |
+| [Default implementations](examples/default_impl.c)  | ✅ | Some interface operations may be given default implementations. A default operation can call other operations and vice versa. |
 
 ## Installation
 
@@ -95,7 +97,7 @@ Some handy advices:
 
 ## Tutorial
 
-A good way to start is to investigate the [examples](examples/). In this section, we are to speak about Interface99 a bit more laboriously.
+If you have experience with other general-purpose PLs, you should already know how to use Interface99; to grasp the syntax part, you can look through our well-documented [examples](examples/). In this section, to understand the macros better, we will see what is being generated under the hood on some concrete examples.
 
 ### Basic usage
 
@@ -151,7 +153,12 @@ static const StateVTable Num_State_impl = {
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
-This is the implementation of `State` for `Num`. Normally you will not use it directly but through `State.vptr`. `State`, in its turn, is instantiated by [`DYN`](#DYN):
+This is the implementation of `State` for `Num`: it contains all the operations needed to satisfy the interface. Normally, you will not use it directly but through an interface object of type `State`:
+
+ - `State.self` is the pointer to an object whose type implements `State` (in our case -- `Num`).
+ - `State.vptr` is the pointer to an implementer's virtual table (`Num_State_impl`).
+
+`State`, in its turn, is instantiated by [`DYN`](#DYN):
 
 ```с
 Num n = {0};
@@ -238,7 +245,7 @@ void Droid_turn_on(Droid droid) {
 }
 ```
 
-As you can see, default operation implementations follow a specific naming convention, `<iface>_<default-op-name>`, so that Interface99 can understand which operation name to generate. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
+As you can see, default implementations follow a strict naming convention, `<iface>_<default-op-name>`, so that Interface99 can understand which operation name to generate. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
 
 ```c
 static const DroidVTable C_3PO_Droid_impl = {
