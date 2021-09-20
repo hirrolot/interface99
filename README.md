@@ -310,7 +310,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - `<iface>` refers to a user-defined macro `<iface>_INTERFACE(OP, ...)`, which must expand to `{ <op> }*`. Note that:
+ - For every interface, a macro `<iface>_INTERFACE(OP, ...)` must be defined, which must expand to `{ <op> }*`. Note that:
    - You can choose a different name for the `OP` parameter if you wish -- it is just a matter of convention.
    - If you use [Clang-Format], it can be helpful to add `OP` to the `StatementMacros` vector.
    - If your interface contains no operations, i.e., a marker interface, you can omit `(OP, ...)` like this: `#define MyMarker_INTERFACE`.
