@@ -260,7 +260,7 @@ void R2_D2_turn_on(Droid droid) {
 impl(Droid, R2_D2);
 ```
 
-(`#define R2_D2_turn_on_CUSTOM ()` tells Interface99 to use the custom implementation instead of the default one; this is because it is impossible to detect at compile-time whether a specific function is defined or not.)
+(`R2_D2_turn_on_CUSTOM` tells Interface99 to use the custom implementation instead of the default one; this is because it is impossible to detect at compile-time whether a specific function is defined or not.)
 
 And the virtual table would be:
 
