@@ -284,8 +284,9 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>      ::= "interface(" <iface> ")" ;
 
-<method>         ::= <method-kind> "(" <method-ret-ty> "," <method-name> "," <method-params> ")" ;
-<method-kind>    ::= "method" | "defaultMethod" ;
+<method>         ::= <regular-method> | <default-method> ;
+<regular-method> ::= "method("        <method-ret-ty> "," <method-name> "," <method-params> ")" ;
+<default-method> ::= "defaultMethod(" <method-ret-ty> "," <method-name> "," <method-params> ")" ;
 <method-ret-ty>  ::= <type> ;
 <method-name>    ::= <ident> ;
 <method-params>  ::= <parameter-type-list> ;
