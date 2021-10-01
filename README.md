@@ -72,7 +72,7 @@ The design of Interface99 is pretty similar to that of high-level programming la
 | [Marker interfaces](examples/marker.c) | ✅ | An interface with no methods. |
 | [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a method to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a method to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
-| [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can pass an object of both interfaces to a function, `FooBar obj`. |
+| [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can construct an object of both interfaces, `FooBar obj`. |
 | [Default implementations](examples/default_impl.c)  | ✅ | Some interface methods may be given default implementations. A default method can call other methods and vice versa. |
 
 ## Installation
@@ -417,7 +417,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 ## Guidelines
 
  - Write `impl(...)`/`externImpl(...)` right after all methods are implemented; do not gather all implementation definitions in a single place.
- - If you use [Clang-Format], it can be helpful to add `method` and `defaultMethod` to the `StatementMacros` vector.
+ - If you use [Clang-Format], it can be helpful to add `method` and `defaultMethod` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
 
 ## Pitfalls
 
