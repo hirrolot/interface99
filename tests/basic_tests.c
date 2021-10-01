@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 // Ensure that forward declarations are generated.
-#define TestForwardDecl_INTERFACE method(void, abc, Foo self, FooVTable vtable)
+#define TestForwardDecl_IFACE method(void, abc, Foo self, FooVTable vtable)
 
 interface(TestForwardDecl);
 

@@ -8,7 +8,7 @@
 #include <string.h>
 
 // A marker interface whose implementers can be duplicated by simply copying bits.
-#define Copy_INTERFACE
+#define Copy_IFACE
 
 interface(Copy);
 

@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define State_INTERFACE                                                                            \
+#define State_IFACE                                                                                \
     method(int, get, void *self)                                                                   \
     method(void, set, void *self, int x)
 

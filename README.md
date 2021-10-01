@@ -10,7 +10,7 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_INTERFACE                 \
+#define State_IFACE                     \
     method( int, get, void *self)       \
     method(void, set, void *self, int x)
 
@@ -178,13 +178,13 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_INTERFACE                                \
+#define Vehicle_IFACE                                    \
     method(void, move_forward, void *self, int distance) \
     method(void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE                           \
+#define Airplane_IFACE                               \
     method(void, move_up, void *self, int distance)  \
     method(void, move_down, void *self, int distance)
 
@@ -224,7 +224,7 @@ Sometimes we wish to define default behaviour for several implementers; this is 
 Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this example, we define the interface `Droid`:
 
 ```c
-#define Droid_INTERFACE                     \
+#define Droid_IFACE                         \
     method(const char *, name, void)        \
     defaultMethod(void, turn_on, Droid self)
 
@@ -305,7 +305,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - For every interface, a macro `<iface>_INTERFACE` must be defined, which must expand to `{ <method> }*`.
+ - For every interface, a macro `<iface>_IFACE` must be defined, which must expand to `{ <method> }*`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
  - For any interface method implementation, a macro `<implementer>_<method-name>_CUSTOM` can be defined, which must expand to `"()"`.
 
@@ -346,7 +346,7 @@ struct <iface> {
 
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` that is polymorphic over `<iface>` implementers. This is generated in two steps:
 
- - **Method pointers**. For each `<method-name>I` specified in the macro `<iface>_INTERFACE`, the corresponding function pointer is generated.
+ - **Method pointers**. For each `<method-name>I` specified in the macro `<iface>_IFACE`, the corresponding function pointer is generated.
  - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementers to satisfy them.
 
 #### `impl`
@@ -513,7 +513,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE method(void, foo, int x, int y)
+#define Foo_IFACE method(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -538,7 +538,7 @@ playground.c:12:1: error: ‘MyFoo_foo’ undeclared here (not in a function)
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE method(void, foo, int x, int y)
+#define Foo_IFACE method(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -564,11 +564,11 @@ playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE method(void, foo, int x, int y)
+#define Foo_IFACE   method(void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_INTERFACE method(void, bar, void)
-#define Bar_EXTENDS   (Foo)
+#define Bar_IFACE   method(void, bar, void)
+#define Bar_EXTENDS (Foo)
 
 interface(Bar);
 
@@ -597,7 +597,7 @@ playground.c:19:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a functio
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE method(void, foo, void)
+#define Foo_IFACE method(void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -629,7 +629,7 @@ playground.c:14:31: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_INTERFACE method(void, foo, void)
+#define Foo_IFACE method(void, foo, void)
 interface(Foo);
 
 typedef struct {

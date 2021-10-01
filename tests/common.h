@@ -7,11 +7,11 @@
 
 // Interfaces {
 
-#define Marker_INTERFACE
+#define Marker_IFACE
 
-#define Foo_INTERFACE method(const char *, foo, int x, double *restrict y)
+#define Foo_IFACE method(const char *, foo, int x, double *restrict y)
 
-#define Bar_INTERFACE                                                                              \
+#define Bar_IFACE                                                                                  \
     method(const char *, foo, int x, double *restrict y)                                           \
     method(float, bar, long long x)
 

@@ -88,9 +88,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * char dummy;
  *
- * <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
+ * <method-ret-ty>0 (*<method-name>0)(<method-params>0);
  * ...
- * <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
+ * <method-ret-ty>N (*<method-name>N)(<method-params>N);
  *
  * const <requirement>0VTable *<requirement>;
  * ...
@@ -102,7 +102,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            IFACE99_PRIV_genFnPtrForEach(iface)),                                                  \
+            IFACE99_PRIV_genMethodPtrForEach(iface)),                                              \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementForEach(iface),                                             \
@@ -112,14 +112,14 @@ SOFTWARE.
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(char dummy;), ML99_empty())
 
 /*
- * <fn-ret-ty>0 (*<fn-name>0)(<fn-params>0);
+ * <method-ret-ty>0 (*<method-name>0)(<method-params>0);
  * ...
- * <fn-ret-ty>N (*<fn-name>N)(<fn-params>N);
+ * <method-ret-ty>N (*<method-name>N)(<method-params>N);
  */
-#define IFACE99_PRIV_genFnPtrForEach(iface)                                                        \
-    ML99_seqForEach(v(IFACE99_PRIV_genFnPtr), v(iface##_INTERFACE))
+#define IFACE99_PRIV_genMethodPtrForEach(iface)                                                    \
+    ML99_seqForEach(v(IFACE99_PRIV_genMethodPtr), v(iface##_IFACE))
 
-#define IFACE99_PRIV_genFnPtr_IMPL(_tag, ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
+#define IFACE99_PRIV_genMethodPtr_IMPL(_tag, ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
 
 /*
  * const <requirement>0VTable *<requirement>;
@@ -153,9 +153,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * .dummy = '\0',
  *
- * <fn-name>0 = either <implementer>_<fn-name>0 or <iface>_<fn-name>0,
+ * <method-name>0 = either <implementer>_<method-name>0 or <iface>_<method-name>0,
  * ...
- * <fn-name>N = either <implementer>_<fn-name>N or <iface>_<fn-name>N,
+ * <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
  *
  * <requirement>0 = &VTABLE(<implementer, <requirement>0),
  * ...
@@ -167,7 +167,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            IFACE99_PRIV_genImplFnNameForEach(iface, implementer)),                                \
+            IFACE99_PRIV_genImplMethodNameForEach(iface, implementer)),                            \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementsImplForEach(iface, implementer),                           \
@@ -177,22 +177,22 @@ SOFTWARE.
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(.dummy = '\0'), ML99_empty())
 
 /*
- * <fn-name>0 = either <implementer>_<fn-name>0 or <iface>_<fn-name>0,
+ * <method-name>0 = either <implementer>_<method-name>0 or <iface>_<method-name>0,
  * ...
- * <fn-name>N = either <implementer>_<fn-name>N or <iface>_<fn-name>N,
+ * <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
  */
-#define IFACE99_PRIV_genImplFnNameForEach(iface, implementer)                                      \
+#define IFACE99_PRIV_genImplMethodNameForEach(iface, implementer)                                  \
     ML99_seqForEach(                                                                               \
-        ML99_appl(v(IFACE99_PRIV_genImplFnName), v(iface, implementer)),                           \
-        v(iface##_INTERFACE))
+        ML99_appl(v(IFACE99_PRIV_genImplMethodName), v(iface, implementer)),                       \
+        v(iface##_IFACE))
 
-#define IFACE99_PRIV_genImplFnName_IMPL(iface, implementer, tag, _ret_ty, fn_name, ...)            \
-    v(.fn_name = ML99_IF(                                                                          \
+#define IFACE99_PRIV_genImplMethodName_IMPL(iface, implementer, tag, _ret_ty, name, ...)           \
+    v(.name = ML99_IF(                                                                             \
           ML99_AND(                                                                                \
               IFACE99_PRIV_IS_DEFAULT(tag),                                                        \
-              ML99_NOT(IFACE99_PRIV_IS_CUSTOM(implementer, fn_name))),                             \
-          iface##_##fn_name,                                                                       \
-          implementer##_##fn_name), )
+              ML99_NOT(IFACE99_PRIV_IS_CUSTOM(implementer, name))),                                \
+          iface##_##name,                                                                          \
+          implementer##_##name), )
 
 /*
  * <requirement>0 = &VTABLE(<implementer, <requirement>0),
@@ -222,13 +222,14 @@ SOFTWARE.
 
 #define IFACE99_PRIV_IS_EMPTY_VTABLE(iface)                                                        \
     ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
-#define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_SEQ_IS_EMPTY(iface##_INTERFACE)
+#define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_SEQ_IS_EMPTY(iface##_IFACE)
 #define IFACE99_PRIV_IS_SUB_IFACE(iface)    ML99_IS_TUPLE(iface##_EXTENDS)
 
 #define IFACE99_PRIV_IS_DEFAULT(tag)           ML99_DETECT_IDENT(IFACE99_PRIV_IS_DEFAULT_, tag)
 #define IFACE99_PRIV_IS_DEFAULT_0defaultMethod ()
 
-#define IFACE99_PRIV_IS_CUSTOM(implementer, fn_name) ML99_IS_TUPLE(implementer##_##fn_name##_CUSTOM)
+#define IFACE99_PRIV_IS_CUSTOM(implementer, method_name)                                           \
+    ML99_IS_TUPLE(implementer##_##method_name##_CUSTOM)
 // } (Various predicates)
 
 // Arity specifiers {
@@ -236,8 +237,8 @@ SOFTWARE.
 #define IFACE99_PRIV_genRequirement_ARITY     1
 #define IFACE99_PRIV_genRequirementImpl_ARITY 2
 
-#define IFACE99_PRIV_genFnPtr_ARITY      1
-#define IFACE99_PRIV_genImplFnName_ARITY 2
+#define IFACE99_PRIV_genMethodPtr_ARITY      1
+#define IFACE99_PRIV_genImplMethodName_ARITY 2
 
 // Public:
 

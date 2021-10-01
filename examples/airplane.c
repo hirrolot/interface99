@@ -4,13 +4,13 @@
 
 #include <stdio.h>
 
-#define Vehicle_INTERFACE                                                                          \
+#define Vehicle_IFACE                                                                              \
     method(void, move_forward, void *self, int distance)                                           \
     method(void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_INTERFACE                                                                         \
+#define Airplane_IFACE                                                                             \
     method(void, move_up, void *self, int distance)                                                \
     method(void, move_down, void *self, int distance)
 

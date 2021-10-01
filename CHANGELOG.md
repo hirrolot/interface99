@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - Use `method` and `defaultMethod` instead of [X-Macro] for the sake of conciseness.
+ - `<iface>_INTERFACE` => `<iface>_IFACE`.
 
 ## [0.5.0] - 2021-09-16
 

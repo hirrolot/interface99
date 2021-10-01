@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 
-#define Droid_INTERFACE                                                                            \
+#define Droid_IFACE                                                                                \
     method(const char *, name, void)                                                               \
     defaultMethod(void, turn_on, Droid self)
 

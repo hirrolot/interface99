@@ -7,17 +7,17 @@
 
 // Interfaces {
 
-#define FooExtendsMarker_INTERFACE Foo_INTERFACE
-#define FooExtendsMarker_EXTENDS   (Marker)
+#define FooExtendsMarker_IFACE   Foo_IFACE
+#define FooExtendsMarker_EXTENDS (Marker)
 
-#define FooExtendsMany_INTERFACE Foo_INTERFACE
-#define FooExtendsMany_EXTENDS   (Foo, Bar)
+#define FooExtendsMany_IFACE   Foo_IFACE
+#define FooExtendsMany_EXTENDS (Foo, Bar)
 
-#define MarkerExtendsMarker_INTERFACE Marker_INTERFACE
-#define MarkerExtendsMarker_EXTENDS   (Marker)
+#define MarkerExtendsMarker_IFACE   Marker_IFACE
+#define MarkerExtendsMarker_EXTENDS (Marker)
 
-#define MarkerExtendsMany_INTERFACE Marker_INTERFACE
-#define MarkerExtendsMany_EXTENDS   (Foo, Bar)
+#define MarkerExtendsMany_IFACE   Marker_IFACE
+#define MarkerExtendsMany_EXTENDS (Foo, Bar)
 
 interface(FooExtendsMarker);
 interface(FooExtendsMany);
