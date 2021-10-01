@@ -2,8 +2,7 @@
 
 #include <assert.h>
 
-#define TestDefault_INTERFACE(OP, ...) OP(__VA_ARGS__, void, default_op, void *self, int x)
-#define TestDefault_default_op_DEFAULT ()
+#define TestDefault_INTERFACE defaultMethod(void, default_op, void *self, int x)
 
 interface(TestDefault);
 
@@ -31,7 +30,7 @@ typedef struct {
 #define B_default_op        custom_impl
 impl(TestDefault, B);
 
-#define TestNoOpCustom_INTERFACE(OP, ...) OP(__VA_ARGS__, void, custom_op, void *self, int x)
+#define TestNoOpCustom_INTERFACE method(void, custom_op, void *self, int x)
 
 interface(TestNoOpCustom);
 

@@ -9,11 +9,11 @@
 
 #define Marker_INTERFACE
 
-#define Foo_INTERFACE(OP, ...) OP(__VA_ARGS__, const char *, foo, int x, double *restrict y)
+#define Foo_INTERFACE method(const char *, foo, int x, double *restrict y)
 
-#define Bar_INTERFACE(OP, ...)                                                                     \
-    OP(__VA_ARGS__, const char *, foo, int x, double *restrict y)                                  \
-    OP(__VA_ARGS__, float, bar, long long x)
+#define Bar_INTERFACE                                                                              \
+    method(const char *, foo, int x, double *restrict y)                                           \
+    method(float, bar, long long x)
 
 interface(Marker);
 interface(Foo);

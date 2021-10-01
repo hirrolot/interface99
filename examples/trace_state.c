@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 
-#define State_INTERFACE(OP, ...)                                                                   \
-    OP(__VA_ARGS__, int, get, void *self)                                                          \
-    OP(__VA_ARGS__, void, set, void *self, int x)
+#define State_INTERFACE                                                                            \
+    method(int, get, void *self)                                                                   \
+    method(void, set, void *self, int x)
 
 interface(State);
 
@@ -20,7 +20,7 @@ void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 
 impl(State, Num);
 
-// A state adaptor that traces all operations on the inner state.
+// A state adaptor that traces all methods on the inner state.
 typedef struct {
     State st;
 } TraceState;

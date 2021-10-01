@@ -6,12 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define Read_INTERFACE(OP, ...)                                                                    \
-    OP(__VA_ARGS__, size_t, read, void *self, char *dest, size_t bytes_to_read)
+#define Read_INTERFACE method(size_t, read, void *self, char *dest, size_t bytes_to_read)
 interface(Read);
 
-#define Write_INTERFACE(OP, ...)                                                                   \
-    OP(__VA_ARGS__, size_t, write, void *self, const char *src, size_t bytes_to_write)
+#define Write_INTERFACE method(size_t, write, void *self, const char *src, size_t bytes_to_write)
 interface(Write);
 
 #define ReadWrite_INTERFACE

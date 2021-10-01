@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- - Default operation implementations.
+ - Default method implementations.
 
 ### Changed
 
- - Make the `CTX` parameter variadic (allows for a simplified implementation).
+ - Use `method` and `defaultMethod` instead of [X-Macro] for the sake of conciseness.
 
 ## [0.5.0] - 2021-09-16
 

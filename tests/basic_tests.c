@@ -6,13 +6,8 @@
 #include <assert.h>
 #include <stddef.h>
 
-// Ensure that a marker interface can take the `OP, ...` parameters (not omitted).
-#define MarkerWithParams_INTERFACE(OP, ...)
-
-interface(MarkerWithParams);
-
 // Ensure that forward declarations are generated.
-#define TestForwardDecl_INTERFACE(OP, ...) OP(__VA_ARGS__, void, abc, Foo self, FooVTable vtable)
+#define TestForwardDecl_INTERFACE method(void, abc, Foo self, FooVTable vtable)
 
 interface(TestForwardDecl);
 
@@ -69,9 +64,6 @@ int main(void) {
     {
         ENSURE_VTABLE_FIELD_TYPE(MarkerVTable, dummy, char);
         ENSURE_DYN_OBJ_TYPE(Marker);
-
-        ENSURE_VTABLE_FIELD_TYPE(MarkerWithParamsVTable, dummy, char);
-        ENSURE_DYN_OBJ_TYPE(MarkerWithParams);
 
         ENSURE_VTABLE_FIELD_TYPE(FooVTable, foo, FooOpType);
         ENSURE_DYN_OBJ_TYPE(Foo);
