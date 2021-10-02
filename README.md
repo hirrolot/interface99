@@ -306,7 +306,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - For every interface, a macro `<iface>_IFACE` must be defined, which must expand to `{ <method> }*`.
+ - For every interface `<iface>`, the macro `<iface>_IFACE` must expand to `{ <method> }*`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
  - For any interface method implementation, a macro `<implementer>_<method-name>_CUSTOM` can be defined, which must expand to `"()"`.
 
@@ -347,7 +347,7 @@ struct <iface> {
 
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` that is polymorphic over `<iface>` implementers. This is generated in two steps:
 
- - **Method pointers**. For each `<method-name>I` specified in the macro `<iface>_IFACE`, the corresponding function pointer is generated.
+ - **Methods' pointers**. For each `<method-name>I` specified in the macro `<iface>_IFACE`, the corresponding function pointer is generated.
  - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementers to satisfy them.
 
 #### `impl`
@@ -363,15 +363,15 @@ static const <iface>VTable VTABLE(<implementer>, <iface>) = {
     ...
     <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
 
-    <requirement>0 = &VTABLE(<implementer, <requirement>0),
+    <requirement>0 = &VTABLE(<implementer>, <requirement>0),
     ...
-    <requirement>N = &VTABLE(<implementer, <requirement>N),
+    <requirement>N = &VTABLE(<implementer>, <requirement>N),
 }
 ```
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementer>`. It is generated in two steps:
 
- - **Method implementations.** If `<method-name>I` is defined via `defaultMethod` and `<implementer>_<method-name>I_CUSTOM` is **not** defined, `<iface>_<method-name>I` is generated (default implementation). Otherwise, `<implementer>_<method-name>I` is generated (custom implementation).
+ - **Methods' implementations.** If `<method-name>I` is defined via `defaultMethod` and `<implementer>_<method-name>I_CUSTOM` is **not** defined, `<iface>_<method-name>I` is generated (default implementation). Otherwise, `<implementer>_<method-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `declImpl`

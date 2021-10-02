@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - Use `method` and `defaultMethod` instead of [X-Macro] for the sake of conciseness.
- - `<iface>_INTERFACE` => `<iface>_IFACE`.
+ - Use `method` and `defaultMethod` instead of [X-Macro] for the sake of conciseness [**BC**].
+ - `<iface>_INTERFACE` => `<iface>_IFACE` [**BC**].
 
 ## [0.5.0] - 2021-09-16
 

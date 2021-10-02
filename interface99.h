@@ -157,9 +157,9 @@ SOFTWARE.
  * ...
  * <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
  *
- * <requirement>0 = &VTABLE(<implementer, <requirement>0),
+ * <requirement>0 = &VTABLE(<implementer>, <requirement>0),
  * ...
- * <requirement>N = &VTABLE(<implementer, <requirement>N),
+ * <requirement>N = &VTABLE(<implementer>, <requirement>N),
  */
 #define IFACE99_PRIV_genImplInitList(iface, implementer)                                           \
     ML99_uncomma(ML99_QUOTE(                                                                       \
@@ -195,9 +195,9 @@ SOFTWARE.
           implementer##_##name), )
 
 /*
- * <requirement>0 = &VTABLE(<implementer, <requirement>0),
+ * <requirement>0 = &VTABLE(<implementer>, <requirement>0),
  * ...
- * <requirement>N = &VTABLE(<implementer, <requirement>N),
+ * <requirement>N = &VTABLE(<implementer>, <requirement>N),
  */
 #define IFACE99_PRIV_genRequirementsImplForEach(iface, implementer)                                \
     ML99_tupleForEach(                                                                             \
