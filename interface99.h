@@ -29,8 +29,8 @@ SOFTWARE.
 
 #include <metalang99.h>
 
-#if !ML99_VERSION_COMPATIBLE(1, 10, 0)
-#error Please, update Metalang99 to v1.10.0 or later.
+#if !ML99_VERSION_COMPATIBLE(1, 11, 0)
+#error Please, update Metalang99 to v1.11.0 or later.
 #endif
 
 #ifndef IFACE99_NO_ALIASES
@@ -68,7 +68,7 @@ SOFTWARE.
 #define defaultMethod99(ret_ty, name, ...) (0defaultMethod, ret_ty, name, __VA_ARGS__)
 
 #define IFACE99_MAJOR 0
-#define IFACE99_MINOR 5
+#define IFACE99_MINOR 6
 #define IFACE99_PATCH 0
 // } (Public stuff)
 
