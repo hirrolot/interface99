@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - `method` => `iMethod`, `defaultMethod` => `defaultIMethod` to avoid name clashes [**BC**].
- - Previously, shortcuts referring to functional macros were object-like. To avoid nasty compilation errors, now they are function-like too:
+
+### Fixed
+
+- Previously, shortcuts referring to functional macros were object-like. To avoid nasty compilation errors, now they are function-like too:
    - `interface(iface)`
    - `impl(iface, implementer)`
    - `externImpl(iface, implementer)`
