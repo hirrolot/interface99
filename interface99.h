@@ -68,7 +68,7 @@ SOFTWARE.
 #define defaultIMethod99(ret_ty, name, ...) (0defaultMethod, ret_ty, name, __VA_ARGS__)
 
 #define IFACE99_MAJOR 0
-#define IFACE99_MINOR 6
+#define IFACE99_MINOR 7
 #define IFACE99_PATCH 0
 // } (Public stuff)
 

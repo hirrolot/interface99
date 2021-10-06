@@ -10,8 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - `method` => `iMethod`, `defaultMethod` => `defaultIMethod` to avoid name clashes.
- - Previously, shortcuts referring to functional macros were object-like (e.g., `interface` or `VTABLE`). To avoid nasty compilation errors, now they are function-like too.
+ - `method` => `iMethod`, `defaultMethod` => `defaultIMethod` to avoid name clashes [**BC**].
+ - Previously, shortcuts referring to functional macros were object-like. To avoid nasty compilation errors, now they are function-like too:
+   - `interface(iface)`
+   - `impl(iface, implementer)`
+   - `externImpl(iface, implementer)`
+   - `declImpl(iface, implementer)`
+   - `externDeclImpl(iface, implementer)`
+   - `iMethod(ret_ty, name, ...)`
+   - `defaultIMethod(ret_ty, name, ...)`
+   - `DYN(implementer, iface, ...)`
+   - `VTABLE(implementer, iface)`
 
 ## [0.6.0] - 2021-10-02
 
