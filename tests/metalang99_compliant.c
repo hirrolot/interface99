@@ -11,7 +11,7 @@ ML99_ASSERT_UNEVAL(IFACE99_interface_ARITY == 1);
 ML99_ASSERT_UNEVAL(IFACE99_impl_ARITY == 2);
 ML99_ASSERT_UNEVAL(IFACE99_externImpl_ARITY == 2);
 
-#define Foo_IFACE method(const char *, foo, int x, double *restrict y)
+#define Foo_IFACE iMethod(const char *, foo, int x, double *restrict y)
 
 ML99_EVAL(IFACE99_interface(v(Foo)));
 

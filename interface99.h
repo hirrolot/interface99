@@ -40,8 +40,8 @@ SOFTWARE.
 #define declImpl       declImpl99
 #define externImpl     externImpl99
 #define externDeclImpl externDeclImpl99
-#define method         method99
-#define defaultMethod  defaultMethod99
+#define iMethod        iMethod99
+#define defaultIMethod defaultIMethod99
 #define DYN            DYN99
 #define VTABLE         VTABLE99
 
@@ -64,8 +64,8 @@ SOFTWARE.
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
 #define VTABLE99(implementer, iface) ML99_CAT4(implementer, _, iface, _impl)
 
-#define method99(ret_ty, name, ...)        (0method, ret_ty, name, __VA_ARGS__)
-#define defaultMethod99(ret_ty, name, ...) (0defaultMethod, ret_ty, name, __VA_ARGS__)
+#define iMethod99(ret_ty, name, ...)        (0method, ret_ty, name, __VA_ARGS__)
+#define defaultIMethod99(ret_ty, name, ...) (0defaultMethod, ret_ty, name, __VA_ARGS__)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 6

@@ -9,11 +9,11 @@
 
 #define Marker_IFACE
 
-#define Foo_IFACE method(const char *, foo, int x, double *restrict y)
+#define Foo_IFACE iMethod(const char *, foo, int x, double *restrict y)
 
 #define Bar_IFACE                                                                                  \
-    method(const char *, foo, int x, double *restrict y)                                           \
-    method(float, bar, long long x)
+    iMethod(const char *, foo, int x, double *restrict y)                                          \
+    iMethod(float, bar, long long x)
 
 interface(Marker);
 interface(Foo);

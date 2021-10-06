@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-#define TestDefault_IFACE defaultMethod(void, default_op, void *self, int x)
+#define TestDefault_IFACE defaultIMethod(void, default_op, void *self, int x)
 
 interface(TestDefault);
 
@@ -30,7 +30,7 @@ typedef struct {
 #define B_default_op        custom_impl
 impl(TestDefault, B);
 
-#define TestNoOpCustom_IFACE method(void, custom_op, void *self, int x)
+#define TestNoOpCustom_IFACE iMethod(void, custom_op, void *self, int x)
 
 interface(TestNoOpCustom);
 

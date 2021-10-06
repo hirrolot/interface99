@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_IFACE                     \
-    method( int, get, void *self)       \
-    method(void, set, void *self, int x)
+#define State_IFACE                      \
+    iMethod( int, get, void *self)       \
+    iMethod(void, set, void *self, int x)
 
 interface(State);
 
@@ -178,15 +178,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_IFACE                                    \
-    method(void, move_forward, void *self, int distance) \
-    method(void, move_back, void *self, int distance)
+#define Vehicle_IFACE                                     \
+    iMethod(void, move_forward, void *self, int distance) \
+    iMethod(void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_IFACE                               \
-    method(void, move_up, void *self, int distance)  \
-    method(void, move_down, void *self, int distance)
+#define Airplane_IFACE                                \
+    iMethod(void, move_up, void *self, int distance)  \
+    iMethod(void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -225,13 +225,13 @@ Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this exa
 
 ```c
 #define Droid_IFACE                         \
-    method(const char *, name, void)        \
-    defaultMethod(void, turn_on, Droid self)
+    iMethod(const char *, name, void)        \
+    defaultIMethod(void, turn_on, Droid self)
 
 interface(Droid);
 ```
 
-The macro `defaultMethod` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
+The macro `defaultIMethod` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
 
 ```c
 void Droid_turn_on(Droid droid) {
@@ -285,8 +285,8 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <iface-def>      ::= "interface(" <iface> ")" ;
 
 <method>         ::= <regular-method> | <default-method> ;
-<regular-method> ::= "method("        <method-ret-ty> "," <method-name> "," <method-params> ")" ;
-<default-method> ::= "defaultMethod(" <method-ret-ty> "," <method-name> "," <method-params> ")" ;
+<regular-method> ::= "iMethod("        <method-ret-ty> "," <method-name> "," <method-params> ")" ;
+<default-method> ::= "defaultIMethod(" <method-ret-ty> "," <method-name> "," <method-params> ")" ;
 <method-ret-ty>  ::= <type> ;
 <method-name>    ::= <ident> ;
 <method-params>  ::= <parameter-type-list> ;
@@ -371,7 +371,7 @@ static const <iface>VTable VTABLE(<implementer>, <iface>) = {
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementer>`. It is generated in two steps:
 
- - **Methods' implementations.** If `<method-name>I` is defined via `defaultMethod` and `<implementer>_<method-name>I_CUSTOM` is **not** defined, `<iface>_<method-name>I` is generated (default implementation). Otherwise, `<implementer>_<method-name>I` is generated (custom implementation).
+ - **Methods' implementations.** If `<method-name>I` is defined via `defaultIMethod` and `<implementer>_<method-name>I_CUSTOM` is **not** defined, `<iface>_<method-name>I` is generated (default implementation). Otherwise, `<implementer>_<method-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `declImpl`
@@ -418,7 +418,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 ## Guidelines
 
  - Write `impl(...)`/`externImpl(...)` right after all methods are implemented; do not gather all implementation definitions in a single place.
- - If you use [Clang-Format], it can be helpful to add `method` and `defaultMethod` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
+ - If you use [Clang-Format], it can be helpful to add `iMethod` and `defaultIMethod` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
 
 ## Pitfalls
 
@@ -514,7 +514,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_IFACE method(void, foo, int x, int y)
+#define Foo_IFACE iMethod(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -539,7 +539,7 @@ playground.c:12:1: error: ‘MyFoo_foo’ undeclared here (not in a function)
 
 [`playground.c`]
 ```c
-#define Foo_IFACE method(void, foo, int x, int y)
+#define Foo_IFACE iMethod(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -565,10 +565,10 @@ playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 
 [`playground.c`]
 ```c
-#define Foo_IFACE   method(void, foo, int x, int y)
+#define Foo_IFACE   iMethod(void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_IFACE   method(void, bar, void)
+#define Bar_IFACE   iMethod(void, bar, void)
 #define Bar_EXTENDS (Foo)
 
 interface(Bar);
@@ -598,7 +598,7 @@ playground.c:19:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a functio
 
 [`playground.c`]
 ```c
-#define Foo_IFACE method(void, foo, void)
+#define Foo_IFACE iMethod(void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -630,7 +630,7 @@ playground.c:14:31: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_IFACE method(void, foo, void)
+#define Foo_IFACE iMethod(void, foo, void)
 interface(Foo);
 
 typedef struct {

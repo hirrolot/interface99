@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.7.0] - 2021-10-06
+
+### Changed
+
+ - `method` => `iMethod`, `defaultMethod` => `defaultIMethod` to avoid name clashes.
+
 ## [0.6.0] - 2021-10-02
 
 ### Added

@@ -14,4 +14,4 @@ BinPackParameters: true
 AlignConsecutiveMacros: true
 AlignAfterOpenBracket: AlwaysBreak
 
-StatementMacros: ["ML99_EVAL", "method", "defaultMethod"]
+StatementMacros: ["ML99_EVAL", "iMethod", "defaultIMethod"]

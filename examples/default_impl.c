@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 #define Droid_IFACE                                                                                \
-    method(const char *, name, void)                                                               \
-    defaultMethod(void, turn_on, Droid self)
+    iMethod(const char *, name, void)                                                              \
+    defaultIMethod(void, turn_on, Droid self)
 
 interface(Droid);
 
