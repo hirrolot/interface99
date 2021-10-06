@@ -35,15 +35,15 @@ SOFTWARE.
 
 #ifndef IFACE99_NO_ALIASES
 
-#define interface      interface99
-#define impl           impl99
-#define declImpl       declImpl99
-#define externImpl     externImpl99
-#define externDeclImpl externDeclImpl99
-#define iMethod        iMethod99
-#define defaultIMethod defaultIMethod99
-#define DYN            DYN99
-#define VTABLE         VTABLE99
+#define interface(iface)                   interface99(iface)
+#define impl(iface, implementer)           impl99(iface, implementer)
+#define externImpl(iface, implementer)     externImpl99(iface, implementer)
+#define declImpl(iface, implementer)       declImpl99(iface, implementer)
+#define externDeclImpl(iface, implementer) externDeclImpl99(iface, implementer)
+#define iMethod(ret_ty, name, ...)         iMethod99(ret_ty, name, __VA_ARGS__)
+#define defaultIMethod(ret_ty, name, ...)  defaultIMethod99(ret_ty, name, __VA_ARGS__)
+#define DYN(implementer, iface, ...)       DYN99(implementer, iface, __VA_ARGS__)
+#define VTABLE(implementer, iface)         VTABLE99(implementer, iface)
 
 #endif // IFACE99_NO_ALIASES
 

@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
  - `method` => `iMethod`, `defaultMethod` => `defaultIMethod` to avoid name clashes.
+ - Previously, shortcuts referring to functional macros were object-like (e.g., `interface` or `VTABLE`). To avoid nasty compilation errors, now they are function-like too.
 
 ## [0.6.0] - 2021-10-02
 
