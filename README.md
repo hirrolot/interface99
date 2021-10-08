@@ -456,6 +456,7 @@ Thanks to Rust and Golang for their implementations of traits/interfaces.
 
 ## Publications
 
+ - [_Comparing Rust and Interface99_](https://www.reddit.com/r/ProgrammingLanguages/comments/q40om0/comparing_interfaces_rust_and_interface99/) by Hirrolot.
  - [_What’s the Point of the C Preprocessor, Actually?_](https://hirrolot.github.io/posts/whats-the-point-of-the-c-preprocessor-actually.html) by Hirrolot.
  - [_Macros on Steroids, Or: How Can Pure C Benefit From Metaprogramming_](https://hirrolot.github.io/posts/macros-on-steroids-or-how-can-pure-c-benefit-from-metaprogramming.html) by Hirrolot.
  - [_Extend Your Language, Don’t Alter It_](https://hirrolot.github.io/posts/extend-your-language-dont-alter-it.html) by Hirrolot.
