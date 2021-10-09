@@ -64,8 +64,8 @@ SOFTWARE.
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
 #define VTABLE99(implementer, iface) ML99_CAT4(implementer, _, iface, _impl)
 
-#define iMethod99(ret_ty, name, ...)        (0method, ret_ty, name, __VA_ARGS__)
-#define defaultIMethod99(ret_ty, name, ...) (0defaultMethod, ret_ty, name, __VA_ARGS__)
+#define iMethod99(ret_ty, name, ...)        ML99_CHOICE(method, ret_ty, name, __VA_ARGS__)
+#define defaultIMethod99(ret_ty, name, ...) ML99_CHOICE(defaultMethod, ret_ty, name, __VA_ARGS__)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 7
@@ -187,12 +187,15 @@ SOFTWARE.
         v(iface##_IFACE))
 
 #define IFACE99_PRIV_genImplMethodName_IMPL(iface, implementer, tag, _ret_ty, name, ...)           \
-    v(.name = ML99_IF(                                                                             \
-          ML99_AND(                                                                                \
-              IFACE99_PRIV_IS_DEFAULT(tag),                                                        \
-              ML99_NOT(IFACE99_PRIV_IS_CUSTOM(implementer, name))),                                \
-          iface##_##name,                                                                          \
-          implementer##_##name), )
+    ML99_match(ML99_choice(v(tag), v(iface, implementer, name)), v(IFACE99_PRIV_genImpl_))
+
+#define IFACE99_PRIV_genImpl_method_IMPL(_iface, implementer, name)                                \
+    v(.name = implementer##_##name, )
+#define IFACE99_PRIV_genImpl_defaultMethod_IMPL(iface, implementer, name)                          \
+    ML99_IF(                                                                                       \
+        IFACE99_PRIV_IS_CUSTOM(implementer, name),                                                 \
+        IFACE99_PRIV_genImpl_method_IMPL(~, implementer, name),                                    \
+        v(.name = iface##_##name, ))
 
 /*
  * <requirement>0 = &VTABLE(<implementer>, <requirement>0),
@@ -224,9 +227,6 @@ SOFTWARE.
     ML99_AND(IFACE99_PRIV_IS_MARKER_IFACE(iface), ML99_NOT(IFACE99_PRIV_IS_SUB_IFACE(iface)))
 #define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_SEQ_IS_EMPTY(iface##_IFACE)
 #define IFACE99_PRIV_IS_SUB_IFACE(iface)    ML99_IS_TUPLE(iface##_EXTENDS)
-
-#define IFACE99_PRIV_IS_DEFAULT(tag)           ML99_DETECT_IDENT(IFACE99_PRIV_IS_DEFAULT_, tag)
-#define IFACE99_PRIV_IS_DEFAULT_0defaultMethod ()
 
 #define IFACE99_PRIV_IS_CUSTOM(implementer, method_name)                                           \
     ML99_IS_TUPLE(implementer##_##method_name##_CUSTOM)
