@@ -5,14 +5,14 @@
 #include <stdio.h>
 
 #define Vehicle_IFACE                                                                              \
-    iMethod(void, move_forward, void *self, int distance)                                          \
-    iMethod(void, move_back, void *self, int distance)
+    vfunc(void, move_forward, void *self, int distance)                                            \
+    vfunc(void, move_back, void *self, int distance)
 
 interface(Vehicle);
 
 #define Airplane_IFACE                                                                             \
-    iMethod(void, move_up, void *self, int distance)                                               \
-    iMethod(void, move_down, void *self, int distance)
+    vfunc(void, move_up, void *self, int distance)                                                 \
+    vfunc(void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 

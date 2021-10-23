@@ -3,11 +3,11 @@
 #include <assert.h>
 
 #define METHODS(prefix, T)                                                                         \
-    iMethod(int, prefix##_vcall, void *self)                                                       \
-    iMethod(int, prefix##_vcall_args, void *self, int x, const char *y)                            \
+    vfunc(int, prefix##_vcall, void *self)                                                         \
+    vfunc(int, prefix##_vcall_args, void *self, int x, const char *y)                              \
                                                                                                    \
-    iMethod(int, prefix##_vcall_obj, T self)                                                       \
-    iMethod(int, prefix##_vcall_obj_args, T self, int x, const char *y)
+    vfunc(int, prefix##_vcall_obj, T self)                                                         \
+    vfunc(int, prefix##_vcall_obj_args, T self, int x, const char *y)
 
 #define TestSuper_IFACE METHODS(test_super, TestSuper)
 #define Test_IFACE      METHODS(test, Test)

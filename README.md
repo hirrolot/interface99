@@ -10,9 +10,9 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 #include <stdio.h>
 
-#define State_IFACE                      \
-    iMethod( int, get, void *self)       \
-    iMethod(void, set, void *self, int x)
+#define State_IFACE                    \
+    vfunc( int, get, void *self)       \
+    vfunc(void, set, void *self, int x)
 
 interface(State);
 
@@ -26,9 +26,9 @@ void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 impl(State, Num);
 
 void test(State st) {
-    printf("x = %d\n", st.vptr->get(st.self));
-    st.vptr->set(st.self, 5);
-    printf("x = %d\n", st.vptr->get(st.self));
+    printf("x = %d\n", VCALL(st, get));
+    VCALL(st, set, 5);
+    printf("x = %d\n", VCALL(st, get));
 }
 
 int main(void) {
@@ -69,11 +69,11 @@ The design of Interface99 is pretty similar to that of high-level programming la
 |---------|--------|-------------|
 | [Multiple interface inheritance](examples/read_write.c) | ✅ | A type can inherit multiple interfaces at the same time. |
 | [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
-| [Marker interfaces](examples/marker.c) | ✅ | An interface with no methods. |
-| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a method to be called at runtime based on `self`. |
-| Multiple dispatch | ❌ | Determine a method to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
+| [Marker interfaces](examples/marker.c) | ✅ | An interface with no functions. |
+| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
+| Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can construct an object of both interfaces, `FooBar obj`. |
-| [Default implementations](examples/default_impl.c)  | ✅ | Some interface methods may be given default implementations. A default method can call other methods and vice versa. |
+| [Default implementations](examples/default_impl.c)  | ✅ | Some interface functions may be given default implementations. A default function can call other functions and vice versa. |
 
 ## Installation
 
@@ -149,7 +149,7 @@ static const StateVTable Num_State_impl = {
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
-This is the implementation of `State` for `Num`: it contains all the methods needed to satisfy the interface. Normally, you will not use it directly but through an interface object of type `State`:
+This is the implementation of `State` for `Num`: it contains all the functions needed to satisfy the interface. Normally, you will not use it directly but through an interface object of type `State`:
 
  - `State.self` is the pointer to an object whose type implements `State` (in our case -- `Num`).
  - `State.vptr` is the pointer to an implementer's virtual table (`Num_State_impl`).
@@ -178,15 +178,15 @@ void test(State st) {
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_IFACE                                     \
-    iMethod(void, move_forward, void *self, int distance) \
-    iMethod(void, move_back, void *self, int distance)
+#define Vehicle_IFACE                                   \
+    vfunc(void, move_forward, void *self, int distance) \
+    vfunc(void,    move_back, void *self, int distance)
 
 interface(Vehicle);
 
-#define Airplane_IFACE                                \
-    iMethod(void, move_up, void *self, int distance)  \
-    iMethod(void, move_down, void *self, int distance)
+#define Airplane_IFACE                               \
+    vfunc(void,   move_up, void *self, int distance) \
+    vfunc(void, move_down, void *self, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -195,7 +195,7 @@ interface(Airplane);
 
 (Note that `#define Airplane_EXTENDS` must appear prior to `interface(Airplane);`.)
 
-Here, `Airplane` extends `Vehicle` with the new methods `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
+Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
 
 ```c
 Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
@@ -225,13 +225,13 @@ Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this exa
 
 ```c
 #define Droid_IFACE                          \
-    iMethod(const char *, name, void)        \
-    defaultIMethod(void, turn_on, Droid self)
+    vfunc(const char *, name, void)        \
+    defaultVFunc(void, turn_on, Droid self)
 
 interface(Droid);
 ```
 
-The macro `defaultIMethod` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
+The macro `defaultVFunc` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
 
 ```c
 void Droid_turn_on(Droid droid) {
@@ -239,7 +239,7 @@ void Droid_turn_on(Droid droid) {
 }
 ```
 
-As you can see, default implementations follow a strict naming convention, `<iface>_<default-method-name>` -- this provides Interface99 with sufficient information to generate a virtual table. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
+As you can see, default implementations follow a strict naming convention, `<iface>_<default-func-name>` -- this provides Interface99 with sufficient information to generate a virtual table. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
 
 ```c
 static const DroidVTable C_3PO_Droid_impl = {
@@ -284,12 +284,12 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ```ebnf
 <iface-def>      ::= "interface(" <iface> ")" ;
 
-<method>         ::= <regular-method> | <default-method> ;
-<regular-method> ::= "iMethod("        <method-ret-ty> "," <method-name> "," <method-params> ")" ;
-<default-method> ::= "defaultIMethod(" <method-ret-ty> "," <method-name> "," <method-params> ")" ;
-<method-ret-ty>  ::= <type> ;
-<method-name>    ::= <ident> ;
-<method-params>  ::= <parameter-type-list> ;
+<func>           ::= <regular-func> | <default-func> ;
+<regular-func>   ::= "vfunc("        <func-ret-ty> "," <func-name> "," <func-params> ")" ;
+<default-func>   ::= "defaultVFunc(" <func-ret-ty> "," <func-name> "," <func-params> ")" ;
+<func-ret-ty>    ::= <type> ;
+<func-name>      ::= <ident> ;
+<func-params>    ::= <parameter-type-list> ;
 
 <impl>           ::= "impl("           <iface> "," <implementer> ")" ;
 <externImpl>     ::= "externImpl("     <iface> "," <implementer> ")" ;
@@ -306,9 +306,9 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 Notes:
 
- - For every interface `<iface>`, the macro `<iface>_IFACE` must expand to `{ <method> }*`.
+ - For every interface `<iface>`, the macro `<iface>_IFACE` must expand to `{ <func> }*`.
  - For any interface, a macro `<iface>_EXTENDS` can be defined, which must expand to `"(" <requirement> { "," <requirement> }* ")"`.
- - For any interface method implementation, a macro `<implementer>_<method-name>_CUSTOM` can be defined, which must expand to `"()"`.
+ - For any interface function implementation, a macro `<implementer>_<func-name>_CUSTOM` can be defined, which must expand to `"()"`.
 
 [Clang-Format]: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 
@@ -328,9 +328,9 @@ struct <iface>VTable {
     // Only if <iface> is a marker interface without superinterfaces:
     char dummy;
 
-    <method-ret-ty>0 (*<method-name>0)(<method-params>0);
+    <func-ret-ty>0 (*<func-name>0)(<func-params>0);
     ...
-    <method-ret-ty>N (*<method-name>N)(<method-params>N);
+    <func-ret-ty>N (*<func-name>N)(<func-params>N);
 
     const <requirement>0VTable *<requirement>;
     ...
@@ -347,7 +347,7 @@ struct <iface> {
 
 I.e., this macro defines a virtual table structure for `<iface>`, as well as the structure `<iface>` that is polymorphic over `<iface>` implementers. This is generated in two steps:
 
- - **Methods' pointers**. For each `<method-name>I` specified in the macro `<iface>_IFACE`, the corresponding function pointer is generated.
+ - **Function pointers**. For each `<func-name>I` specified in the macro `<iface>_IFACE`, the corresponding function pointer is generated.
  - **Requirements obligation.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to obligate `<iface>` implementers to satisfy them.
 
 #### `impl`
@@ -359,9 +359,9 @@ static const <iface>VTable VTABLE(<implementer>, <iface>) = {
     // Only if <iface> is a marker interface without superinterfaces:
     .dummy = '\0',
 
-    <method-name>0 = either <implementer>_<method-name>0 or <iface>_<method-name>0,
+    <func-name>0 = either <implementer>_<func-name>0 or <iface>_<func-name>0,
     ...
-    <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
+    <func-name>N = either <implementer>_<func-name>N or <iface>_<func-name>N,
 
     <requirement>0 = &VTABLE(<implementer>, <requirement>0),
     ...
@@ -371,7 +371,7 @@ static const <iface>VTable VTABLE(<implementer>, <iface>) = {
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementer>`. It is generated in two steps:
 
- - **Methods' implementations.** If `<method-name>I` is defined via `defaultIMethod` and `<implementer>_<method-name>I_CUSTOM` is **not** defined, `<iface>_<method-name>I` is generated (default implementation). Otherwise, `<implementer>_<method-name>I` is generated (custom implementation).
+ - **Function implementations.** If `<func-name>I` is defined via `defaultVFunc` and `<implementer>_<func-name>I_CUSTOM` is **not** defined, `<iface>_<func-name>I` is generated (default implementation). Otherwise, `<implementer>_<func-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `declImpl`
@@ -417,21 +417,21 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 ## Guidelines
 
- - Write `impl(...)`/`externImpl(...)` right after all methods are implemented; do not gather all implementation definitions in a single place.
- - If you use [Clang-Format], it can be helpful to add `iMethod` and `defaultIMethod` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
+ - Write `impl(...)`/`externImpl(...)` right after all functions are implemented; do not gather all implementation definitions in a single place.
+ - If you use [Clang-Format], it can be helpful to add `vfunc` and `defaultVFunc` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
 
 ## Pitfalls
 
- - Both interfaces that you implement for a single type can have a method with the same name, thus resulting in a name collision. However, you can elegantly workaround like this:
+ - Both interfaces that you implement for a single type can have a function with the same name, thus resulting in a name collision. However, you can elegantly workaround like this:
 
 ```c
-// `MyType_Iface1_foo` method definition here...
+// `MyType_Iface1_foo` function definition here...
 
 #define Iface1_foo MyType_Iface1_foo
 impl(Iface1, MyType);
 #undef Iface1_foo
 
-// `MyType_Iface2_foo` method definition here...
+// `MyType_Iface2_foo` function definition here...
 
 #define Iface2_foo MyType_Iface2_foo
 impl(Iface2, MyType);
@@ -491,7 +491,7 @@ A: Yes, C++11 and onwards is supported.
 
 A:
 
- - **Less boilerplate.** In particular, Interface99 deduces method implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
+ - **Less boilerplate.** In particular, Interface99 deduces function implementations from the context, thus improving code maintenance. To my knowledge, no other alternative can do this.
 
  - **Small.** Interface99 only features the software interface concept, no less and no more -- it does not bring all the other fancy OOP stuff, unlike [GObject] or [COS].
 
@@ -515,7 +515,7 @@ Other worth-mentioning projects:
 
 [`playground.c`]
 ```c
-#define Foo_IFACE iMethod(void, foo, int x, int y)
+#define Foo_IFACE vfunc(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -540,7 +540,7 @@ playground.c:12:1: error: ‘MyFoo_foo’ undeclared here (not in a function)
 
 [`playground.c`]
 ```c
-#define Foo_IFACE iMethod(void, foo, int x, int y)
+#define Foo_IFACE vfunc(void, foo, int x, int y)
 interface(Foo);
 
 typedef struct {
@@ -566,10 +566,10 @@ playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 
 [`playground.c`]
 ```c
-#define Foo_IFACE   iMethod(void, foo, int x, int y)
+#define Foo_IFACE   vfunc(void, foo, int x, int y)
 interface(Foo);
 
-#define Bar_IFACE   iMethod(void, bar, void)
+#define Bar_IFACE   vfunc(void, bar, void)
 #define Bar_EXTENDS (Foo)
 
 interface(Bar);
@@ -599,7 +599,7 @@ playground.c:19:1: error: ‘MyBar_Foo_impl’ undeclared here (not in a functio
 
 [`playground.c`]
 ```c
-#define Foo_IFACE iMethod(void, foo, void)
+#define Foo_IFACE vfunc(void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -631,7 +631,7 @@ playground.c:14:31: error: expected ‘)’ before ‘{’ token
 
 [`playground.c`]
 ```c
-#define Foo_IFACE iMethod(void, foo, void)
+#define Foo_IFACE vfunc(void, foo, void)
 interface(Foo);
 
 typedef struct {
@@ -663,11 +663,11 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends do not highlight function parameters -- we trade some IDE support for syntax conciseness.
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
-A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to method parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
+A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
 
 ### Q: Which compilers are tested?
 

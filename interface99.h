@@ -40,8 +40,8 @@ SOFTWARE.
 #define externImpl(iface, implementer)     externImpl99(iface, implementer)
 #define declImpl(iface, implementer)       declImpl99(iface, implementer)
 #define externDeclImpl(iface, implementer) externDeclImpl99(iface, implementer)
-#define iMethod(ret_ty, name, ...)         iMethod99(ret_ty, name, __VA_ARGS__)
-#define defaultIMethod(ret_ty, name, ...)  defaultIMethod99(ret_ty, name, __VA_ARGS__)
+#define vfunc(ret_ty, name, ...)           vfunc99(ret_ty, name, __VA_ARGS__)
+#define defaultVFunc(ret_ty, name, ...)    defaultVFunc99(ret_ty, name, __VA_ARGS__)
 
 #define DYN(implementer, iface, ...) DYN99(implementer, iface, __VA_ARGS__)
 #define VTABLE(implementer, iface)   VTABLE99(implementer, iface)
@@ -66,8 +66,8 @@ SOFTWARE.
 #define externImpl99(iface, implementer) ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementer))
 // } (Metalang99-compliant macros)
 
-#define iMethod99(ret_ty, name, ...)        ML99_CHOICE(method, ret_ty, name, __VA_ARGS__)
-#define defaultIMethod99(ret_ty, name, ...) ML99_CHOICE(defaultMethod, ret_ty, name, __VA_ARGS__)
+#define vfunc99(ret_ty, name, ...)        ML99_CHOICE(func, ret_ty, name, __VA_ARGS__)
+#define defaultVFunc99(ret_ty, name, ...) ML99_CHOICE(defaultFunc, ret_ty, name, __VA_ARGS__)
 
 #define DYN99(implementer, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
@@ -91,8 +91,8 @@ SOFTWARE.
 
 #define IFACE99_PRIV_VCALL_OVERLOAD(...)                                                           \
     ML99_CAT(IFACE99_PRIV_VCALL_, ML99_VARIADICS_IS_SINGLE(__VA_ARGS__))
-#define IFACE99_PRIV_VCALL_1(obj, method_name)      method_name(obj)
-#define IFACE99_PRIV_VCALL_0(obj, method_name, ...) method_name(obj, __VA_ARGS__)
+#define IFACE99_PRIV_VCALL_1(obj, func_name)      func_name(obj)
+#define IFACE99_PRIV_VCALL_0(obj, func_name, ...) func_name(obj, __VA_ARGS__)
 // } (Virtual calls)
 
 #define IFACE99_MAJOR 0
@@ -116,9 +116,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * char dummy;
  *
- * <method-ret-ty>0 (*<method-name>0)(<method-params>0);
+ * <func-ret-ty>0 (*<func-name>0)(<func-params>0);
  * ...
- * <method-ret-ty>N (*<method-name>N)(<method-params>N);
+ * <func-ret-ty>N (*<func-name>N)(<func-params>N);
  *
  * const <requirement>0VTable *<requirement>;
  * ...
@@ -130,7 +130,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            IFACE99_PRIV_genMethodPtrForEach(iface)),                                              \
+            IFACE99_PRIV_genFuncPtrForEach(iface)),                                                \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementForEach(iface),                                             \
@@ -140,14 +140,14 @@ SOFTWARE.
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(char dummy;), ML99_empty())
 
 /*
- * <method-ret-ty>0 (*<method-name>0)(<method-params>0);
+ * <func-ret-ty>0 (*<func-name>0)(<func-params>0);
  * ...
- * <method-ret-ty>N (*<method-name>N)(<method-params>N);
+ * <func-ret-ty>N (*<func-name>N)(<func-params>N);
  */
-#define IFACE99_PRIV_genMethodPtrForEach(iface)                                                    \
-    ML99_seqForEach(v(IFACE99_PRIV_genMethodPtr), v(iface##_IFACE))
+#define IFACE99_PRIV_genFuncPtrForEach(iface)                                                      \
+    ML99_seqForEach(v(IFACE99_PRIV_genFuncPtr), v(iface##_IFACE))
 
-#define IFACE99_PRIV_genMethodPtr_IMPL(_tag, ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
+#define IFACE99_PRIV_genFuncPtr_IMPL(_tag, ret_ty, name, ...) v(ret_ty (*name)(__VA_ARGS__);)
 
 /*
  * const <requirement>0VTable *<requirement>;
@@ -181,9 +181,9 @@ SOFTWARE.
  * // Only if <iface> is a marker interface without superinterfaces:
  * .dummy = '\0',
  *
- * <method-name>0 = either <implementer>_<method-name>0 or <iface>_<method-name>0,
+ * <func-name>0 = either <implementer>_<func-name>0 or <iface>_<func-name>0,
  * ...
- * <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
+ * <func-name>N = either <implementer>_<func-name>N or <iface>_<func-name>N,
  *
  * <requirement>0 = &VTABLE(<implementer>, <requirement>0),
  * ...
@@ -195,7 +195,7 @@ SOFTWARE.
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_MARKER_IFACE(iface),                                                   \
             ML99_empty(),                                                                          \
-            IFACE99_PRIV_genImplMethodNameForEach(iface, implementer)),                            \
+            IFACE99_PRIV_genImplFuncNameForEach(iface, implementer)),                              \
         ML99_IF(                                                                                   \
             IFACE99_PRIV_IS_SUB_IFACE(iface),                                                      \
             IFACE99_PRIV_genRequirementsImplForEach(iface, implementer),                           \
@@ -205,24 +205,23 @@ SOFTWARE.
     ML99_IF(IFACE99_PRIV_IS_EMPTY_VTABLE(iface), v(.dummy = '\0'), ML99_empty())
 
 /*
- * <method-name>0 = either <implementer>_<method-name>0 or <iface>_<method-name>0,
+ * <func-name>0 = either <implementer>_<func-name>0 or <iface>_<func-name>0,
  * ...
- * <method-name>N = either <implementer>_<method-name>N or <iface>_<method-name>N,
+ * <func-name>N = either <implementer>_<func-name>N or <iface>_<func-name>N,
  */
-#define IFACE99_PRIV_genImplMethodNameForEach(iface, implementer)                                  \
+#define IFACE99_PRIV_genImplFuncNameForEach(iface, implementer)                                    \
     ML99_seqForEach(                                                                               \
-        ML99_appl(v(IFACE99_PRIV_genImplMethodName), v(iface, implementer)),                       \
+        ML99_appl(v(IFACE99_PRIV_genImplFuncName), v(iface, implementer)),                         \
         v(iface##_IFACE))
 
-#define IFACE99_PRIV_genImplMethodName_IMPL(iface, implementer, tag, _ret_ty, name, ...)           \
+#define IFACE99_PRIV_genImplFuncName_IMPL(iface, implementer, tag, _ret_ty, name, ...)             \
     ML99_match(ML99_choice(v(tag), v(iface, implementer, name)), v(IFACE99_PRIV_genImpl_))
 
-#define IFACE99_PRIV_genImpl_method_IMPL(_iface, implementer, name)                                \
-    v(.name = implementer##_##name, )
-#define IFACE99_PRIV_genImpl_defaultMethod_IMPL(iface, implementer, name)                          \
+#define IFACE99_PRIV_genImpl_func_IMPL(_iface, implementer, name) v(.name = implementer##_##name, )
+#define IFACE99_PRIV_genImpl_defaultFunc_IMPL(iface, implementer, name)                            \
     ML99_IF(                                                                                       \
         IFACE99_PRIV_IS_CUSTOM(implementer, name),                                                 \
-        IFACE99_PRIV_genImpl_method_IMPL(~, implementer, name),                                    \
+        IFACE99_PRIV_genImpl_func_IMPL(~, implementer, name),                                      \
         v(.name = iface##_##name, ))
 
 /*
@@ -256,8 +255,8 @@ SOFTWARE.
 #define IFACE99_PRIV_IS_MARKER_IFACE(iface) ML99_SEQ_IS_EMPTY(iface##_IFACE)
 #define IFACE99_PRIV_IS_SUB_IFACE(iface)    ML99_IS_TUPLE(iface##_EXTENDS)
 
-#define IFACE99_PRIV_IS_CUSTOM(implementer, method_name)                                           \
-    ML99_IS_TUPLE(implementer##_##method_name##_CUSTOM)
+#define IFACE99_PRIV_IS_CUSTOM(implementer, func_name)                                             \
+    ML99_IS_TUPLE(implementer##_##func_name##_CUSTOM)
 // } (Various predicates)
 
 // Arity specifiers {
@@ -265,8 +264,8 @@ SOFTWARE.
 #define IFACE99_PRIV_genRequirement_ARITY     1
 #define IFACE99_PRIV_genRequirementImpl_ARITY 2
 
-#define IFACE99_PRIV_genMethodPtr_ARITY      1
-#define IFACE99_PRIV_genImplMethodName_ARITY 2
+#define IFACE99_PRIV_genFuncPtr_ARITY      1
+#define IFACE99_PRIV_genImplFuncName_ARITY 2
 
 // Public:
 
