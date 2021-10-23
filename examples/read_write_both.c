@@ -47,11 +47,11 @@ int main(void) {
 
     ReadWrite rw = DYN(File, ReadWrite, &(File){fp});
 
-    rw.vptr->Write->write(rw.self, "hello world", strlen("hello world"));
+    VCALL_SUPER(rw, Write, write, "hello world", strlen("hello world"));
     rewind(fp);
 
     char hello_world[16] = {0};
-    rw.vptr->Read->read(rw.self, hello_world, strlen("hello world"));
+    VCALL_SUPER(rw, Read, read, hello_world, strlen("hello world"));
 
     printf("We have read: '%s'\n", hello_world);
     fclose(fp);

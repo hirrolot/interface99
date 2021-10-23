@@ -15,7 +15,6 @@ typedef struct {
 } Num;
 
 int Num_get(void *self) { return ((Num *)self)->x; }
-
 void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 
 impl(State, Num);
@@ -27,24 +26,22 @@ typedef struct {
 
 int TraceState_get(void *self) {
     TraceState *this = (TraceState *)self;
-
     printf("get x\n");
-    return this->st.vptr->get(this->st.self);
+    return VCALL(this->st, get);
 }
 
 void TraceState_set(void *self, int x) {
     TraceState *this = (TraceState *)self;
-
     printf("set x = %d\n", x);
-    this->st.vptr->set(this->st.self, x);
+    VCALL(this->st, set, x);
 }
 
 impl(State, TraceState);
 
 void test(State st) {
-    st.vptr->set(st.self, 5);
-    st.vptr->set(st.self, 6);
-    (void)st.vptr->get(st.self);
+    VCALL(st, set, 5);
+    VCALL(st, set, 6);
+    (void)VCALL(st, get);
 }
 
 /*

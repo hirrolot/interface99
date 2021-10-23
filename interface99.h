@@ -42,8 +42,14 @@ SOFTWARE.
 #define externDeclImpl(iface, implementer) externDeclImpl99(iface, implementer)
 #define iMethod(ret_ty, name, ...)         iMethod99(ret_ty, name, __VA_ARGS__)
 #define defaultIMethod(ret_ty, name, ...)  defaultIMethod99(ret_ty, name, __VA_ARGS__)
-#define DYN(implementer, iface, ...)       DYN99(implementer, iface, __VA_ARGS__)
-#define VTABLE(implementer, iface)         VTABLE99(implementer, iface)
+
+#define DYN(implementer, iface, ...) DYN99(implementer, iface, __VA_ARGS__)
+#define VTABLE(implementer, iface)   VTABLE99(implementer, iface)
+
+#define VCALL(obj, ...)                       VCALL99(obj, __VA_ARGS__)
+#define VCALL_OBJ(obj, ...)                   VCALL_OBJ99(obj, __VA_ARGS__)
+#define VCALL_SUPER(obj, superiface, ...)     VCALL_SUPER99(obj, superiface, __VA_ARGS__)
+#define VCALL_SUPER_OBJ(obj, superiface, ...) VCALL_SUPER_OBJ99(obj, superiface, __VA_ARGS__)
 
 #endif // IFACE99_NO_ALIASES
 
@@ -60,12 +66,34 @@ SOFTWARE.
 #define externImpl99(iface, implementer) ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementer))
 // } (Metalang99-compliant macros)
 
+#define iMethod99(ret_ty, name, ...)        ML99_CHOICE(method, ret_ty, name, __VA_ARGS__)
+#define defaultIMethod99(ret_ty, name, ...) ML99_CHOICE(defaultMethod, ret_ty, name, __VA_ARGS__)
+
 #define DYN99(implementer, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
 #define VTABLE99(implementer, iface) ML99_CAT4(implementer, _, iface, _impl)
 
-#define iMethod99(ret_ty, name, ...)        ML99_CHOICE(method, ret_ty, name, __VA_ARGS__)
-#define defaultIMethod99(ret_ty, name, ...) ML99_CHOICE(defaultMethod, ret_ty, name, __VA_ARGS__)
+// Virtual calls {
+
+#define VCALL99(obj, ...)                                                                          \
+    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
+#define VCALL_OBJ99(obj, ...)                                                                      \
+    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj), __VA_ARGS__))
+#define VCALL_SUPER99(obj, superiface, ...)                                                        \
+    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
+#define VCALL_SUPER_OBJ99(obj, superiface, ...)                                                    \
+    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)(                             \
+        ((superiface){                                                                             \
+            .self = (obj).self,                                                                    \
+            .vptr = (obj).vptr->superiface,                                                        \
+        }),                                                                                        \
+        __VA_ARGS__))
+
+#define IFACE99_PRIV_VCALL_OVERLOAD(...)                                                           \
+    ML99_CAT(IFACE99_PRIV_VCALL_, ML99_VARIADICS_IS_SINGLE(__VA_ARGS__))
+#define IFACE99_PRIV_VCALL_1(obj, method_name)      method_name(obj)
+#define IFACE99_PRIV_VCALL_0(obj, method_name, ...) method_name(obj, __VA_ARGS__)
+// } (Virtual calls)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 7

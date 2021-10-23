@@ -39,12 +39,12 @@ int main(void) {
     assert(fp);
 
     Write w = DYN(File, Write, &(File){fp});
-    w.vptr->write(w.self, "hello world", strlen("hello world"));
+    VCALL(w, write, "hello world", strlen("hello world"));
     rewind(fp);
 
     Read r = DYN(File, Read, &(File){fp});
     char hello_world[16] = {0};
-    r.vptr->read(r.self, hello_world, strlen("hello world"));
+    VCALL(r, read, hello_world, strlen("hello world"));
 
     printf("We have read: '%s'\n", hello_world);
     fclose(fp);

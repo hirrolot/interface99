@@ -24,9 +24,9 @@ void Num_set(void *self, int x) { ((Num *)self)->x = x; }
 impl(State, Num);
 
 void test(State st) {
-    printf("x = %d\n", st.vptr->get(st.self));
-    st.vptr->set(st.self, 5);
-    printf("x = %d\n", st.vptr->get(st.self));
+    printf("x = %d\n", VCALL(st, get));
+    VCALL(st, set, 5);
+    printf("x = %d\n", VCALL(st, get));
 }
 
 /*

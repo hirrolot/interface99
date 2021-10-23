@@ -5,8 +5,6 @@
 #include "croak.h"
 #include "frog.h"
 
-static void test(Croak croakable) { croakable.vptr->croak(croakable.self); }
-
 /*
  * Output:
  * Paul: croak!
@@ -16,8 +14,8 @@ int main(void) {
     Frog *paul = Frog_new("Paul");
     Frog *steve = Frog_new("Steve");
 
-    test(DYN(Frog, Croak, paul));
-    test(DYN(Frog, Croak, steve));
+    VCALL(DYN(Frog, Croak, paul), croak);
+    VCALL(DYN(Frog, Croak, steve), croak);
 
     Frog_free(paul);
     Frog_free(steve);

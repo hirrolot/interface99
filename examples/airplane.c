@@ -65,11 +65,11 @@ impl(Airplane, MyAirplane);
 int main(void) {
     Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
 
-    my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
-    my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
+    VCALL_SUPER(my_airplane, Vehicle, move_forward, 10);
+    VCALL_SUPER(my_airplane, Vehicle, move_back, 3);
 
-    my_airplane.vptr->move_up(my_airplane.self, 7);
-    my_airplane.vptr->move_down(my_airplane.self, 11);
+    VCALL(my_airplane, move_up, 7);
+    VCALL(my_airplane, move_down, 11);
 
     return 0;
 }

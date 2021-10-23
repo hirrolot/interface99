@@ -20,6 +20,7 @@ endif()
 add_subdirectory(extern_impl)
 
 add_executable(basic_tests basic_tests.c common.h common.c util.h)
+add_executable(vcalls vcalls.c)
 add_executable(decl_impl decl_impl.c common.h common.c)
 add_executable(metalang99_compliant metalang99_compliant.c)
 add_executable(superinterfaces superinterfaces.c common.h common.c util.h)
