@@ -75,16 +75,32 @@ impl(TestSuper, Impl);
 impl(Test, Impl);
 
 int main(void) {
-    Test test = DYN(Impl, Test, &obj);
+#define RVALUE DYN(Impl, Test, &obj)
 
-    assert(TEST_VCALL == VCALL(test, test_vcall));
-    assert(TEST_VCALL_ARGS == VCALL(test, test_vcall_args, n, str));
-    assert(TEST_VCALL_OBJ == VCALL_OBJ(test, test_vcall_obj));
-    assert(TEST_VCALL_OBJ_ARGS == VCALL_OBJ(test, test_vcall_obj_args, n, str));
+    // Test that VCALL_* can accept lvalues.
+    {
+        Test lvalue = RVALUE;
 
-    assert(TEST_VCALL == VCALL_SUPER(test, TestSuper, test_super_vcall));
-    assert(TEST_VCALL_ARGS == VCALL_SUPER(test, TestSuper, test_super_vcall_args, n, str));
-    assert(TEST_VCALL_OBJ == VCALL_SUPER_OBJ(test, TestSuper, test_super_vcall_obj));
-    assert(
-        TEST_VCALL_OBJ_ARGS == VCALL_SUPER_OBJ(test, TestSuper, test_super_vcall_obj_args, n, str));
+        assert(TEST_VCALL == VCALL(lvalue, test_vcall));
+        assert(TEST_VCALL_ARGS == VCALL(lvalue, test_vcall_args, n, str));
+        assert(TEST_VCALL_OBJ == VCALL_OBJ(lvalue, test_vcall_obj));
+        assert(TEST_VCALL_OBJ_ARGS == VCALL_OBJ(lvalue, test_vcall_obj_args, n, str));
+
+        assert(TEST_VCALL == VCALL_SUPER(lvalue, TestSuper, test_super_vcall));
+        assert(TEST_VCALL_ARGS == VCALL_SUPER(lvalue, TestSuper, test_super_vcall_args, n, str));
+        assert(TEST_VCALL_OBJ == VCALL_SUPER_OBJ(lvalue, TestSuper, test_super_vcall_obj));
+        assert(
+            TEST_VCALL_OBJ_ARGS ==
+            VCALL_SUPER_OBJ(lvalue, TestSuper, test_super_vcall_obj_args, n, str));
+    }
+
+    // Test rvalues.
+    {
+        (void)VCALL(RVALUE, test_vcall);
+        (void)VCALL_OBJ(RVALUE, test_vcall_obj);
+        (void)VCALL_SUPER(RVALUE, TestSuper, test_super_vcall);
+        (void)VCALL_SUPER_OBJ(RVALUE, TestSuper, test_super_vcall_obj);
+    }
+
+#undef RVALUE
 }

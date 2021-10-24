@@ -297,10 +297,11 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <dyn>             ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
 <vtable>          ::= "VTABLE(" <implementer> "," <iface> ")" ;
 
-<vcall>           ::= "VCALL("           <rvalue> "," <func-name> <vcall-args> ")" ;
-<vcall-obj>       ::= "VCALL_OBJ("       <rvalue> "," <func-name> <vcall-args> ")" ;
-<vcall-super>     ::= "VCALL_SUPER("     <rvalue> "," <iface> "," <func-name> <vcall-args> ")" ;
-<vcall-super-obj> ::= "VCALL_SUPER_OBJ(" <rvalue> "," <iface> "," <func-name> <vcall-args> ")" ;
+(* <expr> must be an expression of an interface object type. *)
+<vcall>           ::= "VCALL("           <expr> "," <func-name> <vcall-args> ")" ;
+<vcall-obj>       ::= "VCALL_OBJ("       <expr> "," <func-name> <vcall-args> ")" ;
+<vcall-super>     ::= "VCALL_SUPER("     <expr> "," <iface> "," <func-name> <vcall-args> ")" ;
+<vcall-super-obj> ::= "VCALL_SUPER_OBJ(" <expr> "," <iface> "," <func-name> <vcall-args> ")" ;
 <vcall-args>      ::= [ "," <argument-expression-list> ] ;
 
 <requirement>     ::= <iface> ;
@@ -400,7 +401,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VCALL`
 
-_Note: henceforth, for `VCALL_*` macros, `obj` designates a passed `<rvalue>`, `func` designates `<func-name>`, and `args...` designate non-empty `<vcall-args>`._
+_Note: henceforth, for `VCALL_*` macros, `obj` designates a passed `<expr>`, `func` designates `<func-name>`, and `args...` designate non-empty `<vcall-args>`._
 
 A shortcut for `obj.vptr->func(obj.self)` or `obj.vptr->func(obj.self, args...)`.
 
