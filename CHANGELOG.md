@@ -8,11 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
- - `VCALL`, `VCALL_OBJ`, `VCALL_SUPER`, `VCALL_SUPER_OBJ` as a syntax sugar to call virtual functions.
+ - `VCALL`, `VCALL_OBJ`, `VCALL_SUPER`, `VCALL_SUPER_OBJ` as a convenient syntax sugar to call virtual functions.
 
 ### Changed
 
- - `iMethod` => `vfunc`, `defaultIMethod` => `defaultVFunc` (consistent with `VTABLE`, `vptr`).
+ - `iMethod` => `vfunc`, `defaultIMethod` => `defaultVFunc` (consistent with `VTABLE`, `vptr`) [**BC**].
 
 ## [0.7.0] - 2021-10-06
 
