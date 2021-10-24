@@ -579,7 +579,7 @@ playground.c:12:1: note: (near initialization for ‘MyFoo_Foo_impl.foo’)
 
 [`playground.c`]
 ```c
-#define Foo_IFACE   vfunc(void, foo, int x, int y)
+#define Foo_IFACE vfunc(void, foo, int x, int y)
 interface(Foo);
 
 #define Bar_IFACE   vfunc(void, bar, void)
@@ -628,6 +628,7 @@ int main(void) { Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0}); }
 
 [`/bin/sh`]
 ```
+playground.c: In function ‘main’:
 playground.c:14:28: error: ‘Bar’ undeclared (first use in this function)
    14 | int main(void) { Foo foo = DYN(MyFoo, /* Foo */ Bar, &(MyFoo){0}); }
       |                            ^~~
@@ -660,6 +661,7 @@ int main(void) { FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo); }
 
 [`/bin/sh`]
 ```
+playground.c: In function ‘main’:
 playground.c:14:34: error: ‘MyBar_Foo_impl’ undeclared (first use in this function); did you mean ‘MyFoo_Foo_impl’?
    14 | int main(void) { FooVTable foo = VTABLE(/* MyFoo */ MyBar, Foo); }
       |                                  ^~~~~~
