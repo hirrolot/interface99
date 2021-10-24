@@ -6,7 +6,7 @@
 
 #define Droid_IFACE                                                                                \
     vfunc(const char *, name, void)                                                                \
-    defaultVFunc(void, turn_on, Droid self)
+    defaultVFunc(void, turn_on, Droid droid)
 
 interface(Droid);
 

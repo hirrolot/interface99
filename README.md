@@ -220,9 +220,9 @@ Sometimes we wish to define default behaviour for several implementers; this is 
 Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this example, we define the interface `Droid`:
 
 ```c
-#define Droid_IFACE                        \
-    vfunc(const char *, name, void)        \
-    defaultVFunc(void, turn_on, Droid self)
+#define Droid_IFACE                         \
+    vfunc(const char *, name, void)         \
+    defaultVFunc(void, turn_on, Droid droid)
 
 interface(Droid);
 ```
