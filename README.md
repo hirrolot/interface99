@@ -98,33 +98,11 @@ This section is based on a collection of well-documented [examples](examples/), 
 
 ### Basic usage
 
-Interface99 lies upon these three basic concepts:
+ 1. **Interface definition.**
 
- 1. **Interface definition:**
+[`interface(State);`](#interface)
 
-[`interface(Vehicle);`](#interface)
-
-(This is much like defining a `struct`/`union`/`enum`. Usually it goes in `*.h` files.)
-
- 2. **Implementation declaration:**
-
-| Linkage | Syntax |
-|---------|--------|
-| Internal | [`declImpl(Vehicle, Car);`](#declImpl) |
-| External | [`externDeclImpl(Vehicle, Car);`](#externDeclImpl) |
-
-(If your interface implementation is to be exposed to other TUs, you can write `externDeclImpl(...)` in a `*.h` file and `externImpl` (see below) in a corresponding `*.c` file.)
-
- 3. **Implementation definition:**
-
-| Linkage | Syntax |
-|---------|--------|
-| Internal | [`impl(Vehicle, Car);`](#impl) |
-| External | [`externImpl(Vehicle, Car);`](#externImpl) |
-
-(This is the actual place where a certain interface is implemented for a certain type.)
-
-Now what do the macros generate? `interface` generates a virtual table and a so-called _interface object_ type. In the case of [`examples/state.c`](examples/state.c):
+An interface definition expands to a virtual table structure and a so-called _interface object type_. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
 typedef struct StateVTable {
@@ -138,7 +116,18 @@ typedef struct State {
 } State;
 ```
 
-`impl` generates a constant variable of type `StateVTable`:
+Here, `State.self` is the pointer to an object whose type implements `State`, and `State.vptr` points to a corresponding virtual table instance (see below).
+
+Usually, it goes in `*.h` files.
+
+ 2. **Implementation definition.**
+
+| Linkage | Syntax |
+|---------|--------|
+| Internal | [`impl(State, Num);`](#impl) |
+| External | [`externImpl(State, Num);`](#externImpl) |
+
+An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/state.c`:
 
 ```c
 static const StateVTable Num_State_impl = {
@@ -149,29 +138,31 @@ static const StateVTable Num_State_impl = {
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
-This is the implementation of `State` for `Num`: it contains all the functions needed to satisfy the interface. Normally, you will not use it directly but through an interface object of type `State`:
+ 3. **Dynamic dispatch.**
 
- - `State.self` is the pointer to an object whose type implements `State` (in our case -- `Num`).
- - `State.vptr` is the pointer to an implementer's virtual table (`Num_State_impl`).
+Once an interface and its implementations are both generated, it is time to instantiate an interface object and invoke some functions upon it.
 
-`State`, in its turn, is instantiated by [`DYN`](#DYN):
+First of all, to instantiate `State`, use the [`DYN`](#DYN) macro:
 
 ```с
 Num n = {0};
 State st = DYN(Num, State, &n);
+test(st);
 ```
 
-Since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept it as a function parameter and manipulate it through `.self` & `.vptr` like this:
+Since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept it as a function parameter and invoke some methods on it:
 
 ```c
 void test(State st) {
-    printf("x = %d\n", st.vptr->get(st.self));
-    st.vptr->set(st.self, 5);
-    printf("x = %d\n", st.vptr->get(st.self));
+    printf("x = %d\n", VCALL(st, get));
+    VCALL(st, set, 5);
+    printf("x = %d\n", VCALL(st, get));
 }
 ```
 
-... and this is all you need to know to write most of the stuff.
+Besides [`VCALL`](#VCALL), you also have [`VCALL_OBJ`](#VCALL_OBJ), [`VCALL_SUPER`](#VCALL_SUPER), and [`VCALL_SUPER_OBJ`](#VCALL_SUPER_OBJ); for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke it as `obj.vptr->foo(...)` as well.
+
+Congratulations, this is all you need to know to write most of the stuff!
 
 ### Superinterfaces
 
@@ -224,7 +215,7 @@ Sometimes we wish to define default behaviour for several implementers; this is 
 Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this example, we define the interface `Droid`:
 
 ```c
-#define Droid_IFACE                          \
+#define Droid_IFACE                        \
     vfunc(const char *, name, void)        \
     defaultVFunc(void, turn_on, Droid self)
 
@@ -282,26 +273,32 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 ### EBNF syntax
 
 ```ebnf
-<iface-def>      ::= "interface(" <iface> ")" ;
+<iface-def>       ::= "interface(" <iface> ")" ;
+<iface>           ::= <ident> ;
 
-<func>           ::= <regular-func> | <default-func> ;
-<regular-func>   ::= "vfunc("        <func-ret-ty> "," <func-name> "," <func-params> ")" ;
-<default-func>   ::= "defaultVFunc(" <func-ret-ty> "," <func-name> "," <func-params> ")" ;
-<func-ret-ty>    ::= <type> ;
-<func-name>      ::= <ident> ;
-<func-params>    ::= <parameter-type-list> ;
+<func>            ::= <regular-func> | <default-func> ;
+<regular-func>    ::= "vfunc("        <func-ret-ty> "," <func-name> "," <func-params> ")" ;
+<default-func>    ::= "defaultVFunc(" <func-ret-ty> "," <func-name> "," <func-params> ")" ;
+<func-ret-ty>     ::= <type> ;
+<func-name>       ::= <ident> ;
+<func-params>     ::= <parameter-type-list> ;
 
-<impl>           ::= "impl("           <iface> "," <implementer> ")" ;
-<externImpl>     ::= "externImpl("     <iface> "," <implementer> ")" ;
-<declImpl>       ::= "declImpl("       <iface> "," <implementer> ")" ;
-<externDeclImpl> ::= "externDeclImpl(" <iface> "," <implementer> ")" ;
+<impl>            ::= "impl("           <iface> "," <implementer> ")" ;
+<externImpl>      ::= "externImpl("     <iface> "," <implementer> ")" ;
+<declImpl>        ::= "declImpl("       <iface> "," <implementer> ")" ;
+<externDeclImpl>  ::= "externDeclImpl(" <iface> "," <implementer> ")" ;
+<implementer>     ::= <ident> ;
 
-<dyn>            ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
-<vtable>         ::= "VTABLE(" <implementer> "," <iface> ")" ;
+<dyn>             ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
+<vtable>          ::= "VTABLE(" <implementer> "," <iface> ")" ;
 
-<iface>          ::= <ident> ;
-<implementer>    ::= <ident> ;
-<requirement>    ::= <iface> ;
+<vcall>           ::= "VCALL("           <rvalue> "," <func-name> [ "," <vcall-args> ] ")" ;
+<vcall-obj>       ::= "VCALL_OBJ("       <rvalue> "," <func-name> [ "," <vcall-args> ] ")" ;
+<vcall-super>     ::= "VCALL_SUPER("     <rvalue> "," <iface> "," <func-name> [ "," <vcall-args> ] ")" ;
+<vcall-super-obj> ::= "VCALL_SUPER_OBJ(" <rvalue> "," <iface> "," <func-name> [ "," <vcall-args> ] ")" ;
+<vcall-args>      ::= <argument-expression-list> ;
+
+<requirement>     ::= <iface> ;
 ```
 
 Notes:
@@ -395,6 +392,22 @@ Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` 
 #### `VTABLE`
 
 Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<implementer>` of type `<iface>VTable`.
+
+#### `VCALL`
+
+Semantically equivalent to `obj.vptr->func(obj.self)` or `obj.vptr->func(obj.self, args...)`.
+
+#### `VCALL_OBJ`
+
+The same as [`VCALL`](#VCALL) except that it passes `obj` to `func` instead of `obj.self`.
+
+#### `VCALL_SUPER`
+
+Semantically equivalent to `obj.vptr->superiface->func(obj.self)` or `obj.vptr->superiface->func(obj.self, args...)`.
+
+#### `VCALL_SUPER_OBJ`
+
+The same as [`VCALL_SUPER`](#VCALL_SUPER) except that it passes `obj` to `func` instead of `obj.self`.
 
 ## Miscellaneous
 
@@ -663,7 +676,7 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends do not highlight function parameters -- we trade some IDE support for syntax conciseness.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness.
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
