@@ -100,20 +100,24 @@ This section is based on a collection of well-documented [examples](examples/), 
 
  1. **Interface definition.**
 
-[`interface(State);`](#interface)
+Syntax: [`interface(State);`](#interface)
 
 An interface definition expands to a virtual table structure and a so-called _interface object type_. In the case of [`examples/state.c`](examples/state.c):
 
 ```c
-typedef struct StateVTable {
+// interface(State);
+typedef struct StateVTable StateVTable;
+typedef struct State State;
+
+struct StateVTable {
     int (*get)(void *self);
     void (*set)(void *self, int x);
-} StateVTable;
+};
 
-typedef struct State {
+struct State {
     void *self;
     const StateVTable *vptr;
-} State;
+};
 ```
 
 Here, `State.self` is the pointer to an object whose type implements `State`, and `State.vptr` points to a corresponding virtual table instance (see below).
@@ -130,6 +134,7 @@ Usually, it goes in `*.h` files.
 An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/state.c`:
 
 ```c
+// impl(State, Num);
 static const StateVTable Num_State_impl = {
     .get = Num_get,
     .set = Num_set,
@@ -150,7 +155,7 @@ State st = DYN(Num, State, &n);
 test(st);
 ```
 
-Since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept it as a function parameter and invoke some methods on it:
+Here, `DYN(Num, State, &n)` creates `State` by initialising `State.self` to `&n` and `State.vptr` to the aforementioned `Num_State_impl` (also accessible as [`VTABLE(Num, State)`](#VTABLE)). Eventually, since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `st` as a function parameter and invoke some methods on it:
 
 ```c
 void test(State st) {
@@ -160,7 +165,7 @@ void test(State st) {
 }
 ```
 
-Besides [`VCALL`](#VCALL), you also have [`VCALL_OBJ`](#VCALL_OBJ), [`VCALL_SUPER`](#VCALL_SUPER), and [`VCALL_SUPER_OBJ`](#VCALL_SUPER_OBJ); for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke it as `obj.vptr->foo(...)` as well.
+Besides [`VCALL`](#VCALL), you also have [`VCALL_OBJ`](#VCALL_OBJ), [`VCALL_SUPER`](#VCALL_SUPER), and [`VCALL_SUPER_OBJ`](#VCALL_SUPER_OBJ); for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
 
 Congratulations, this is all you need to know to write most of the stuff!
 
@@ -292,11 +297,11 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <dyn>             ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
 <vtable>          ::= "VTABLE(" <implementer> "," <iface> ")" ;
 
-<vcall>           ::= "VCALL("           <rvalue> "," <func-name> [ "," <vcall-args> ] ")" ;
-<vcall-obj>       ::= "VCALL_OBJ("       <rvalue> "," <func-name> [ "," <vcall-args> ] ")" ;
-<vcall-super>     ::= "VCALL_SUPER("     <rvalue> "," <iface> "," <func-name> [ "," <vcall-args> ] ")" ;
-<vcall-super-obj> ::= "VCALL_SUPER_OBJ(" <rvalue> "," <iface> "," <func-name> [ "," <vcall-args> ] ")" ;
-<vcall-args>      ::= <argument-expression-list> ;
+<vcall>           ::= "VCALL("           <rvalue> "," <func-name> <vcall-args> ")" ;
+<vcall-obj>       ::= "VCALL_OBJ("       <rvalue> "," <func-name> <vcall-args> ")" ;
+<vcall-super>     ::= "VCALL_SUPER("     <rvalue> "," <iface> "," <func-name> <vcall-args> ")" ;
+<vcall-super-obj> ::= "VCALL_SUPER_OBJ(" <rvalue> "," <iface> "," <func-name> <vcall-args> ")" ;
+<vcall-args>      ::= [ "," <argument-expression-list> ] ;
 
 <requirement>     ::= <iface> ;
 ```
@@ -395,7 +400,9 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VCALL`
 
-Semantically equivalent to `obj.vptr->func(obj.self)` or `obj.vptr->func(obj.self, args...)`.
+_Note: henceforth, for `VCALL_*` macros, `obj` designates a passed `<rvalue>`, `func` designates `<func-name>`, and `args...` designate non-empty `<vcall-args>`._
+
+A shortcut for `obj.vptr->func(obj.self)` or `obj.vptr->func(obj.self, args...)`.
 
 #### `VCALL_OBJ`
 
@@ -403,11 +410,13 @@ The same as [`VCALL`](#VCALL) except that it passes `obj` to `func` instead of `
 
 #### `VCALL_SUPER`
 
-Semantically equivalent to `obj.vptr->superiface->func(obj.self)` or `obj.vptr->superiface->func(obj.self, args...)`.
+_Note: henceforth, for `VCALL_SUPER_*` macros, `superiface` designates `<iface>`._
+
+A shortcut for `obj.vptr->superiface->func(obj.self)` or `obj.vptr->superiface->func(obj.self, args...)`.
 
 #### `VCALL_SUPER_OBJ`
 
-The same as [`VCALL_SUPER`](#VCALL_SUPER) except that it passes `obj` to `func` instead of `obj.self`.
+The same as [`VCALL_SUPER`](#VCALL_SUPER) except that it passes `(superiface){obj.self, obj.vptr->superiface}` to `func` instead of `obj.self`.
 
 ## Miscellaneous
 
@@ -678,7 +687,7 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness.
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 
