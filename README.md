@@ -376,13 +376,13 @@ I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<
  - **Function implementations.** If `<func-name>I` is defined via `defaultVFunc` and `<implementer>_<func-name>I_CUSTOM` is **not** defined, `<iface>_<func-name>I` is generated (default implementation). Otherwise, `<implementer>_<func-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
-#### `declImpl`
-
-Expands to `static const <iface>VTable VTABLE(<implementer>, <iface>)`, i.e., it declares a virtual table instance of `<implementer>` of type `<iface>VTable`.
-
 #### `externImpl`
 
 The same as [`impl`](#impl) but generates an `extern` definition instead of `static`.
+
+#### `declImpl`
+
+Expands to `static const <iface>VTable VTABLE(<implementer>, <iface>)`, i.e., it declares a virtual table instance of `<implementer>` of type `<iface>VTable`.
 
 #### `externDeclImpl`
 
