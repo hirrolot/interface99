@@ -5,7 +5,7 @@ IndentWidth: 4
 ContinuationIndentWidth: 4
 ColumnLimit: 100
 
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: Empty
 AllowAllArgumentsOnNextLine: false
 BinPackArguments: false
 AllowAllParametersOfDeclarationOnNextLine: true

@@ -74,6 +74,7 @@ The design of Interface99 is pretty similar to that of high-level programming la
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can construct an object of both interfaces, `FooBar obj`. |
 | [Default implementations](examples/default_impl.c)  | ✅ | Some interface functions may be given default implementations. A default function can call other functions and vice versa. |
+| Data and implementation separation  | ✅ | New interfaces can be implemented for existing types. |
 
 ## Installation
 
@@ -688,7 +689,7 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness. We could instead generate wrapper functions `Iface_method(self, ...)` with appropriate signatures, but they would be anyway less expressive than `VCALL` because we could not call superinterface functions using this mechanism.
 
 ### Q: Why use `void *self` instead of `T *self` in implementations?
 

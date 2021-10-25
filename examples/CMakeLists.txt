@@ -19,7 +19,7 @@ endif()
 
 add_subdirectory(opaque_type)
 
-add_executable(state state.c)
+add_executable(shape shape.c)
 add_executable(trace_state trace_state.c)
 add_executable(airplane airplane.c)
 add_executable(read_write read_write.c)
