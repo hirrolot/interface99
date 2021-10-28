@@ -43,13 +43,16 @@ SOFTWARE.
 #define vfunc(ret_ty, name, ...)           vfunc99(ret_ty, name, __VA_ARGS__)
 #define defaultVFunc(ret_ty, name, ...)    defaultVFunc99(ret_ty, name, __VA_ARGS__)
 
-#define DYN(implementer, iface, ...) DYN99(implementer, iface, __VA_ARGS__)
-#define VTABLE(implementer, iface)   VTABLE99(implementer, iface)
-
 #define VCALL(obj, ...)                       VCALL99(obj, __VA_ARGS__)
 #define VCALL_OBJ(obj, ...)                   VCALL_OBJ99(obj, __VA_ARGS__)
 #define VCALL_SUPER(obj, superiface, ...)     VCALL_SUPER99(obj, superiface, __VA_ARGS__)
 #define VCALL_SUPER_OBJ(obj, superiface, ...) VCALL_SUPER_OBJ99(obj, superiface, __VA_ARGS__)
+
+#define DYN(implementer, iface, ...) DYN99(implementer, iface, __VA_ARGS__)
+#define VTABLE(implementer, iface)   VTABLE99(implementer, iface)
+
+#define VSelf    VSelf99
+#define VSELF(T) VSELF99(T)
 
 #endif // IFACE99_NO_ALIASES
 
@@ -66,34 +69,15 @@ SOFTWARE.
 #define externImpl99(iface, implementer) ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementer))
 // } (Metalang99-compliant macros)
 
-#define vfunc99(ret_ty, name, ...)        ML99_CHOICE(func, ret_ty, name, __VA_ARGS__)
-#define defaultVFunc99(ret_ty, name, ...) ML99_CHOICE(defaultFunc, ret_ty, name, __VA_ARGS__)
+#define vfunc99(ret_ty, name, ...)        ML99_CHOICE(vfunc, ret_ty, name, __VA_ARGS__)
+#define defaultVFunc99(ret_ty, name, ...) ML99_CHOICE(defaultVFunc, ret_ty, name, __VA_ARGS__)
 
 #define DYN99(implementer, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
 #define VTABLE99(implementer, iface) ML99_CAT4(implementer, _, iface, _impl)
 
-// Virtual calls {
-
-#define VCALL99(obj, ...)                                                                          \
-    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
-#define VCALL_OBJ99(obj, ...)                                                                      \
-    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj), __VA_ARGS__))
-#define VCALL_SUPER99(obj, superiface, ...)                                                        \
-    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
-#define VCALL_SUPER_OBJ99(obj, superiface, ...)                                                    \
-    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)(                             \
-        ((superiface){                                                                             \
-            .self = (obj).self,                                                                    \
-            .vptr = (obj).vptr->superiface,                                                        \
-        }),                                                                                        \
-        __VA_ARGS__))
-
-#define IFACE99_PRIV_VCALL_OVERLOAD(...)                                                           \
-    ML99_CAT(IFACE99_PRIV_VCALL_, ML99_VARIADICS_IS_SINGLE(__VA_ARGS__))
-#define IFACE99_PRIV_VCALL_1(obj, func_name)      func_name(obj)
-#define IFACE99_PRIV_VCALL_0(obj, func_name, ...) func_name(obj, __VA_ARGS__)
-// } (Virtual calls)
+#define VSelf99    void *restrict iface99_priv_self
+#define VSELF99(T) T *restrict self = (T * restrict)(iface99_priv_self)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 7
@@ -217,11 +201,11 @@ SOFTWARE.
 #define IFACE99_PRIV_genImplFuncName_IMPL(iface, implementer, tag, _ret_ty, name, ...)             \
     ML99_match(ML99_choice(v(tag), v(iface, implementer, name)), v(IFACE99_PRIV_genImpl_))
 
-#define IFACE99_PRIV_genImpl_func_IMPL(_iface, implementer, name) v(.name = implementer##_##name, )
-#define IFACE99_PRIV_genImpl_defaultFunc_IMPL(iface, implementer, name)                            \
+#define IFACE99_PRIV_genImpl_vfunc_IMPL(_iface, implementer, name) v(.name = implementer##_##name, )
+#define IFACE99_PRIV_genImpl_defaultVFunc_IMPL(iface, implementer, name)                           \
     ML99_IF(                                                                                       \
         IFACE99_PRIV_IS_CUSTOM(implementer, name),                                                 \
-        IFACE99_PRIV_genImpl_func_IMPL(~, implementer, name),                                      \
+        IFACE99_PRIV_genImpl_vfunc_IMPL(~, implementer, name),                                     \
         v(.name = iface##_##name, ))
 
 /*
@@ -247,6 +231,28 @@ SOFTWARE.
 #define IFACE99_PRIV_DECL_IMPL_COMMON(iface, implementer)                                          \
     const ML99_CAT(iface, VTable) VTABLE99(implementer, iface)
 // } (Implementation declaration)
+
+// Virtual calls {
+
+#define VCALL99(obj, ...)                                                                          \
+    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
+#define VCALL_OBJ99(obj, ...)                                                                      \
+    ((obj).vptr->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj), __VA_ARGS__))
+#define VCALL_SUPER99(obj, superiface, ...)                                                        \
+    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)((obj).self, __VA_ARGS__))
+#define VCALL_SUPER_OBJ99(obj, superiface, ...)                                                    \
+    ((obj).vptr->superiface->IFACE99_PRIV_VCALL_OVERLOAD(__VA_ARGS__)(                             \
+        ((superiface){                                                                             \
+            .self = (obj).self,                                                                    \
+            .vptr = (obj).vptr->superiface,                                                        \
+        }),                                                                                        \
+        __VA_ARGS__))
+
+#define IFACE99_PRIV_VCALL_OVERLOAD(...)                                                           \
+    ML99_CAT(IFACE99_PRIV_VCALL_, ML99_VARIADICS_IS_SINGLE(__VA_ARGS__))
+#define IFACE99_PRIV_VCALL_1(obj, func_name)      func_name(obj)
+#define IFACE99_PRIV_VCALL_0(obj, func_name, ...) func_name(obj, __VA_ARGS__)
+// } (Virtual calls)
 
 // Various predicates {
 

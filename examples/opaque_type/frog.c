@@ -24,10 +24,10 @@ void Frog_free(Frog *self) {
     free(self);
 }
 
-static void Frog_croak(void *self) {
-    Frog *this = (Frog *)self;
-    printf("%s: croak!\n", this->name);
-    this->ncroaks++;
+static void Frog_croak(VSelf) {
+    VSELF(Frog);
+    printf("%s: croak!\n", self->name);
+    self->ncroaks++;
 }
 
 externImpl(Croak, Frog);

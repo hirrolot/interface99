@@ -6,10 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define Read_IFACE vfunc(size_t, read, void *self, char *dest, size_t bytes_to_read)
+#define Read_IFACE vfunc(size_t, read, VSelf, char *dest, size_t bytes_to_read)
 interface(Read);
 
-#define Write_IFACE vfunc(size_t, write, void *self, const char *src, size_t bytes_to_write)
+#define Write_IFACE vfunc(size_t, write, VSelf, const char *src, size_t bytes_to_write)
 interface(Write);
 
 #define ReadWrite_IFACE
@@ -20,16 +20,16 @@ typedef struct {
     FILE *fp;
 } File;
 
-size_t File_read(void *self, char *dest, size_t bytes_to_read) {
-    File *this = (File *)self;
-    return fread(dest, 1, bytes_to_read, this->fp);
+size_t File_read(VSelf, char *dest, size_t bytes_to_read) {
+    VSELF(File);
+    return fread(dest, 1, bytes_to_read, self->fp);
 }
 
 impl(Read, File);
 
-size_t File_write(void *self, const char *src, size_t bytes_to_write) {
-    File *this = (File *)self;
-    return fwrite(src, 1, bytes_to_write, this->fp);
+size_t File_write(VSelf, const char *src, size_t bytes_to_write) {
+    VSELF(File);
+    return fwrite(src, 1, bytes_to_write, self->fp);
 }
 
 impl(Write, File);

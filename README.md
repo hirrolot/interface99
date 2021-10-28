@@ -4,37 +4,74 @@
 
 Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-header library.
 
-[ [`examples/state.c`](examples/state.c) ]
+[ [`examples/shape.c`](examples/shape.c) ]
 ```c
 #include <interface99.h>
 
 #include <stdio.h>
 
-#define State_IFACE                    \
-    vfunc( int, get, void *self)       \
-    vfunc(void, set, void *self, int x)
+#define Shape_IFACE                      \
+    vfunc( int, perim, const VSelf)      \
+    vfunc(void, scale, VSelf, int factor)
 
-interface(State);
+interface(Shape);
+
+// Rect implementation
+// ============================================================
 
 typedef struct {
-    int x;
-} Num;
+    int a, b;
+} Rect;
 
-int  Num_get(void *self) { return ((Num *)self)->x; }
-void Num_set(void *self, int x) { ((Num *)self)->x = x; }
+int Rect_perim(const VSelf) {
+    VSELF(const Rect);
+    return (self->a + self->b) * 2;
+}
 
-impl(State, Num);
+void Rect_scale(VSelf, int factor) {
+    VSELF(Rect);
+    self->a *= factor;
+    self->b *= factor;
+}
 
-void test(State st) {
-    printf("x = %d\n", VCALL(st, get));
-    VCALL(st, set, 5);
-    printf("x = %d\n", VCALL(st, get));
+impl(Shape, Rect);
+
+// Triangle implementation
+// ============================================================
+
+typedef struct {
+    int a, b, c;
+} Triangle;
+
+int Triangle_perim(const VSelf) {
+    VSELF(const Triangle);
+    return self->a + self->b + self->c;
+}
+
+void Triangle_scale(VSelf, int factor) {
+    VSELF(Triangle);
+    self->a *= factor;
+    self->b *= factor;
+    self->c *= factor;
+}
+
+impl(Shape, Triangle);
+
+// Test
+// ============================================================
+
+void test(Shape shape) {
+    printf("perim = %d\n", VCALL(shape, perim));
+    VCALL(shape, scale, 5);
+    printf("perim = %d\n", VCALL(shape, perim));
 }
 
 int main(void) {
-    Num n = {0};
-    State st = DYN(Num, State, &n);
-    test(st);
+    Shape rect = DYN(Rect, Shape, &(Rect){5, 7}),
+          triangle = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
+
+    test(rect);
+    test(triangle);
 }
 ```
 
@@ -42,8 +79,10 @@ int main(void) {
   <summary>Output</summary>
 
 ```
-x = 0
-x = 5
+perim = 24
+perim = 120
+perim = 6
+perim = 30
 ```
 
 </details>
@@ -70,7 +109,7 @@ The design of Interface99 is pretty similar to that of high-level programming la
 | [Multiple interface inheritance](examples/read_write.c) | ✅ | A type can inherit multiple interfaces at the same time. |
 | [Superinterfaces](examples/airplane.c) | ✅ | One interface can require a set of other interfaces to be implemented as well. |
 | [Marker interfaces](examples/marker.c) | ✅ | An interface with no functions. |
-| [Single/Dynamic dispatch](examples/state.c) | ✅ | Determine a function to be called at runtime based on `self`. |
+| [Single/Dynamic dispatch](examples/shape.c) | ✅ | Determine a function to be called at runtime based on `self`. |
 | Multiple dispatch | ❌ | Determine a function to be called at runtime based on multiple arguments. Likely to never going to be implemented. |
 | [Dynamic objects of multiple interfaces](examples/read_write_both.c)  | ✅ | Given interfaces `Foo` and `Bar`, you can construct an object of both interfaces, `FooBar obj`. |
 | [Default implementations](examples/default_impl.c)  | ✅ | Some interface functions may be given default implementations. A default function can call other functions and vice versa. |
@@ -101,72 +140,88 @@ This section is based on a collection of well-documented [examples](examples/), 
 
  1. **Interface definition.**
 
-Syntax: [`interface(State);`](#interface)
+Syntax: [`interface(Shape);`](#interface)
 
-An interface definition expands to a virtual table structure and a so-called _interface object type_. In the case of [`examples/state.c`](examples/state.c):
+An interface definition expands to a virtual table structure and a so-called _interface object type_. In the case of [`examples/shape.c`](examples/shape.c):
 
 ```c
-// interface(State);
-typedef struct StateVTable StateVTable;
-typedef struct State State;
+// interface(Shape);
+typedef struct ShapeVTable ShapeVTable;
+typedef struct Shape Shape;
 
-struct StateVTable {
-    int (*get)(void *self);
-    void (*set)(void *self, int x);
+struct ShapeVTable {
+    int (*perim)(const VSelf);
+    void (*scale)(VSelf, int factor);
 };
 
-struct State {
+struct Shape {
     void *self;
-    const StateVTable *vptr;
+    const ShapeVTable *vptr;
 };
 ```
 
-Here, `State.self` is the pointer to an object whose type implements `State`, and `State.vptr` points to a corresponding virtual table instance (see below).
+Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance (see below). Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#TODO) bits -- they expand to parameters of type `void * restrict` (with extra `const` in the case of `perim`). When calling these methods, Interface99 will substitute `Shape.self` for these parameters (more on this later).
 
-Usually, it goes in `*.h` files.
+Usually, interface definitions go in `*.h` files.
 
  2. **Implementation definition.**
 
 | Linkage | Syntax |
 |---------|--------|
-| Internal | [`impl(State, Num);`](#impl) |
-| External | [`externImpl(State, Num);`](#externImpl) |
+| Internal | [`impl(Shape, Rect);`](#impl) |
+| External | [`externImpl(Shape, Rect);`](#externImpl) |
 
-An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/state.c`:
+An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/shape.c`:
 
 ```c
-// impl(State, Num);
-static const StateVTable Num_State_impl = {
-    .get = Num_get,
-    .set = Num_set,
+// impl(Shape, Rect);
+static const ShapeVTable Rect_Shape_impl = {
+    .perim = Rect_perim,
+    .scale = Rect_scale,
 };
 ```
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
+Note that inside function implementations, we use [`VSELF`](#TODO):
+
+```c
+int Rect_perim(const VSelf) {
+    VSELF(const Rect);
+    return (self->a + self->b) * 2;
+}
+
+void Rect_scale(VSelf, int factor) {
+    VSELF(Rect);
+    self->a *= factor;
+    self->b *= factor;
+}
+```
+
+`VSELF(T)` simply casts the parameter introduced by `VSelf` to a user-defined type, `const Rect` or `Rect` in our case.
+
  3. **Dynamic dispatch.**
 
 Once an interface and its implementations are both generated, it is time to instantiate an interface object and invoke some functions upon it.
 
-First of all, to instantiate `State`, use the [`DYN`](#DYN) macro:
+First of all, to instantiate `Shape`, use the [`DYN`](#DYN) macro:
 
 ```с
-Num n = {0};
-State st = DYN(Num, State, &n);
-test(st);
+Shape rect = DYN(Rect, Shape, &(Rect){5, 7})
+test(rect);
 ```
 
-Here, `DYN(Num, State, &n)` creates `State` by initialising `State.self` to `&n` and `State.vptr` to the aforementioned `Num_State_impl` (also accessible as [`VTABLE(Num, State)`](#VTABLE)). Eventually, since `State` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `st` as a function parameter and invoke some methods on it:
+Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl` (also accessible as [`VTABLE(Rect, Shape)`](#VTABLE)). Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it:
 
 ```c
-void test(State st) {
-    printf("x = %d\n", VCALL(st, get));
-    VCALL(st, set, 5);
-    printf("x = %d\n", VCALL(st, get));
+void test(Shape shape) {
+    printf("perim = %d\n", VCALL(shape, perim));
+    VCALL(shape, scale, 5);
+    printf("perim = %d\n", VCALL(shape, perim));
 }
 ```
 
-Besides [`VCALL`](#VCALL), you also have [`VCALL_OBJ`](#VCALL_OBJ), [`VCALL_SUPER`](#VCALL_SUPER), and [`VCALL_SUPER_OBJ`](#VCALL_SUPER_OBJ); for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
+Besides [`VCALL`](#TODO), you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`; for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
 
 Congratulations, this is all you need to know to write most of the stuff!
 
@@ -175,15 +230,15 @@ Congratulations, this is all you need to know to write most of the stuff!
 Interface99 has the feature called superinterfaces, or interface requirements. [`examples/airplane.c`](examples/airplane.c) demonstrates how to extend interfaces with new functionality:
 
 ```c
-#define Vehicle_IFACE                                   \
-    vfunc(void, move_forward, void *self, int distance) \
-    vfunc(void,    move_back, void *self, int distance)
+#define Vehicle_IFACE                              \
+    vfunc(void, move_forward, VSelf, int distance) \
+    vfunc(void,    move_back, VSelf, int distance)
 
 interface(Vehicle);
 
-#define Airplane_IFACE                               \
-    vfunc(void,   move_up, void *self, int distance) \
-    vfunc(void, move_down, void *self, int distance)
+#define Airplane_IFACE                          \
+    vfunc(void,   move_up, VSelf, int distance) \
+    vfunc(void, move_down, VSelf, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -197,8 +252,8 @@ Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_do
 ```c
 Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
 
-my_airplane.vptr->Vehicle->move_forward(my_airplane.self, 10);
-my_airplane.vptr->Vehicle->move_back(my_airplane.self, 3);
+VCALL_SUPER(my_airplane, Vehicle, move_forward, 10);
+VCALL_SUPER(my_airplane, Vehicle, move_back, 3);
 ```
 
 Thus, Interface99 embeds superinterfaces' virtual tables into those of subinterfaces, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` and `Armoured`, and they all will be included into `AirplaneVTable` like so:
@@ -206,8 +261,8 @@ Thus, Interface99 embeds superinterfaces' virtual tables into those of subinterf
 ```c
 // #define Airplane_EXTENDS (Vehicle, Repairable, Armoured)
 typedef struct AirplaneVTable {
-    void (*move_up)(void *self, int distance);
-    void (*move_down)(void *self, int distance);
+    void (*move_up)(VSelf, int distance);
+    void (*move_down)(VSelf, int distance);
     const VehicleVTable *Vehicle;
     const RepairableVTable *Repairable;
     const ArmouredVTable *Armoured;
@@ -298,6 +353,9 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <dyn>             ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
 <vtable>          ::= "VTABLE(" <implementer> "," <iface> ")" ;
 
+<vself-params>    ::= "VSelf" ;
+<vself-cast>      ::= "VSELF(" <type> ")" ;
+
 (* <expr> must be an expression of an interface object type. *)
 <vcall>           ::= "VCALL("           <expr> "," <func-name> <vcall-args> ")" ;
 <vcall-obj>       ::= "VCALL_OBJ("       <expr> "," <func-name> <vcall-args> ")" ;
@@ -318,7 +376,7 @@ Notes:
 
 ### Semantics
 
-(It might be helpful to look at the [generated data layout](https://godbolt.org/z/rh8Meb89E) of [`examples/state.c`](examples/state.c).)
+(It might be helpful to look at the [generated output](https://godbolt.org/z/5K41zEjqP) of [`examples/shape.c`](examples/shape.c).)
 
 #### `interface`
 
@@ -400,25 +458,21 @@ Expands to an expression of type `<iface>`, with `.self` initialised to `<ptr>` 
 
 Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<implementer>` of type `<iface>VTable`.
 
-#### `VCALL`
+#### `VSelf`/`VSELF`
 
-_Note: henceforth, for `VCALL_*` macros, `obj` designates a passed `<expr>`, `func` designates `<func-name>`, and `args...` designate non-empty `<vcall-args>`._
+`VSelf` is an object-like macro that expands to a function parameter of type `void *restrict`, with an implementation-defined name.
 
-A shortcut for `obj.vptr->func(obj.self)` or `obj.vptr->func(obj.self, args...)`.
+`VSELF(T)` is a function-like macro that brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name. It must only be used inside a function with the `VSelf` parameter.
 
-#### `VCALL_OBJ`
+#### `VCALL_*`
 
-The same as [`VCALL`](#VCALL) except that it passes `obj` to `func` instead of `obj.self`.
+ - `VCALL(obj, func)` => `obj.vptr->func(obj.self)`; `VCALL(obj, func, args...)` => `obj.vptr->func(obj.self, args...)`.
 
-#### `VCALL_SUPER`
+ - `VCALL_OBJ` is the same as `VCALL` except that it passes `obj` to `func` instead of `obj.self`.
 
-_Note: henceforth, for `VCALL_SUPER_*` macros, `superiface` designates `<iface>`._
+ - `VCALL_SUPER(obj, superiface, func)` => `obj.vptr->superiface->func(obj.self)`; `VCALL_SUPER(obj, superiface, func, args...)` => `obj.vptr->superiface->func(obj.self, args...)`.
 
-A shortcut for `obj.vptr->superiface->func(obj.self)` or `obj.vptr->superiface->func(obj.self, args...)`.
-
-#### `VCALL_SUPER_OBJ`
-
-The same as [`VCALL_SUPER`](#VCALL_SUPER) except that it passes `(superiface){obj.self, obj.vptr->superiface}` to `func` instead of `obj.self`.
+ - `VCALL_SUPER_OBJ` is the same as `VCALL_SUPER` except that it passes `(superiface){obj.self, obj.vptr->superiface}` to `func` instead of `obj.self`.
 
 ## Miscellaneous
 
@@ -690,10 +744,6 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 ![Suggestion](images/suggestion.png)
 
 A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness. We could instead generate wrapper functions `Iface_method(self, ...)` with appropriate signatures, but they would be anyway less expressive than `VCALL` because we could not call superinterface functions using this mechanism.
-
-### Q: Why use `void *self` instead of `T *self` in implementations?
-
-A: This trick technically [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type); Interface99 is agnostic to function parameters (including `self`) though as it claims strict C99 conformance, all the examples are using `void *self`.
 
 ### Q: Which compilers are tested?
 

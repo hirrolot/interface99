@@ -5,9 +5,9 @@
 #include <stdio.h>
 
 // clang-format off
-#define Shape_IFACE                           \
-    vfunc( int, perim, const void *self)      \
-    vfunc(void, scale, void *self, int factor)
+#define Shape_IFACE                      \
+    vfunc( int, perim, const VSelf)      \
+    vfunc(void, scale, VSelf, int factor)
 // clang-format on
 
 interface(Shape);
@@ -19,15 +19,15 @@ typedef struct {
     int a, b;
 } Rect;
 
-int Rect_perim(const void *self) {
-    const Rect *this = (const Rect *)self;
-    return (this->a + this->b) * 2;
+int Rect_perim(const VSelf) {
+    VSELF(const Rect);
+    return (self->a + self->b) * 2;
 }
 
-void Rect_scale(void *self, int factor) {
-    Rect *this = (Rect *)self;
-    this->a *= factor;
-    this->b *= factor;
+void Rect_scale(VSelf, int factor) {
+    VSELF(Rect);
+    self->a *= factor;
+    self->b *= factor;
 }
 
 impl(Shape, Rect);
@@ -39,16 +39,16 @@ typedef struct {
     int a, b, c;
 } Triangle;
 
-int Triangle_perim(const void *self) {
-    const Triangle *this = (const Triangle *)self;
-    return this->a + this->b + this->c;
+int Triangle_perim(const VSelf) {
+    VSELF(const Triangle);
+    return self->a + self->b + self->c;
 }
 
-void Triangle_scale(void *self, int factor) {
-    Triangle *this = (Triangle *)self;
-    this->a *= factor;
-    this->b *= factor;
-    this->c *= factor;
+void Triangle_scale(VSelf, int factor) {
+    VSELF(Triangle);
+    self->a *= factor;
+    self->b *= factor;
+    self->c *= factor;
 }
 
 impl(Shape, Triangle);

@@ -3,8 +3,8 @@
 #include <assert.h>
 
 #define METHODS(prefix, T)                                                                         \
-    vfunc(int, prefix##_vcall, void *self)                                                         \
-    vfunc(int, prefix##_vcall_args, void *self, int x, const char *y)                              \
+    vfunc(int, prefix##_vcall, VSelf)                                                              \
+    vfunc(int, prefix##_vcall_args, const VSelf, int x, const char *y)                             \
                                                                                                    \
     vfunc(int, prefix##_vcall_obj, T self)                                                         \
     vfunc(int, prefix##_vcall_obj_args, T self, int x, const char *y)
@@ -33,13 +33,15 @@ typedef struct {
 static Impl obj = {0};
 
 #define IMPL_METHODS(prefix, T)                                                                    \
-    static int Impl_##prefix##_vcall(void *self) {                                                 \
+    static int Impl_##prefix##_vcall(VSelf) {                                                      \
+        VSELF(Impl);                                                                               \
         assert(&obj == self);                                                                      \
                                                                                                    \
         return TEST_VCALL;                                                                         \
     }                                                                                              \
                                                                                                    \
-    static int Impl_##prefix##_vcall_args(void *self, int x, const char *y) {                      \
+    static int Impl_##prefix##_vcall_args(const VSelf, int x, const char *y) {                     \
+        VSELF(const Impl);                                                                         \
         assert(&obj == self);                                                                      \
         assert(n == x);                                                                            \
         assert(str == y);                                                                          \

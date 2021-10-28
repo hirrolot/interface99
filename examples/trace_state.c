@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 #define State_IFACE                                                                                \
-    vfunc(int, get, const void *self)                                                              \
-    vfunc(void, set, void *self, int data)
+    vfunc(int, get, const VSelf)                                                                   \
+    vfunc(void, set, VSelf, int data)
 
 interface(State);
 
@@ -17,12 +17,14 @@ typedef struct {
     int data;
 } Num;
 
-int Num_get(const void *self) {
-    return ((const Num *)self)->data;
+int Num_get(const VSelf) {
+    VSELF(const Num);
+    return self->data;
 }
 
-void Num_set(void *self, int data) {
-    ((Num *)self)->data = data;
+void Num_set(VSelf, int data) {
+    VSELF(Num);
+    self->data = data;
 }
 
 impl(State, Num);
@@ -34,17 +36,17 @@ typedef struct {
     State st;
 } TraceState;
 
-int TraceState_get(const void *self) {
-    const TraceState *this = (const TraceState *)self;
-    int result = VCALL(this->st, get);
+int TraceState_get(const VSelf) {
+    VSELF(const TraceState);
+    int result = VCALL(self->st, get);
     printf("get() = %d\n", result);
     return result;
 }
 
-void TraceState_set(void *self, int data) {
-    TraceState *this = (TraceState *)self;
+void TraceState_set(VSelf, int data) {
+    VSELF(TraceState);
     printf("set(%d)\n", data);
-    VCALL(this->st, set, data);
+    VCALL(self->st, set, data);
 }
 
 impl(State, TraceState);

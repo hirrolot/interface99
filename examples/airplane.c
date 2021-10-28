@@ -5,14 +5,14 @@
 #include <stdio.h>
 
 #define Vehicle_IFACE                                                                              \
-    vfunc(void, move_forward, void *self, int distance)                                            \
-    vfunc(void, move_back, void *self, int distance)
+    vfunc(void, move_forward, VSelf, int distance)                                                 \
+    vfunc(void, move_back, VSelf, int distance)
 
 interface(Vehicle);
 
 #define Airplane_IFACE                                                                             \
-    vfunc(void, move_up, void *self, int distance)                                                 \
-    vfunc(void, move_down, void *self, int distance)
+    vfunc(void, move_up, VSelf, int distance)                                                      \
+    vfunc(void, move_down, VSelf, int distance)
 
 #define Airplane_EXTENDS (Vehicle)
 
@@ -26,30 +26,30 @@ void MyAirplane_log(MyAirplane *self, const char *command, int distance) {
     printf("%s(%d): x = %d, y = %d\n", command, distance, self->x, self->y);
 }
 
-void MyAirplane_move_forward(void *self, int distance) {
-    MyAirplane *this = (MyAirplane *)self;
-    this->x += distance;
+void MyAirplane_move_forward(VSelf, int distance) {
+    VSELF(MyAirplane);
+    self->x += distance;
     MyAirplane_log(self, "move_forward", distance);
 }
 
-void MyAirplane_move_back(void *self, int distance) {
-    MyAirplane *this = (MyAirplane *)self;
-    this->x -= distance;
+void MyAirplane_move_back(VSelf, int distance) {
+    VSELF(MyAirplane);
+    self->x -= distance;
     MyAirplane_log(self, "move_back", distance);
 }
 
 impl(Vehicle, MyAirplane);
 
-void MyAirplane_move_up(void *self, int distance) {
-    MyAirplane *this = (MyAirplane *)self;
-    this->y += distance;
+void MyAirplane_move_up(VSelf, int distance) {
+    VSELF(MyAirplane);
+    self->y += distance;
     MyAirplane_log(self, "move_up", distance);
 }
 
-void MyAirplane_move_down(void *self, int distance) {
-    MyAirplane *this = (MyAirplane *)self;
+void MyAirplane_move_down(VSelf, int distance) {
+    VSELF(MyAirplane);
 
-    this->y -= distance;
+    self->y -= distance;
     MyAirplane_log(self, "move_down", distance);
 }
 
