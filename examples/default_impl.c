@@ -23,7 +23,9 @@ typedef struct {
     char dummy;
 } C_3PO;
 
-const char *C_3PO_name(void) { return "C-3PO"; }
+const char *C_3PO_name(void) {
+    return "C-3PO";
+}
 
 // Use the default implementation of `Droid::turn_on` automatically.
 impl(Droid, C_3PO);
@@ -35,7 +37,9 @@ typedef struct {
     char dummy;
 } R2_D2;
 
-const char *R2_D2_name(void) { return "R2-D2"; }
+const char *R2_D2_name(void) {
+    return "R2-D2";
+}
 
 void R2_D2_turn_on(Droid droid) {
     // A default implementation can be called from a custom one.

@@ -23,4 +23,6 @@ impl(Bar, BarImpl);
 declImpl(Bar, BarImpl);
 declImpl(Bar, BarImpl);
 
-int main(void) { test_decl_impl(); }
+int main(void) {
+    test_decl_impl();
+}

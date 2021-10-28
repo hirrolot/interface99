@@ -11,6 +11,10 @@ float bar1_impl(long long x) {
     return 12.141f;
 }
 
-const char *foo2_impl(int x, double *restrict y) { return foo1_impl(x, y); }
+const char *foo2_impl(int x, double *restrict y) {
+    return foo1_impl(x, y);
+}
 
-float bar2_impl(long long x) { return bar1_impl(x); }
+float bar2_impl(long long x) {
+    return bar1_impl(x);
+}
