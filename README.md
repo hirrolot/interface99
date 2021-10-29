@@ -460,7 +460,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 `VSelf` is an object-like macro that expands to a function parameter of type `void *restrict`, with an implementation-defined name.
 
-`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name.
+`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name casted to `T * restrict`.
 
 `VSelf` can be used on any position for any virtual function, however, it only makes sense to use it as a first parameter. `VSELF(T)` can be used everywhere inside a function with the `VSelf` parameter.
 
@@ -527,6 +527,36 @@ impl(Iface1, MyType);
 // Use the default `Iface2::bar`.
 impl(Iface2, MyType);
 ```
+
+## Design choices
+
+The design of Interface99 may raise some questions. In this section, you may find answers why it was designed in this way.
+
+### `VCALL_*`
+
+Instead of using the `VCALL_*` macros, we could instead generate functions that accept an interface object as a first parameter, with the rest of parameters being arguments to a particular method:
+
+```c
+void Shape_scale(Shape shape, int factor) {
+    shape.vptr->scale(shape.self, factor);
+}
+```
+
+But this approach does not work for superinterfaces' methods, as well as for methods accepting an interface object instead of `VSelf` or a combination thereof. For this reason, I decided to stick to more expressive `VCALL_*` macros, although at the cost of some IDE support.
+
+### `self` type safety
+
+In order to make `self` parameters type-safe, we may want to likewise generate untyped wrapper functions that accept `void *restrict self` and pass the downcasted version to the underlying function:
+
+```c
+void Rect_scale_wrapper(void *restrict self, int factor) {
+    Rect_scale((Rect * restrict)self, factor);
+}
+```
+
+But the reason we do **not** is that it is difficult to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
+
+However, casting untyped `self` to a particular type is still quite unpleasant. The best thing I came up with is the `VSelf` and `VSELF(T)` mechanism, which nonetheless works quite well.
 
 ## Credits
 
@@ -743,7 +773,7 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function parameters -- thus, we trade some IDE support for syntax conciseness. We could instead generate wrapper functions `Iface_method(self, ...)` with appropriate signatures, but they would be anyway less expressive than `VCALL` because we could not call superinterface functions using this mechanism.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function signatures, so we trade some IDE support for syntax conciseness.
 
 ### Q: Which compilers are tested?
 
