@@ -160,7 +160,7 @@ struct Shape {
 };
 ```
 
-Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance. Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#vcall_) bits -- they expand to parameters of type `void * restrict`; when calling these methods, Interface99 will substitute `Shape.self` for these parameters.
+Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance. Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#vcall_) bits -- they expand to parameters of type `void * restrict` (with extra `const` for `perim`); when calling these methods, Interface99 will substitute `Shape.self` for these parameters.
 
 Usually, interface definitions go in `*.h` files.
 
@@ -209,7 +209,7 @@ Shape rect = DYN(Rect, Shape, &(Rect){5, 7})
 test(rect);
 ```
 
-Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it:
+Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
 
 ```c
 void test(Shape shape) {
@@ -289,7 +289,7 @@ void Droid_turn_on(Droid droid) {
 }
 ```
 
-As you can see, default implementations follow a strict naming convention, `<iface>_<default-func-name>` -- this provides Interface99 with sufficient information to generate a virtual table. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
+As you can see, default implementations follow a strict naming convention, `<iface>_<default-func-name>` , which provides Interface99 with sufficient information to generate a virtual table. Additionally, as a developer, you can also rely on this convention and call a default function of a third-party interface. For `C_3PO`, we use the default implementation of `turn_on`, and the resulting virtual table would look like this:
 
 ```c
 static const DroidVTable C_3PO_Droid_impl = {
@@ -460,7 +460,9 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 `VSelf` is an object-like macro that expands to a function parameter of type `void *restrict`, with an implementation-defined name.
 
-`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name. `VSELF(T)` must only be used inside a function with the `VSelf` parameter.
+`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name.
+
+`VSelf` can be used on any position for any virtual function, however, it only makes sense to use it as a first parameter. `VSELF(T)` can be used everywhere inside a function with the `VSelf` parameter.
 
 #### `VCALL_*`
 
