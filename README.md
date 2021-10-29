@@ -160,7 +160,7 @@ struct Shape {
 };
 ```
 
-Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance (see below). Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#TODO) bits -- they expand to parameters of type `void * restrict` (with extra `const` in the case of `perim`). When calling these methods, Interface99 will substitute `Shape.self` for these parameters (more on this later).
+Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance. Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#vcall_) bits -- they expand to parameters of type `void * restrict`; when calling these methods, Interface99 will substitute `Shape.self` for these parameters.
 
 Usually, interface definitions go in `*.h` files.
 
@@ -175,7 +175,7 @@ An implementation definition expands to nothing but a virtual table instance of 
 
 ```c
 // impl(Shape, Rect);
-static const ShapeVTable Rect_Shape_impl = {
+static const ShapeVTable VTABLE(Rect, Shape) = {
     .perim = Rect_perim,
     .scale = Rect_scale,
 };
@@ -183,7 +183,7 @@ static const ShapeVTable Rect_Shape_impl = {
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
-Note that inside function implementations, we use [`VSELF`](#TODO):
+Note that inside function implementations, we use [`VSELF`](#vselfvself), which simply casts the parameter introduced by `VSelf` to a user-defined type (`const Rect` or `Rect` in our case):
 
 ```c
 int Rect_perim(const VSelf) {
@@ -198,8 +198,6 @@ void Rect_scale(VSelf, int factor) {
 }
 ```
 
-`VSELF(T)` simply casts the parameter introduced by `VSelf` to a user-defined type, `const Rect` or `Rect` in our case.
-
  3. **Dynamic dispatch.**
 
 Once an interface and its implementations are both generated, it is time to instantiate an interface object and invoke some functions upon it.
@@ -211,7 +209,7 @@ Shape rect = DYN(Rect, Shape, &(Rect){5, 7})
 test(rect);
 ```
 
-Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl` (also accessible as [`VTABLE(Rect, Shape)`](#VTABLE)). Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it:
+Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it:
 
 ```c
 void test(Shape shape) {
@@ -221,7 +219,7 @@ void test(Shape shape) {
 }
 ```
 
-Besides [`VCALL`](#TODO), you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`; for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
+Besides [`VCALL`](#vcall_), you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`; for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
 
 Congratulations, this is all you need to know to write most of the stuff!
 
@@ -462,7 +460,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 `VSelf` is an object-like macro that expands to a function parameter of type `void *restrict`, with an implementation-defined name.
 
-`VSELF(T)` is a function-like macro that brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name. It must only be used inside a function with the `VSelf` parameter.
+`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name. `VSELF(T)` must only be used inside a function with the `VSelf` parameter.
 
 #### `VCALL_*`
 
