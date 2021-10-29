@@ -467,7 +467,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VCALL_*`
 
-The `VCALL_*` macros are meant to **call** a **v**irtual method. (A virtual method is a `vfunc`/`defaultVFunc` that accepts either `VSelf` or an interface object (of a containing interface type) as a first parameter.)
+The `VCALL_*` macros are meant to **call** a **v**irtual method, which is a `vfunc`/`defaultVFunc` that accepts either `VSelf` or an interface object (of a containing interface type) as a first parameter.
 
 For methods accepting `VSelf`, there exist `VCALL` and `VCALL_SUPER`:
 
