@@ -91,7 +91,7 @@ The design of Interface99 is pretty similar to that of high-level programming la
 
 ## Highlights
 
- - **Zero-boilerplate.** Forget about maintaining virtual tables -- Interface99 will do it for you!
+ - **Zero-boilerplate.** Forget about maintaining virtual tables manually -- just write `impl(Shape, Rect)` and Interface99 will do it for you!
 
  - **Portable.** Everything you need is a standard-conforming C99 compiler; neither the standard library, nor compiler/platform-specific functionality or VLA are required.
 
