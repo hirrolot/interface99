@@ -67,11 +67,11 @@ void test(Shape shape) {
 }
 
 int main(void) {
-    Shape rect = DYN(Rect, Shape, &(Rect){5, 7}),
-          triangle = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
+    Shape r = DYN(Rect, Shape, &(Rect){5, 7});
+    Shape t = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
 
-    test(rect);
-    test(triangle);
+    test(r);
+    test(t);
 }
 ```
 
@@ -205,11 +205,11 @@ Once an interface and its implementations are both generated, it is time to inst
 First of all, to instantiate `Shape`, use the [`DYN`](#DYN) macro:
 
 ```с
-Shape rect = DYN(Rect, Shape, &(Rect){5, 7})
-test(rect);
+Shape r = DYN(Rect, Shape, &(Rect){5, 7})
+test(r);
 ```
 
-Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `rect` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
+Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
 
 ```c
 void test(Shape shape) {

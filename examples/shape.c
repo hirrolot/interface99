@@ -70,11 +70,11 @@ void test(Shape shape) {
  * perim = 30
  */
 int main(void) {
-    Shape rect = DYN(Rect, Shape, &(Rect){5, 7}),
-          triangle = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
+    Shape r = DYN(Rect, Shape, &(Rect){5, 7});
+    Shape t = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
 
-    test(rect);
-    test(triangle);
+    test(r);
+    test(t);
 
     return 0;
 }
