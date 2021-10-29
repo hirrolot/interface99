@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - `VCALL`, `VCALL_OBJ`, `VCALL_SUPER`, `VCALL_SUPER_OBJ` as a convenient syntax sugar to call virtual functions.
- - `VSelf` and `VSELF(T)` for typed `self` parameters.
+ - `VSelf` and `VSELF(T)` to imitate typed `self` parameters.
 
 ### Changed
 
  - `iMethod` => `vfunc`, `defaultIMethod` => `defaultVFunc` (consistent with `VTABLE`, `vptr`) [**BC**].
+ - `self` (`VSelf`) parameters are now `restrict`.
 
 ## [0.7.0] - 2021-10-06
 
