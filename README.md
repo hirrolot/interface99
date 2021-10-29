@@ -368,6 +368,12 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <requirement>     ::= <iface> ;
 ```
 
+<details>
+  <summary>Note: shortened vs. postfixed versions</summary>
+
+  Each listed identifier in the above grammar corresponds to a macro name defined by default -- these are called _shortened versions_. On the other hand, there are also _postfixed versions_ (`interface99`, `impl99`, `vfunc99`, etc.), which are defined unconditionally. If you want to avoid name clashes caused by shortened versions, define `IFACE99_NO_ALIASES` before including `interface99.h`. Library headers are strongly advised to use the postfixed macros, but without resorting to `IFACE99_NO_ALIASES`.
+</details>
+
 Notes:
 
  - For every interface `<iface>`, the macro `<iface>_IFACE` must expand to `{ <func> }*`.
@@ -485,8 +491,6 @@ For methods accepting an interface object, there are `VCALL_OBJ` and `VCALL_SUPE
 ## Miscellaneous
 
  - The macros `IFACE99_MAJOR`, `IFACE99_MINOR`, and `IFACE99_PATCH` stand for the corresponding components of a version of Interface99.
-
- -  If you do **not** want the shortened versions to appear (e.g., `interface` without the prefix `99`), define `IFACE99_NO_ALIASES` prior to `#include <interface99.h>`.
 
  - For each macro using `ML99_EVAL`, Interface99 provides its [Metalang99-compliant](https://metalang99.readthedocs.io/en/latest/#definitions) counterpart which can be used inside derivers and other Metalang99-compliant macros:
 
