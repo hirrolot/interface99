@@ -554,7 +554,7 @@ But this approach does not work for superinterfaces' methods, as well as for met
 
 ### `self` type safety
 
-Since a virtual method accepts `self` and there can be many implementations, it **must** be of type `void *`. But the problem is that in concrete implementations, we still want `self` to be of some concrete type; and since `void *` and `T *` may be incompatible types, assigning a concrete method accepting `T *` to a virtual method field [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type).
+Since a virtual method accepts `self` and there can be many specific implementations of it (like `Rect_scale` or `Triangle_scale`), `self` **must** be of type `void *`. But the problem is that in concrete implementations, we still want `self` to be of some concrete type; and since `void *` and `T *` may be incompatible types, assigning a concrete method accepting `T *` to a virtual method field [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type).
 
 To solve the problem, we may want to generate untyped wrapper functions that accept `void *restrict self` and pass the downcasted version to the underlying method:
 
