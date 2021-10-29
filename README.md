@@ -160,7 +160,7 @@ struct Shape {
 };
 ```
 
-Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance. Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#vcall_) bits -- they expand to parameters of type `void * restrict` (with extra `const` for `perim`); when calling these methods, Interface99 will substitute `Shape.self` for these parameters.
+Here, `Shape.self` is the pointer to an object whose type implements `Shape`, and `Shape.vptr` points to a corresponding virtual table instance. Inside `ShapeVTable`, you can observe the mysterious [`VSelf`](#vselfvself) bits -- they expand to parameters of type `void * restrict` (with extra `const` for `perim`); when calling these methods, Interface99 will substitute `Shape.self` for these parameters.
 
 Usually, interface definitions go in `*.h` files.
 
@@ -219,7 +219,10 @@ void test(Shape shape) {
 }
 ```
 
-Besides [`VCALL`](#vcall_), you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`; for more information, please refer to their documentation. Also, remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
+Finally, just a few brief notes:
+
+ - Besides `VCALL`, you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`. They all serve a different purpose; for more information, please refer to [their documentation](#vcall_).
+ - Remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
 
 Congratulations, this is all you need to know to write most of the stuff!
 
@@ -245,7 +248,7 @@ interface(Airplane);
 
 (Note that `#define Airplane_EXTENDS` must appear prior to `interface(Airplane);`.)
 
-Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you also have a pointer to `VehicleVTable` accessible as `Airplane.vptr->Vehicle`:
+Here, `Airplane` extends `Vehicle` with the new functions `move_up` and `move_down`. Everywhere you have `Airplane`, you can also operate `Vehicle`:
 
 ```c
 Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
@@ -254,7 +257,7 @@ VCALL_SUPER(my_airplane, Vehicle, move_forward, 10);
 VCALL_SUPER(my_airplane, Vehicle, move_back, 3);
 ```
 
-Thus, Interface99 embeds superinterfaces' virtual tables into those of subinterfaces, thereby forming a _virtual table hierarchy_. Of course, you can specify an arbitrary amount of interfaces along with `(Vehicle)`, like `Repairable` and `Armoured`, and they all will be included into `AirplaneVTable` like so:
+Internally, Interface99 embeds superinterfaces' virtual tables into those of subinterfaces, thereby forming a _virtual table hierarchy_. For example, you can specify `Repairable` and `Armoured` along with `Vehicle`, and they all will be included into `AirplaneVTable` like so:
 
 ```c
 // #define Airplane_EXTENDS (Vehicle, Repairable, Armoured)
@@ -466,12 +469,11 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VCALL_*`
 
- - `VCALL(obj, func)` => `obj.vptr->func(obj.self)`; `VCALL(obj, func, args...)` => `obj.vptr->func(obj.self, args...)`.
-
+ - `VCALL(obj, func)` => `obj.vptr->func(obj.self)`.
+ - `VCALL(obj, func, args...)` => `obj.vptr->func(obj.self, args...)`.
  - `VCALL_OBJ` is the same as `VCALL` except that it passes `obj` to `func` instead of `obj.self`.
-
- - `VCALL_SUPER(obj, superiface, func)` => `obj.vptr->superiface->func(obj.self)`; `VCALL_SUPER(obj, superiface, func, args...)` => `obj.vptr->superiface->func(obj.self, args...)`.
-
+ - `VCALL_SUPER(obj, superiface, func)` => `obj.vptr->superiface->func(obj.self)`.
+ - `VCALL_SUPER(obj, superiface, func, args...)` => `obj.vptr->superiface->func(obj.self, args...)`.
  - `VCALL_SUPER_OBJ` is the same as `VCALL_SUPER` except that it passes `(superiface){obj.self, obj.vptr->superiface}` to `func` instead of `obj.self`.
 
 ## Miscellaneous
@@ -554,7 +556,7 @@ void Rect_scale_wrapper(void *restrict self, int factor) {
 }
 ```
 
-But the reason we do **not** is that it is difficult to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
+But the reason we do **not** is that in C99, it is impossible to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
 
 However, casting untyped `self` to a particular type is still quite unpleasant. The best thing I came up with is the `VSelf` and `VSELF(T)` mechanism, which nonetheless works quite well.
 
@@ -773,7 +775,9 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 ![Suggestion](images/suggestion.png)
 
-A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment. The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function signatures, so we trade some IDE support for syntax conciseness.
+A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment.
+
+The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function signatures, so we trade some IDE support for syntax conciseness.
 
 ### Q: Which compilers are tested?
 
