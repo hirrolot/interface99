@@ -223,6 +223,7 @@ Finally, just a few brief notes:
 
  - Besides `VCALL`, you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`. They all serve a different purpose; for more information, please refer to [their documentation](#vcall_).
  - Remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
+ - If you want to call an interface function on some concrete type, just write `VTABLE(T, Iface).foo(...)`.
 
 Congratulations, this is all you need to know to write most of the stuff!
 
@@ -553,7 +554,9 @@ But this approach does not work for superinterfaces' methods, as well as for met
 
 ### `self` type safety
 
-In order to make `self` parameters type-safe, we may want to likewise generate untyped wrapper functions that accept `void *restrict self` and pass the downcasted version to the underlying function:
+Since a virtual method accepts `self` and there can be many implementations, it **must** be of type `void *`. But the problem is that in concrete implementations, we still want `self` to be of some concrete type; and since `void *` and `T *` may be incompatible types, assigning a concrete method accepting `T *` to a virtual method field [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type).
+
+To solve the problem, we may want to generate untyped wrapper functions that accept `void *restrict self` and pass the downcasted version to the underlying method:
 
 ```c
 void Rect_scale_wrapper(void *restrict self, int factor) {
@@ -561,7 +564,7 @@ void Rect_scale_wrapper(void *restrict self, int factor) {
 }
 ```
 
-But the reason we do **not** is that in C99, it is impossible to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
+But the reason we do **not** do this is that in C99, it is impossible to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
 
 However, casting untyped `self` to a particular type is still quite unpleasant. The best thing I came up with is the `VSelf` and `VSELF(T)` mechanism, which nonetheless works quite well.
 
