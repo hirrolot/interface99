@@ -461,19 +461,24 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VSelf`/`VSELF`
 
-`VSelf` is an object-like macro that expands to a function parameter of type `void *restrict`, with an implementation-defined name.
-
-`VSELF(T)` is a function-like macro that "downcasts" `VSelf` to your implementer type. Formally speaking, it brings an automatic variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name casted to `T * restrict`.
+`VSelf` is an object-like macro that expands to a function parameter of type `void * restrict`, with an implementation-defined name. In order to downcast this parameter to an implementer type, there exists a function-like macro `VSELF`. `VSELF(T)` which brings a variable `self` of type `T * restrict` into the scope, and initialises it to the `VSelf`-produced parameter name casted to `T * restrict`.
 
 `VSelf` can be used on any position for any virtual function, however, it only makes sense to use it as a first parameter. `VSELF(T)` can be used everywhere inside a function with the `VSelf` parameter.
 
 #### `VCALL_*`
 
+The `VCALL_*` macros are meant to all a virtual method. For the purposes of the documentation, a virtual method is a `vfunc`/`defaultVFunc` that accepts either `VSelf` or an interface object (of a containing interface type) as a first parameter.
+
+For methods accepting `VSelf`, there exist `VCALL` and `VCALL_SUPER`:
+
  - `VCALL(obj, func)` => `obj.vptr->func(obj.self)`.
  - `VCALL(obj, func, args...)` => `obj.vptr->func(obj.self, args...)`.
- - `VCALL_OBJ` is the same as `VCALL` except that it passes `obj` to `func` instead of `obj.self`.
  - `VCALL_SUPER(obj, superiface, func)` => `obj.vptr->superiface->func(obj.self)`.
  - `VCALL_SUPER(obj, superiface, func, args...)` => `obj.vptr->superiface->func(obj.self, args...)`.
+
+For methods accepting an interface object, there are `VCALL_OBJ` and `VCALL_SUPER_OBJ`:
+
+ - `VCALL_OBJ` is the same as `VCALL` except that it passes `obj` to `func` instead of `obj.self`.
  - `VCALL_SUPER_OBJ` is the same as `VCALL_SUPER` except that it passes `(superiface){obj.self, obj.vptr->superiface}` to `func` instead of `obj.self`.
 
 ## Miscellaneous
@@ -777,7 +782,7 @@ If an error is not comprehensible at all, try to look at generated code (`-E`). 
 
 A: VS Code automatically enables suggestions of generated types but, of course, it does not support macro syntax highlightment.
 
-The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function signatures, so we trade some IDE support for syntax conciseness.
+The sad part is that `VCALL` and its friends break go-to definitions and do not highlight function signatures, so we [trade some IDE support for syntax conciseness](#vcall_-1).
 
 ### Q: Which compilers are tested?
 
