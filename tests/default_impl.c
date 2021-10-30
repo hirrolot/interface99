@@ -2,7 +2,7 @@
 
 #include <assert.h>
 
-#define TestDefault_IFACE defaultVFunc(void, default_op, VSelf, int x)
+#define TestDefault_IFACE vfuncDefault(void, default_op, VSelf, int x)
 
 interface(TestDefault);
 

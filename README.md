@@ -329,12 +329,12 @@ Take a look at [`examples/default_impl.c`](examples/default_impl.c). In this exa
 ```c
 #define Droid_IFACE                         \
     vfunc(const char *, name, void)         \
-    defaultVFunc(void, turn_on, Droid droid)
+    vfuncDefault(void, turn_on, Droid droid)
 
 interface(Droid);
 ```
 
-The macro `defaultVFunc` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
+The macro `vfuncDefault` tells Interface99 to use the default implementation for `turn_on` automatically. But where is it located? Here:
 
 ```c
 void Droid_turn_on(Droid droid) {
@@ -390,7 +390,7 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 
 <func>            ::= <regular-func> | <default-func> ;
 <regular-func>    ::= "vfunc("        <func-ret-ty> "," <func-name> "," <func-params> ")" ;
-<default-func>    ::= "defaultVFunc(" <func-ret-ty> "," <func-name> "," <func-params> ")" ;
+<default-func>    ::= "vfuncDefault(" <func-ret-ty> "," <func-name> "," <func-params> ")" ;
 <func-ret-ty>     ::= <type> ;
 <func-name>       ::= <ident> ;
 <func-params>     ::= <parameter-type-list> ;
@@ -490,7 +490,7 @@ static const <iface>VTable VTABLE(<implementer>, <iface>) = {
 
 I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<implementer>`. It is generated in two steps:
 
- - **Function implementations.** If `<func-name>I` is defined via `defaultVFunc` and `<implementer>_<func-name>I_CUSTOM` is **not** defined, `<iface>_<func-name>I` is generated (default implementation). Otherwise, `<implementer>_<func-name>I` is generated (custom implementation).
+ - **Function implementations.** If `<func-name>I` is defined via `vfuncDefault` and `<implementer>_<func-name>I_CUSTOM` is **not** defined, `<iface>_<func-name>I` is generated (default implementation). Otherwise, `<implementer>_<func-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
 #### `externImpl`
@@ -523,7 +523,7 @@ Expands to `<implementer>_<iface>_impl`, i.e., a virtual table instance of `<imp
 
 #### `VCALL_*`
 
-The `VCALL_*` macros are meant to **call** a **v**irtual method, which is a `vfunc`/`defaultVFunc` that accepts either `VSelf` or an interface object (of a containing interface type) as a first parameter.
+The `VCALL_*` macros are meant to **call** a **v**irtual method, which is a `vfunc`/`vfuncDefault` that accepts either `VSelf` or an interface object (of a containing interface type) as a first parameter.
 
 For methods accepting `VSelf`, there exist `VCALL` and `VCALL_SUPER`:
 
@@ -557,7 +557,7 @@ For methods accepting an interface object, there are `VCALL_OBJ` and `VCALL_SUPE
 ## Guidelines
 
  - Write `impl(...)`/`externImpl(...)` right after all functions are implemented; do not gather all implementation definitions in a single place.
- - If you use [Clang-Format], it can be helpful to add `vfunc` and `defaultVFunc` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
+ - If you use [Clang-Format], it can be helpful to add `vfunc` and `vfuncDefault` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
 
 ## Pitfalls
 
@@ -617,7 +617,7 @@ void Rectangle_scale_wrapper(void *restrict self, int factor) {
 }
 ```
 
-But the reason we do **not** do this is that in C99, it is impossible to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `defaultVFuncVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
+But the reason we do **not** do this is that in C99, it is impossible to differentiate `void` from other types; if the return type is `void`, we must not emit `return` with an expression, otherwise, we **must**. We could come up with something like `vfuncVoid` and `vfuncDefaultVoid` but this would increase the learning curve and complicate the design and implementation of Interface99.
 
 However, casting untyped `self` to a particular type is still quite unpleasant. The best thing I came up with is the `VSelf` and `VSELF(T)` mechanism, which nonetheless works quite well.
 

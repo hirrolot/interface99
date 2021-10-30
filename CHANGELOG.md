@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
- - `iMethod` => `vfunc`, `defaultIMethod` => `defaultVFunc` (consistent with `VTABLE`, `vptr`) [**BC**].
+ - `iMethod` => `vfunc`, `defaultIMethod` => `vfuncDefault` (consistent with `VTABLE`, `vptr`) [**BC**].
  - `self` (`VSelf`) parameters are now `restrict`.
 
 ## [0.7.0] - 2021-10-06

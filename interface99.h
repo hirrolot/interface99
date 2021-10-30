@@ -41,7 +41,7 @@ SOFTWARE.
 #define declImpl(iface, implementer)       declImpl99(iface, implementer)
 #define externDeclImpl(iface, implementer) externDeclImpl99(iface, implementer)
 #define vfunc(ret_ty, name, ...)           vfunc99(ret_ty, name, __VA_ARGS__)
-#define defaultVFunc(ret_ty, name, ...)    defaultVFunc99(ret_ty, name, __VA_ARGS__)
+#define vfuncDefault(ret_ty, name, ...)    vfuncDefault99(ret_ty, name, __VA_ARGS__)
 
 #define VCALL(obj, ...)                       VCALL99(obj, __VA_ARGS__)
 #define VCALL_OBJ(obj, ...)                   VCALL_OBJ99(obj, __VA_ARGS__)
@@ -70,7 +70,7 @@ SOFTWARE.
 // } (Metalang99-compliant macros)
 
 #define vfunc99(ret_ty, name, ...)        ML99_CHOICE(vfunc, ret_ty, name, __VA_ARGS__)
-#define defaultVFunc99(ret_ty, name, ...) ML99_CHOICE(defaultVFunc, ret_ty, name, __VA_ARGS__)
+#define vfuncDefault99(ret_ty, name, ...) ML99_CHOICE(vfuncDefault, ret_ty, name, __VA_ARGS__)
 
 #define DYN99(implementer, iface, ...)                                                             \
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
@@ -202,7 +202,7 @@ SOFTWARE.
     ML99_match(ML99_choice(v(tag), v(iface, implementer, name)), v(IFACE99_PRIV_genImpl_))
 
 #define IFACE99_PRIV_genImpl_vfunc_IMPL(_iface, implementer, name) v(.name = implementer##_##name, )
-#define IFACE99_PRIV_genImpl_defaultVFunc_IMPL(iface, implementer, name)                           \
+#define IFACE99_PRIV_genImpl_vfuncDefault_IMPL(iface, implementer, name)                           \
     ML99_IF(                                                                                       \
         IFACE99_PRIV_IS_CUSTOM(implementer, name),                                                 \
         IFACE99_PRIV_genImpl_vfunc_IMPL(~, implementer, name),                                     \
