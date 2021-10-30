@@ -37,9 +37,9 @@ SOFTWARE.
 
 #define interface(iface)                   interface99(iface)
 #define impl(iface, implementer)           impl99(iface, implementer)
-#define externImpl(iface, implementer)     externImpl99(iface, implementer)
+#define implExtern(iface, implementer)     implExtern99(iface, implementer)
 #define declImpl(iface, implementer)       declImpl99(iface, implementer)
-#define externDeclImpl(iface, implementer) externDeclImpl99(iface, implementer)
+#define declImplExtern(iface, implementer) declImplExtern99(iface, implementer)
 #define vfunc(ret_ty, name, ...)           vfunc99(ret_ty, name, __VA_ARGS__)
 #define vfuncDefault(ret_ty, name, ...)    vfuncDefault99(ret_ty, name, __VA_ARGS__)
 
@@ -62,11 +62,11 @@ SOFTWARE.
 
 #define IFACE99_interface(iface)               ML99_call(IFACE99_interface, iface)
 #define IFACE99_impl(iface, implementer)       ML99_call(IFACE99_impl, iface, implementer)
-#define IFACE99_externImpl(iface, implementer) ML99_call(IFACE99_externImpl, iface, implementer)
+#define IFACE99_implExtern(iface, implementer) ML99_call(IFACE99_implExtern, iface, implementer)
 
 #define interface99(iface)               ML99_EVAL(IFACE99_interface_IMPL(iface))
 #define impl99(iface, implementer)       ML99_EVAL(IFACE99_impl_IMPL(iface, implementer))
-#define externImpl99(iface, implementer) ML99_EVAL(IFACE99_externImpl_IMPL(iface, implementer))
+#define implExtern99(iface, implementer) ML99_EVAL(IFACE99_implExtern_IMPL(iface, implementer))
 // } (Metalang99-compliant macros)
 
 #define vfunc99(ret_ty, name, ...)        ML99_CHOICE(vfunc, ret_ty, name, __VA_ARGS__)
@@ -148,7 +148,7 @@ SOFTWARE.
 
 #define IFACE99_impl_IMPL(iface, implementer)                                                      \
     IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_STATIC, iface, implementer)
-#define IFACE99_externImpl_IMPL(iface, implementer)                                                \
+#define IFACE99_implExtern_IMPL(iface, implementer)                                                \
     IFACE99_PRIV_implCommon(IFACE99_PRIV_STORAGE_CLASS_EXTERN, iface, implementer)
 
 #define IFACE99_PRIV_STORAGE_CLASS_STATIC    static
@@ -225,7 +225,7 @@ SOFTWARE.
 // Implementation declaration {
 
 #define declImpl99(iface, implementer) static IFACE99_PRIV_DECL_IMPL_COMMON(iface, implementer)
-#define externDeclImpl99(iface, implementer)                                                       \
+#define declImplExtern99(iface, implementer)                                                       \
     extern IFACE99_PRIV_DECL_IMPL_COMMON(iface, implementer)
 
 #define IFACE99_PRIV_DECL_IMPL_COMMON(iface, implementer)                                          \
@@ -277,7 +277,7 @@ SOFTWARE.
 
 #define IFACE99_interface_ARITY  1
 #define IFACE99_impl_ARITY       2
-#define IFACE99_externImpl_ARITY 2
+#define IFACE99_implExtern_ARITY 2
 // } (Arity specifiers)
 
 #endif // INTERFACE99_H

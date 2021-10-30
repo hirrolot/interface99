@@ -9,7 +9,7 @@
 
 ML99_ASSERT_UNEVAL(IFACE99_interface_ARITY == 1);
 ML99_ASSERT_UNEVAL(IFACE99_impl_ARITY == 2);
-ML99_ASSERT_UNEVAL(IFACE99_externImpl_ARITY == 2);
+ML99_ASSERT_UNEVAL(IFACE99_implExtern_ARITY == 2);
 
 #define Foo_IFACE vfunc(const char *, foo, int x, double *restrict y)
 
@@ -35,7 +35,7 @@ typedef struct {
 } B;
 
 #define B_foo foo_impl
-ML99_EVAL(IFACE99_externImpl(v(Foo), v(B)));
+ML99_EVAL(IFACE99_implExtern(v(Foo), v(B)));
 // } (Implementations)
 
 int main(void) {

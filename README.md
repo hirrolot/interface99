@@ -218,7 +218,7 @@ Usually, interface definitions go in `*.h` files.
 | Linkage | Syntax |
 |---------|--------|
 | Internal | [`impl(Shape, Rectangle);`](#impl) |
-| External | [`externImpl(Shape, Rectangle);`](#externImpl) |
+| External | [`implExtern(Shape, Rectangle);`](#implExtern) |
 
 An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/shape.c`:
 
@@ -230,7 +230,7 @@ static const ShapeVTable Rectangle_Shape_impl = {
 };
 ```
 
-(If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
+(If you were using [`implExtern`](#implExtern), this definition would be `extern` likewise.)
 
 Note that inside function implementations, we use [`VSELF`](#vselfvself), which simply casts the parameter introduced by `VSelf` to a user-defined type (`const Rectangle` or `Rectangle` in our case):
 
@@ -396,9 +396,9 @@ Having a well-defined semantics of the macros, you can write an FFI which is qui
 <func-params>     ::= <parameter-type-list> ;
 
 <impl>            ::= "impl("           <iface> "," <implementer> ")" ;
-<externImpl>      ::= "externImpl("     <iface> "," <implementer> ")" ;
+<implExtern>      ::= "implExtern("     <iface> "," <implementer> ")" ;
 <declImpl>        ::= "declImpl("       <iface> "," <implementer> ")" ;
-<externDeclImpl>  ::= "externDeclImpl(" <iface> "," <implementer> ")" ;
+<declImplExtern>  ::= "declImplExtern(" <iface> "," <implementer> ")" ;
 <implementer>     ::= <ident> ;
 
 <dyn>             ::= "DYN("    <implementer> "," <iface> "," <ptr> ")" ;
@@ -493,7 +493,7 @@ I.e., this macro defines a virtual table instance of type `<iface>VTable` for `<
  - **Function implementations.** If `<func-name>I` is defined via `vfuncDefault` and `<implementer>_<func-name>I_CUSTOM` is **not** defined, `<iface>_<func-name>I` is generated (default implementation). Otherwise, `<implementer>_<func-name>I` is generated (custom implementation).
  - **Requirements satisfaction.** If the macro `<iface>_EXTENDS` is defined, then the listed requirements are generated to satisfy `<iface>`.
 
-#### `externImpl`
+#### `implExtern`
 
 The same as [`impl`](#impl) but generates an `extern` definition instead of `static`.
 
@@ -501,7 +501,7 @@ The same as [`impl`](#impl) but generates an `extern` definition instead of `sta
 
 Expands to `static const <iface>VTable VTABLE(<implementer>, <iface>)`, i.e., it declares a virtual table instance of `<implementer>` of type `<iface>VTable`.
 
-#### `externDeclImpl`
+#### `declImplExtern`
 
 The same as [`declImpl`](#declImpl) but generates an `extern` declaration instead of `static`.
 
@@ -547,7 +547,7 @@ For methods accepting an interface object, there are `VCALL_OBJ` and `VCALL_SUPE
 |----------|----------|
 | `interface` | `IFACE99_interface` |
 | `impl` | `IFACE99_impl` |
-| `externImpl` | `IFACE99_externImpl` |
+| `implExtern` | `IFACE99_implExtern` |
 
 (An [arity specifier] and [desugaring macro] are provided for each of the above macros.)
 
@@ -556,7 +556,7 @@ For methods accepting an interface object, there are `VCALL_OBJ` and `VCALL_SUPE
 
 ## Guidelines
 
- - Write `impl(...)`/`externImpl(...)` right after all functions are implemented; do not gather all implementation definitions in a single place.
+ - Write `impl(...)`/`implExtern(...)` right after all functions are implemented; do not gather all implementation definitions in a single place.
  - If you use [Clang-Format], it can be helpful to add `vfunc` and `vfuncDefault` to the `StatementMacros` vector (see [our `.clang-format`](.clang-format)). It will instruct the formatter to place them onto different lines.
 
 ## Pitfalls

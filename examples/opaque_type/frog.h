@@ -10,6 +10,6 @@ typedef struct Frog Frog;
 Frog *Frog_new(const char *name);
 void Frog_free(Frog *self);
 
-externDeclImpl(Croak, Frog);
+declImplExtern(Croak, Frog);
 
 #endif // OPAQUE_TYPE_FROG_H

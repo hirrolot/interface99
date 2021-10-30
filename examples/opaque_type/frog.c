@@ -30,4 +30,4 @@ static void Frog_croak(VSelf) {
     self->ncroaks++;
 }
 
-externImpl(Croak, Frog);
+implExtern(Croak, Frog);

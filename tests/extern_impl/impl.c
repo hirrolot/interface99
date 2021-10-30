@@ -4,8 +4,8 @@
 #include "types.h"
 
 #define FooImpl_foo foo1_impl
-externImpl(Foo, FooImpl);
+implExtern(Foo, FooImpl);
 
 #define BarImpl_foo foo1_impl
 #define BarImpl_bar bar1_impl
-externImpl(Bar, BarImpl);
+implExtern(Bar, BarImpl);

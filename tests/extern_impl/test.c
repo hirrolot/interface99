@@ -6,11 +6,11 @@
 
 #include <assert.h>
 
-externDeclImpl(Foo, FooImpl);
+declImplExtern(Foo, FooImpl);
 
 // Multiple declarations shoud work fine.
-externDeclImpl(Bar, BarImpl);
-externDeclImpl(Bar, BarImpl);
+declImplExtern(Bar, BarImpl);
+declImplExtern(Bar, BarImpl);
 
 int main(void) {
     // Ensure `impl`-generated data.
