@@ -76,8 +76,8 @@ SOFTWARE.
     ((iface){.self = (void *)(__VA_ARGS__), .vptr = &VTABLE99(implementer, iface)})
 #define VTABLE99(implementer, iface) ML99_CAT4(implementer, _, iface, _impl)
 
-#define VSelf99    void *restrict iface99_priv_self
-#define VSELF99(T) T *restrict self = (T * restrict)(iface99_priv_self)
+#define VSelf99    void *restrict iface99_self
+#define VSELF99(T) T *restrict self = (T * restrict)(iface99_self)
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 7

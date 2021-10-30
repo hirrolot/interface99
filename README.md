@@ -175,7 +175,7 @@ An implementation definition expands to nothing but a virtual table instance of 
 
 ```c
 // impl(Shape, Rectangle);
-static const ShapeVTable VTABLE(Rectangle, Shape) = {
+static const ShapeVTable Rectangle_Shape_impl = {
     .perim = Rectangle_perim,
     .scale = Rectangle_scale,
 };
@@ -209,7 +209,7 @@ Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
 test(r);
 ```
 
-Here, `DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7})` creates `Shape` by assigning `Shape.self` to `&(Rectangle){.a = 5, .b = 7}` and `Shape.vptr` to the aforementioned `Rectangle_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
+Here, `DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7})` creates `Shape` by assigning `Shape.self` to `&(Rectangle){.a = 5, .b = 7}` and `Shape.vptr` to the aforementioned `&Rectangle_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
 
 ```c
 void test(Shape shape) {
@@ -384,7 +384,7 @@ Notes:
 
 ### Semantics
 
-(It might be helpful to look at the [generated output](https://godbolt.org/z/5K41zEjqP) of [`examples/shape.c`](examples/shape.c).)
+(It might be helpful to look at the [generated output](https://godbolt.org/z/Gr6f7TM83) of [`examples/shape.c`](examples/shape.c).)
 
 #### `interface`
 
