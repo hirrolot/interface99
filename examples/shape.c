@@ -12,25 +12,25 @@
 
 interface(Shape);
 
-// Rect implementation
+// Rectangle implementation
 // ============================================================
 
 typedef struct {
     int a, b;
-} Rect;
+} Rectangle;
 
-int Rect_perim(const VSelf) {
-    VSELF(const Rect);
+int Rectangle_perim(const VSelf) {
+    VSELF(const Rectangle);
     return (self->a + self->b) * 2;
 }
 
-void Rect_scale(VSelf, int factor) {
-    VSELF(Rect);
+void Rectangle_scale(VSelf, int factor) {
+    VSELF(Rectangle);
     self->a *= factor;
     self->b *= factor;
 }
 
-impl(Shape, Rect);
+impl(Shape, Rectangle);
 
 // Triangle implementation
 // ============================================================
@@ -70,8 +70,8 @@ void test(Shape shape) {
  * perim = 30
  */
 int main(void) {
-    Shape r = DYN(Rect, Shape, &(Rect){5, 7});
-    Shape t = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
+    Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
+    Shape t = DYN(Triangle, Shape, &(Triangle){.a = 10, .b = 20, .c = 30});
 
     test(r);
     test(t);

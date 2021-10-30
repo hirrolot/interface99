@@ -15,30 +15,30 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
     vfunc(void, scale, VSelf, int factor)
 
 interface(Shape);
+```
 
-// Rect implementation
-// ============================================================
-
+(Rectangle implementation)
+```c
 typedef struct {
     int a, b;
-} Rect;
+} Rectangle;
 
-int Rect_perim(const VSelf) {
-    VSELF(const Rect);
+int Rectangle_perim(const VSelf) {
+    VSELF(const Rectangle);
     return (self->a + self->b) * 2;
 }
 
-void Rect_scale(VSelf, int factor) {
-    VSELF(Rect);
+void Rectangle_scale(VSelf, int factor) {
+    VSELF(Rectangle);
     self->a *= factor;
     self->b *= factor;
 }
 
-impl(Shape, Rect);
+impl(Shape, Rectangle);
+```
 
-// Triangle implementation
-// ============================================================
-
+(Triangle implementation)
+```c
 typedef struct {
     int a, b, c;
 } Triangle;
@@ -56,10 +56,10 @@ void Triangle_scale(VSelf, int factor) {
 }
 
 impl(Shape, Triangle);
+```
 
-// Test
-// ============================================================
-
+(Test)
+```c
 void test(Shape shape) {
     printf("perim = %d\n", VCALL(shape, perim));
     VCALL(shape, scale, 5);
@@ -67,8 +67,8 @@ void test(Shape shape) {
 }
 
 int main(void) {
-    Shape r = DYN(Rect, Shape, &(Rect){5, 7});
-    Shape t = DYN(Triangle, Shape, &(Triangle){1, 2, 3});
+    Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
+    Shape t = DYN(Triangle, Shape, &(Triangle){.a = 10, .b = 20, .c = 30});
 
     test(r);
     test(t);
@@ -91,7 +91,7 @@ The design of Interface99 is pretty similar to that of high-level programming la
 
 ## Highlights
 
- - **Zero-boilerplate.** Forget about maintaining virtual tables manually -- just write `impl(Shape, Rect)` and Interface99 will do it for you!
+ - **Zero-boilerplate.** Forget about maintaining virtual tables manually -- just write `impl(Shape, Rectangle)` and Interface99 will do it for you!
 
  - **Portable.** Everything you need is a standard-conforming C99 compiler; neither the standard library, nor compiler/platform-specific functionality or VLA are required.
 
@@ -168,31 +168,31 @@ Usually, interface definitions go in `*.h` files.
 
 | Linkage | Syntax |
 |---------|--------|
-| Internal | [`impl(Shape, Rect);`](#impl) |
-| External | [`externImpl(Shape, Rect);`](#externImpl) |
+| Internal | [`impl(Shape, Rectangle);`](#impl) |
+| External | [`externImpl(Shape, Rectangle);`](#externImpl) |
 
 An implementation definition expands to nothing but a virtual table instance of a particular implementer. In the case of `examples/shape.c`:
 
 ```c
-// impl(Shape, Rect);
-static const ShapeVTable VTABLE(Rect, Shape) = {
-    .perim = Rect_perim,
-    .scale = Rect_scale,
+// impl(Shape, Rectangle);
+static const ShapeVTable VTABLE(Rectangle, Shape) = {
+    .perim = Rectangle_perim,
+    .scale = Rectangle_scale,
 };
 ```
 
 (If you were using [`externImpl`](#externImpl), this definition would be `extern` likewise.)
 
-Note that inside function implementations, we use [`VSELF`](#vselfvself), which simply casts the parameter introduced by `VSelf` to a user-defined type (`const Rect` or `Rect` in our case):
+Note that inside function implementations, we use [`VSELF`](#vselfvself), which simply casts the parameter introduced by `VSelf` to a user-defined type (`const Rectangle` or `Rectangle` in our case):
 
 ```c
-int Rect_perim(const VSelf) {
-    VSELF(const Rect);
+int Rectangle_perim(const VSelf) {
+    VSELF(const Rectangle);
     return (self->a + self->b) * 2;
 }
 
-void Rect_scale(VSelf, int factor) {
-    VSELF(Rect);
+void Rectangle_scale(VSelf, int factor) {
+    VSELF(Rectangle);
     self->a *= factor;
     self->b *= factor;
 }
@@ -205,11 +205,11 @@ Once an interface and its implementations are both generated, it is time to inst
 First of all, to instantiate `Shape`, use the [`DYN`](#DYN) macro:
 
 ```с
-Shape r = DYN(Rect, Shape, &(Rect){5, 7})
+Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
 test(r);
 ```
 
-Here, `DYN(Rect, Shape, &(Rect){5, 7})` creates `Shape` by assigning `Shape.self` to `&(Rect){5, 7}` and `Shape.vptr` to the aforementioned `Rect_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
+Here, `DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7})` creates `Shape` by assigning `Shape.self` to `&(Rectangle){.a = 5, .b = 7}` and `Shape.vptr` to the aforementioned `Rectangle_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
 
 ```c
 void test(Shape shape) {
@@ -558,13 +558,13 @@ But this approach does not work for superinterfaces' methods, as well as for met
 
 ### `self` type safety
 
-Since there can be many specific implementations of a virtual method (like `Rect_scale` or `Triangle_scale`), `self` **must** be of type `void *`. But the problem is that in concrete implementations, we still want `self` to be of some concrete type; and since `void *` and `T *` may be incompatible types, assigning a concrete method accepting `T *` to a virtual method field [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type).
+Since there can be many specific implementations of a virtual method (like `Rectangle_scale` or `Triangle_scale`), `self` **must** be of type `void *`. But the problem is that in concrete implementations, we still want `self` to be of some concrete type; and since `void *` and `T *` may be incompatible types, assigning a concrete method accepting `T *` to a virtual method field [results in UB](https://stackoverflow.com/questions/559581/casting-a-function-pointer-to-another-type).
 
 To solve the problem, we may want to generate untyped wrapper functions that accept `void *restrict self` and pass the downcasted version to the underlying method:
 
 ```c
-void Rect_scale_wrapper(void *restrict self, int factor) {
-    Rect_scale((Rect * restrict)self, factor);
+void Rectangle_scale_wrapper(void *restrict self, int factor) {
+    Rectangle_scale((Rectangle * restrict)self, factor);
 }
 ```
 
