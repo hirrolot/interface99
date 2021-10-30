@@ -4,7 +4,16 @@
 
 Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-header library.
 
-[ [`examples/shape.c`](examples/shape.c) ]
+<div align="center">
+
+<table>
+<tr>
+<td><b>Shape</b></td>
+</tr>
+
+<tr>
+<td>
+
 ```c
 #include <interface99.h>
 
@@ -16,8 +25,19 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 interface(Shape);
 ```
+ 
+</td>
+</tr>
+</table>
 
-(Rectangle implementation)
+<table>
+<tr>
+<td><b>Rectangle</b></td>
+<td><b>Triangle</b></td>
+</tr>
+<tr>
+<td>
+
 ```c
 typedef struct {
     int a, b;
@@ -37,7 +57,9 @@ void Rectangle_scale(VSelf, int factor) {
 impl(Shape, Rectangle);
 ```
 
-(Triangle implementation)
+</td>
+<td>
+
 ```c
 typedef struct {
     int a, b, c;
@@ -58,7 +80,17 @@ void Triangle_scale(VSelf, int factor) {
 impl(Shape, Triangle);
 ```
 
-(Test)
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td><b>Test</b></td>
+</tr>
+<tr>
+<td>
+
 ```c
 void test(Shape shape) {
     printf("perim = %d\n", VCALL(shape, perim));
@@ -74,6 +106,14 @@ int main(void) {
     test(t);
 }
 ```
+
+</td>
+</tr>
+</table>
+
+</div>
+
+(Based on [`examples/shape.c`](examples/shape.c).)
 
 <details>
   <summary>Output</summary>
@@ -209,7 +249,7 @@ Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
 test(r);
 ```
 
-Here, `DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7})` creates `Shape` by assigning `Shape.self` to `&(Rectangle){.a = 5, .b = 7}` and `Shape.vptr` to the aforementioned `&Rectangle_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations (which is the essence of dynamic dispatch), you can accept `shape` as a function parameter and invoke some methods on it through the [`VCALL`](#vcall_) macro:
+Here, `DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7})` creates `Shape` by assigning `Shape.self` to `&(Rectangle){.a = 5, .b = 7}` and `Shape.vptr` to the aforementioned `&Rectangle_Shape_impl`. Eventually, since `Shape` is polymorphic over its implementations, you can accept `shape` as a function parameter and perform dynamic dispatch through the [`VCALL`](#vcall_) macro:
 
 ```c
 void test(Shape shape) {
