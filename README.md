@@ -1,10 +1,13 @@
-# Interface99
-[![CI](https://github.com/Hirrolot/interface99/workflows/C/C++%20CI/badge.svg)](https://github.com/Hirrolot/interface99/actions)
-[![mailing list](https://img.shields.io/badge/mailing%20list-lists.sr.ht-orange)](https://lists.sr.ht/~hirrolot/metalang99)
-
-Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-header library.
-
 <div align="center">
+<h1>Interface99</h1>
+<a href="https://github.com/Hirrolot/interface99/actions">
+<img src="https://github.com/Hirrolot/interface99/workflows/C/C++%20CI/badge.svg">
+</a>
+<a href="https://lists.sr.ht/~hirrolot/metalang99">
+<img src="https://img.shields.io/badge/mailing%20list-lists.sr.ht-orange">
+</a>
+
+Zero-boilerplate interfaces inspired by Rust and Golang. Multiple inheritance, superinterfaces, and default implementations supported. No external tools required, pure C99.
 
 <table>
 <tr>
@@ -13,6 +16,7 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 <tr>
 <td>
+<div align="left">
 
 ```c
 #include <interface99.h>
@@ -25,7 +29,8 @@ Type-safe zero-boilerplate interfaces for pure C99, implemented as a single-head
 
 interface(Shape);
 ```
- 
+
+</div>
 </td>
 </tr>
 </table>
@@ -37,6 +42,7 @@ interface(Shape);
 </tr>
 <tr>
 <td>
+<div align="left">
 
 ```c
 typedef struct {
@@ -57,8 +63,10 @@ void Rectangle_scale(VSelf, int factor) {
 impl(Shape, Rectangle);
 ```
 
+</div>
 </td>
 <td>
+<div align="left">
 
 ```c
 typedef struct {
@@ -80,6 +88,7 @@ void Triangle_scale(VSelf, int factor) {
 impl(Shape, Triangle);
 ```
 
+</div>
 </td>
 </tr>
 </table>
@@ -90,6 +99,7 @@ impl(Shape, Triangle);
 </tr>
 <tr>
 <td>
+<div align="left">
 
 ```c
 void test(Shape shape) {
@@ -107,6 +117,7 @@ int main(void) {
 }
 ```
 
+</div>
 </td>
 </tr>
 </table>
@@ -126,8 +137,6 @@ perim = 30
 ```
 
 </details>
-
-The design of Interface99 is pretty similar to that of high-level programming languages; at the same time, it feels like you still program in plain C. Just functions and data structures, nothing more.
 
 ## Highlights
 
