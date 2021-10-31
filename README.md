@@ -7,7 +7,7 @@
 <img src="https://img.shields.io/badge/mailing%20list-lists.sr.ht-orange">
 </a>
 
-Little-boilerplate interfaces inspired by Rust and Golang. Multiple inheritance, superinterfaces, and default implementations supported. No external tools required, pure C99.
+Full-featured interfaces inspired by Rust and Golang. Multiple inheritance, superinterfaces, and default implementations supported. No external tools required, pure C99.
 
 <table>
 <tr>
@@ -140,7 +140,7 @@ perim = 30
 
 ## Highlights
 
- - **Little-boilerplate.** Forget about maintaining virtual tables manually -- just write `impl(Shape, Rectangle)` and Interface99 will do it for you!
+ - **Minimum boilerplate.** Forget about maintaining virtual tables manually -- just write `impl(Shape, Rectangle)` and Interface99 will do it for you!
 
  - **Portable.** Everything you need is a standard-conforming C99 compiler; neither the standard library, nor compiler/platform-specific functionality or VLA are required.
 
