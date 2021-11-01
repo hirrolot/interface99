@@ -37,8 +37,8 @@ interface(Shape);
 
 <table>
 <tr>
-<td><b><div align="center">Rectangle</div></b></td>
-<td><b><div align="center">Triangle</div></b></td>
+<td><div align="center"><b>Rectangle</b></div></td>
+<td><div align="center"><b>Triangle</b></div></td>
 </tr>
 <tr>
 <td>
@@ -95,7 +95,7 @@ impl(Shape, Triangle);
 
 <table>
 <tr>
-<td><b><div align="center">Test</div></b></td>
+<td><div align="center"><b>Test</b></div></td>
 </tr>
 <tr>
 <td>
