@@ -11,7 +11,7 @@ Full-featured interfaces inspired by Rust and Golang. Multiple inheritance, supe
 
 <table>
 <tr>
-<td><b>Shape</b></td>
+<td><div align="center"><b>Shape</b></div></td>
 </tr>
 
 <tr>
@@ -37,8 +37,8 @@ interface(Shape);
 
 <table>
 <tr>
-<td><b>Rectangle</b></td>
-<td><b>Triangle</b></td>
+<td><b><div align="center">Rectangle</div></b></td>
+<td><b><div align="center">Triangle</div></b></td>
 </tr>
 <tr>
 <td>
@@ -95,7 +95,7 @@ impl(Shape, Triangle);
 
 <table>
 <tr>
-<td><b>Test</b></td>
+<td><b><div align="center">Test</div></b></td>
 </tr>
 <tr>
 <td>
