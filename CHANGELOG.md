@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.8.0] - 2021-11-09
+
 ### Added
 
  - `VCALL`, `VCALL_OBJ`, `VCALL_SUPER`, `VCALL_SUPER_OBJ` as a convenient syntax sugar to call virtual functions.

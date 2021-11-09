@@ -80,7 +80,7 @@ SOFTWARE.
 #define VSELF99(T) T *restrict self = (T * restrict)(iface99_self)
 
 #define IFACE99_MAJOR 0
-#define IFACE99_MINOR 7
+#define IFACE99_MINOR 8
 #define IFACE99_PATCH 0
 // } (Public stuff)
 
