@@ -12,7 +12,7 @@ run_example() {
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     run_example "shape"
-    run_example "trace_state"
+    run_example "tracing_vehicle"
     run_example "airplane"
     run_example "read_write"
     run_example "read_write_both"
