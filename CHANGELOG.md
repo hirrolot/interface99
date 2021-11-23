@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.8.1 - 2021-11-23
+
 ### Fixed
 
  - Programmatically require Metalang99 version compliant with 1.12.0.
