@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+ - Add the root `CMakeLists.txt` to be able to use CMake with [`FetchContent`] or [`add_subdirectory`].
+
+[`FetchContent`]: https://cmake.org/cmake/help/latest/module/FetchContent.html
+[`add_subdirectory`]: https://cmake.org/cmake/help/latest/command/add_subdirectory.html
+
 ## 0.8.1 - 2021-11-23
 
 ### Fixed

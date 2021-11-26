@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(examples LANGUAGES C)
 
-include_directories(.. ../metalang99/include)
-
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-  add_compile_options(-Wall -Wextra -pedantic -std=c99
-                      -ftrack-macro-expansion=0 -fsanitize=address)
+  add_compile_options(-Wall -Wextra -pedantic -ftrack-macro-expansion=0
+                      -fsanitize=address)
   add_link_options(-fsanitize=address)
 elseif(CMAKE_C_COMPILER_ID STREQUAL "Clang")
   add_compile_options(-fmacro-backtrace-limit=1 -fsanitize=address)
@@ -27,6 +25,20 @@ add_executable(read_write_both read_write_both.c)
 add_executable(marker marker.c)
 add_executable(default_impl default_impl.c)
 
-foreach(TARGET ${BUILDSYSTEM_TARGETS})
-  set_target_properties(TARGET PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
+add_subdirectory(.. build)
+
+get_property(
+  EXAMPLES
+  DIRECTORY .
+  PROPERTY BUILDSYSTEM_TARGETS)
+
+get_property(
+  OPAQUE_TYPE_EXAMPLE
+  DIRECTORY opaque_type
+  PROPERTY BUILDSYSTEM_TARGETS)
+
+foreach(TARGET ${EXAMPLES};${OPAQUE_TYPE_EXAMPLE})
+  target_link_libraries(${TARGET} interface99)
+  set_target_properties(${TARGET} PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED
+                                                           ON)
 endforeach()

@@ -27,8 +27,8 @@
     do {                                                                                           \
         implementer x = {0};                                                                       \
         iface x_dyn = DYN(implementer, iface, &x);                                                 \
-        assert(x_dyn.self = &x);                                                                   \
-        assert(x_dyn.vptr = &VTABLE(implementer, iface));                                          \
+        assert(x_dyn.self == &x);                                                                  \
+        assert(x_dyn.vptr == &VTABLE(implementer, iface));                                         \
     } while (0)
 
 #endif // INTERFACE99_TESTS_UTIL_H

@@ -166,9 +166,39 @@ perim = 30
 
 ## Installation
 
- 1. Download Interface99 and [Metalang99] (minimum supported version -- [1.12.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.12.0)).
- 2. Add `interface99` and `metalang99/include` to your include paths.
- 3. `#include <interface99.h>` beforehand.
+Interface99 consists of just one header `interface99.h` and one dependency [Metalang99]; therefore, you need to add `interface99` and `metalang99/include` to your include directories.
+
+If you use CMake, the recommended way is either [`FetchContent`] or [`add_subdirectory`], e.g.:
+
+[`FetchContent`]: https://cmake.org/cmake/help/latest/module/FetchContent.html
+[`add_subdirectory`]: https://cmake.org/cmake/help/latest/command/add_subdirectory.html
+
+```cmake
+include(FetchContent)
+
+FetchContent_Declare(
+    interface99
+    GIT_REPOSITORY https://github.com/Hirrolot/interface99.git
+    # Always use version numbers instead of pulling directly from master!
+    GIT_TAG v1.2.3
+)
+
+FetchContent_MakeAvailable(interface99)
+
+target_link_libraries(MyProject interface99)
+```
+
+Using [`add_subdirectory`]:
+
+```cmake
+add_subdirectory(interface99)
+target_link_libraries(MyProject interface99)
+```
+
+In the latter case, I encourage you to download Interface99 as a [Git submodule] to be able to update it with `git submodule update --remote` when necessary. Also, note that by default, Interface99's `CMakeLists.txt` downloads Metalang99 [v1.12.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.12.0) from the Git repository; if you want to override this behaviour, you can do so by invoking [`FetchContent_Declare`] earlier.
+
+[Git submodule]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
+[`FetchContent_Declare`]: https://cmake.org/cmake/help/latest/module/FetchContent.html#command:fetchcontent_declare
 
 Some handy advices:
 
