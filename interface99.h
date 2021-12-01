@@ -29,8 +29,8 @@ SOFTWARE.
 
 #include <metalang99.h>
 
-#if !ML99_VERSION_COMPATIBLE(1, 12, 0)
-#error Please, update Metalang99 to v1.12.0 or later.
+#if !ML99_VERSION_COMPATIBLE(1, 13, 0)
+#error Please, update Metalang99 to v1.13.0 or later.
 #endif
 
 #ifndef IFACE99_NO_ALIASES
@@ -81,7 +81,7 @@ SOFTWARE.
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 8
-#define IFACE99_PATCH 1
+#define IFACE99_PATCH 2
 // } (Public stuff)
 
 // Interface generation {
