@@ -178,9 +178,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     interface99
-    GIT_REPOSITORY https://github.com/Hirrolot/interface99.git
-    # Always use version numbers instead of pulling directly from master!
-    GIT_TAG v1.2.3
+    URL https://github.com/Hirrolot/interface99/archive/refs/tags/v1.2.3.tar.gz # v1.2.3
 )
 
 FetchContent_MakeAvailable(interface99)
@@ -195,7 +193,7 @@ add_subdirectory(interface99)
 target_link_libraries(MyProject interface99)
 ```
 
-In the latter case, I encourage you to download Interface99 as a [Git submodule] to be able to update it with `git submodule update --remote` when necessary. Also, note that by default, Interface99's `CMakeLists.txt` downloads Metalang99 [v1.12.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.12.0) from the Git repository; if you want to override this behaviour, you can do so by invoking [`FetchContent_Declare`] earlier.
+In the latter case, I encourage you to download Interface99 as a [Git submodule] to be able to update it with `git submodule update --remote` when necessary. Also, note that by default, Interface99's `CMakeLists.txt` downloads Metalang99 [v1.13.0](https://github.com/Hirrolot/metalang99/releases/tag/v1.13.0) from the GitHub release archives; if you want to override this behaviour, you can do so by invoking [`FetchContent_Declare`] earlier.
 
 [Git submodule]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 [`FetchContent_Declare`]: https://cmake.org/cmake/help/latest/module/FetchContent.html#command:fetchcontent_declare
