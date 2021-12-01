@@ -206,6 +206,8 @@ Some handy advices:
 
  - [Precompile headers] that use Interface99 so that they will not be compiled each time they are included. It is helpful to reduce compilation times, but they are not mandatory.
 
+Happy hacking!
+
 [Metalang99]: https://github.com/Hirrolot/metalang99
 [Precompile headers]: https://en.wikipedia.org/wiki/Precompiled_header
 [`-ftrack-macro-expansion=0`]: https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html
@@ -405,8 +407,6 @@ static const DroidVTable R2_D2_Droid_impl = {
 ```
 
 Please, note that you have to specify `()` for the `*_CUSTOM` attribute; do not leave it empty.
-
-Happy hacking!
 
 ## Syntax and semantics
 
