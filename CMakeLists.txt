@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(interface99)
+project(interface99 LANGUAGES C)
 
 include(FetchContent)
 
