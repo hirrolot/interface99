@@ -6,9 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.8.3 - 2021-12-09
+
 ### Fixed
 
- - Specify `C` as the project language in `CMakeLists.txt`. Previously, CMake detected C++ and required a C++ compiler in order to compiler the project.
+ - Specify `C` as the project language in `CMakeLists.txt`. Previously, CMake detected C++ and required a C++ compiler to compile the project.
+ - Require CMake v3.11.4.
 
 ## 0.8.2 - 2021-12-01
 
