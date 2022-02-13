@@ -148,8 +148,12 @@ perim = 30
 
  - **Comprehensible errors.** Interface99 is [resilient to bad code].
 
+ - **Battle-tested.** Interface99 is used at [OpenIPC] to develop real-time streaming software for IP cameras; this includes an [RTSP 1.0 implementation] along with ~50k lines of private code.
+
 [code generation semantics]: #semantics
 [resilient to bad code]: #q-what-about-compile-time-errors
+[OpenIPC]: https://openipc.org/
+[RTSP 1.0 implementation]: https://github.com/OpenIPC/smolrtsp/
 
 ## Features
 
