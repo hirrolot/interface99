@@ -307,7 +307,7 @@ Finally, just a few brief notes:
 
  - Besides `VCALL`, you also have `VCALL_OBJ`, `VCALL_SUPER`, and `VCALL_SUPER_OBJ`. They all serve a different purpose; for more information, please refer to [their documentation](#vcall_).
  - In practice, [`DYN`](#DYN) is used more often than [`DYN_LIT`](#DYN_LIT); it just accepts an ordinary pointer instead of an initialiser list, which means that you can `malloc` it beforehand.
- - Remember that your virtual function can accept literally any parameters, even without `self`, so you can invoke them as `obj.vptr->foo(...)` as well.
+ - If your virtual function does not accept `self`, you can invoke it as `obj.vptr->foo(...)`.
  - If you want to call an interface function on some concrete type, just write `VTABLE(T, Iface).foo(...)`.
 
 Congratulations, this is all you need to know to write most of the stuff!
