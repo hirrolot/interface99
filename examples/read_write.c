@@ -6,11 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#define Read_IFACE vfunc(size_t, read, VSelf, char *dest, size_t bytes_to_read)
-interface(Read);
+#define Reader_IFACE vfunc(size_t, read, VSelf, char *dest, size_t bytes_to_read)
+interface(Reader);
 
-#define Write_IFACE vfunc(size_t, write, VSelf, const char *src, size_t bytes_to_write)
-interface(Write);
+#define Writer_IFACE vfunc(size_t, write, VSelf, const char *src, size_t bytes_to_write)
+interface(Writer);
 
 typedef struct {
     FILE *fp;
@@ -21,14 +21,14 @@ size_t File_read(VSelf, char *dest, size_t bytes_to_read) {
     return fread(dest, 1, bytes_to_read, self->fp);
 }
 
-impl(Read, File);
+impl(Reader, File);
 
 size_t File_write(VSelf, const char *src, size_t bytes_to_write) {
     VSELF(File);
     return fwrite(src, 1, bytes_to_write, self->fp);
 }
 
-impl(Write, File);
+impl(Writer, File);
 
 /*
  * Output:
@@ -38,11 +38,11 @@ int main(void) {
     FILE *fp = tmpfile();
     assert(fp);
 
-    Write w = DYN(File, Write, &(File){fp});
+    Writer w = DYN(File, Writer, &(File){fp});
     VCALL(w, write, "hello world", strlen("hello world"));
     rewind(fp);
 
-    Read r = DYN(File, Read, &(File){fp});
+    Reader r = DYN(File, Reader, &(File){fp});
     char hello_world[16] = {0};
     VCALL(r, read, hello_world, strlen("hello world"));
 
