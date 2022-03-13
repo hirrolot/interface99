@@ -61,9 +61,9 @@ impl(Droid, R2_D2);
  * Waaaaoow!
  */
 int main(void) {
-    Droid c_3po = DYN(C_3PO, Droid, &(C_3PO){0});
+    Droid c_3po = DYN_LIT(C_3PO, Droid, {0});
     VCALL_OBJ(c_3po, turn_on);
 
-    Droid r2_d2 = DYN(R2_D2, Droid, &(R2_D2){0});
+    Droid r2_d2 = DYN_LIT(R2_D2, Droid, {0});
     VCALL_OBJ(r2_d2, turn_on);
 }

@@ -5,6 +5,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <string.h>
 
 // Ensure that forward declarations are generated.
 #define TestForwardDecl_IFACE vfunc(void, abc, Foo self, FooVTable vtable)
@@ -57,6 +58,15 @@ impl(Foo, FooBarImpl);
 impl(Bar, FooBarImpl);
 #undef FooBarImpl_foo
 #undef FooBarImpl_bar
+
+typedef struct {
+    int x;
+    long long d;
+    const char *str;
+} TestCompoundLit;
+
+#define TestCompoundLit_foo foo1_impl
+impl(Foo, TestCompoundLit);
 // } (Implementations)
 
 int main(void) {
@@ -96,4 +106,14 @@ int main(void) {
     ENSURE_DYN_OBJ(BarImpl2, Bar);
     ENSURE_DYN_OBJ(FooBarImpl, Foo);
     ENSURE_DYN_OBJ(FooBarImpl, Bar);
+
+    // Test compound literals with `DYN_LIT`.
+    {
+        Foo compound = DYN_LIT(TestCompoundLit, Foo, {.x = 123, .d = 15, .str = "abc"});
+
+        assert(compound.vptr == &VTABLE(TestCompoundLit, Foo));
+        assert(((TestCompoundLit *)compound.self)->x == 123);
+        assert(((TestCompoundLit *)compound.self)->d == 15);
+        assert(strcmp(((TestCompoundLit *)compound.self)->str, "abc") == 0);
+    }
 }

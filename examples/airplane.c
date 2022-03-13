@@ -63,7 +63,7 @@ impl(Airplane, MyAirplane);
  * move_down(11): x = 7, y = -4
  */
 int main(void) {
-    Airplane my_airplane = DYN(MyAirplane, Airplane, &(MyAirplane){0, 0});
+    Airplane my_airplane = DYN_LIT(MyAirplane, Airplane, {.x = 0, .y = 0});
 
     VCALL_SUPER(my_airplane, Vehicle, move_forward, 10);
     VCALL_SUPER(my_airplane, Vehicle, move_back, 3);

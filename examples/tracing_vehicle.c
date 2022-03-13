@@ -64,8 +64,8 @@ void test(Vehicle vehicle) {
  * Vehicle.drive()
  */
 int main(void) {
-    Vehicle car = DYN(Car, Vehicle, &(Car){0});
-    Vehicle tracing_car = DYN(TracingVehicle, Vehicle, &(TracingVehicle){car});
+    Vehicle car = DYN_LIT(Car, Vehicle, {.fuel = 0});
+    Vehicle tracing_car = DYN_LIT(TracingVehicle, Vehicle, {.inner = car});
 
     test(tracing_car);
 

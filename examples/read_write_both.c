@@ -45,7 +45,7 @@ int main(void) {
     FILE *fp = tmpfile();
     assert(fp);
 
-    ReadWriter rw = DYN(File, ReadWriter, &(File){fp});
+    ReadWriter rw = DYN_LIT(File, ReadWriter, {fp});
 
     VCALL_SUPER(rw, Writer, write, "hello world", strlen("hello world"));
     rewind(fp);

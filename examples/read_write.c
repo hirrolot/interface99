@@ -38,11 +38,11 @@ int main(void) {
     FILE *fp = tmpfile();
     assert(fp);
 
-    Writer w = DYN(File, Writer, &(File){fp});
+    Writer w = DYN_LIT(File, Writer, {fp});
     VCALL(w, write, "hello world", strlen("hello world"));
     rewind(fp);
 
-    Reader r = DYN(File, Reader, &(File){fp});
+    Reader r = DYN_LIT(File, Reader, {fp});
     char hello_world[16] = {0};
     VCALL(r, read, hello_world, strlen("hello world"));
 

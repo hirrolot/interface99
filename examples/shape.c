@@ -66,12 +66,12 @@ void test(Shape shape) {
  * Output:
  * perim = 24
  * perim = 120
- * perim = 6
- * perim = 30
+ * perim = 60
+ * perim = 300
  */
 int main(void) {
-    Shape r = DYN(Rectangle, Shape, &(Rectangle){.a = 5, .b = 7});
-    Shape t = DYN(Triangle, Shape, &(Triangle){.a = 10, .b = 20, .c = 30});
+    Shape r = DYN_LIT(Rectangle, Shape, {5, 7});
+    Shape t = DYN_LIT(Triangle, Shape, {10, 20, 30});
 
     test(r);
     test(t);
