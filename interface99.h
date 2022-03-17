@@ -83,7 +83,7 @@ SOFTWARE.
 
 #define IFACE99_MAJOR 0
 #define IFACE99_MINOR 8
-#define IFACE99_PATCH 3
+#define IFACE99_PATCH 4
 // } (Public stuff)
 
 // Interface generation {
