@@ -661,7 +661,7 @@ However, casting untyped `self` to a particular type is still quite unpleasant. 
 
 Thanks to Rust and Golang for their implementations of traits/interfaces.
 
-## Publications
+## Blog posts
 
  - [_Comparing Golang and Interface99_](https://www.reddit.com/r/C_Programming/comments/tgm5ft/comparing_golang_and_interface99/)
  - [_What’s the Point of the C Preprocessor, Actually?_](https://hirrolot.github.io/posts/whats-the-point-of-the-c-preprocessor-actually.html)
